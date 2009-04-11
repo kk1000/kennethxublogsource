@@ -7,6 +7,10 @@ using Spring.Data.Support;
 
 namespace Spring.Extension.Tests.Data.Support
 {
+    /// <summary>
+    /// Test cases for <see cref="OdpNetDataReaderWrapper"/>
+    /// </summary>
+    /// <author>Kenneth Xu</author>
     [TestFixture] public class OdpNetDataReaderWrapperTest
     {
         private MockRepository _mockery;

@@ -1,5 +1,9 @@
 namespace Spring.Data.Generic
 {
+    /// <summary>
+    /// Interface to use <see cref="Data.IAdoOperations"/> for batch update.
+    /// </summary>
+    /// <author>Kenneth Xu</author>
     public interface IBatchExecutor
     {
         /// <summary>
@@ -22,7 +26,7 @@ namespace Spring.Data.Generic
         /// <param name="data">
         /// A collection of data object to be updated in batch.
         /// </param>
-        /// <param name="dataToParamters">
+        /// <param name="dataToParameters">
         /// Delegate that converts data object to parameters.
         /// </param>
         /// <returns>
@@ -35,6 +39,6 @@ namespace Spring.Data.Generic
             System.Data.CommandType cmdType,
             string cmdText,
             System.Collections.Generic.ICollection<T> data,
-            System.Converter<T, Common.IDbParameters> dataToParamters);
+            System.Converter<T, Common.IDbParameters> dataToParameters);
     }
 }

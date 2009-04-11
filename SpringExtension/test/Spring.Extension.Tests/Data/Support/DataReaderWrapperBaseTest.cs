@@ -6,6 +6,10 @@ using Spring.Data.Support;
 
 namespace Spring.Extension.Tests.Data.Support
 {
+    /// <summary>
+    /// Test cases for <see cref="DataReaderWrapperBase"/>
+    /// </summary>
+    /// <author>Kenneth Xu</author>
     [TestFixture] public class DataReaderWrapperBaseTest
     {
         private MockRepository _mockery;
