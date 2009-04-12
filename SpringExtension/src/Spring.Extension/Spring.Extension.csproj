@@ -33,9 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Net20ExtensionMethodSupport, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="LinqBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c2b14eb747628076, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\ExtensionMethodSupport\Net20ExtensionMethodSupport.dll</HintPath>
+      <HintPath>..\..\lib\LinqBridge\LinqBridge.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.DataAccess, Version=2.102.2.20, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
