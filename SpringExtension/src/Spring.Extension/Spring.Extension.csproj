@@ -54,12 +54,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Support\DataRecordOrdinalCache.cs" />
     <Compile Include="Data\Support\DataRecordByNameReader.cs" />
     <Compile Include="Data\Support\DataRecordExtension.cs" />
     <Compile Include="Data\Generic\AdoOperationsBatchExtension.cs" />
     <Compile Include="Data\Support\DataReaderWrapperBase.cs" />
     <Compile Include="Data\Generic\IBatchExecutor.cs" />
     <Compile Include="Data\Generic\IBatchExecutorFactory.cs" />
+    <Compile Include="Data\Support\IDataRecordOrdinalCache.cs" />
     <Compile Include="Data\Support\OdpNetDataReaderWrapper.cs" />
     <Compile Include="Data\Generic\OracleOdpTemplate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
