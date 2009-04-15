@@ -40,7 +40,6 @@
         <import namespace="System.Runtime.InteropServices"/>
       </imports>
       <attributes>
-        <attribute type="ComVisibleAttribute" value="false"/>
         <attribute type="AssemblyTrademarkAttribute" value=""/>
         <attribute type="AssemblyCultureAttribute" value=""/>
         <attribute type="AssemblyVersionAttribute" value="${version}"/>

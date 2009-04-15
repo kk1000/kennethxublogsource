@@ -8,6 +8,6 @@
   <!-- Uncomment the line below to specify a different set of assembly list to profile -->
   <property name="coverage.assembly.list"    value="Spring.Extension" />
 
-  <include buildfile="${solution.home}/lib/NAntCommonTargets/CommonTargets.build"/>
+  <include buildfile="${solution.home}/dependency/NAntCommonTargets/CommonTargets.build"/>
 
 </project>
