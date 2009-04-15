@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project name="SpringExtension" default="build">
+<project name="Spring.Extension" default="build">
   <property name="solution.home"             value="${path::get-full-path('.')}" />
   <include buildfile="${solution.home}/dependency/NAntCommonTargets/CommonTargets.build"/>
   <property name="nant.settings.currentframework" value="net-3.5" />
