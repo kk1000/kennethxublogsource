@@ -285,8 +285,10 @@
   </target>
 
   <target name="createDistributionBinary" description="Create binary distribution files">
+    <property name="distribution.home" 
+              value="${solution.home}\bin"/>
     <property name="distribution.path" 
-              value="${solution.home}\bin\net\2.0\${build.configuration}"/>
+              value="${distribution.home}\net\2.0\${build.configuration}"/>
     <mkdir dir="${distribution.path}" if="${not directory::exists(distribution.path)}"/>
     <foreach item="String" delim=";" property="build.assembly" in="${build.assembly.all}">
       <copy todir="${distribution.path}" flatten="true" verbose="true" >
@@ -295,6 +297,9 @@
         </fileset>
       </copy>
     </foreach>
+    <echo message="Writing version ${version} to ${distribution.home}\VERSION.TXT"/>
+    <echo message="${version}" file="${distribution.home}\VERSION.TXT" level="Error" />
+
   </target>
 
   <target name="generateCoverageReport">
