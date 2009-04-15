@@ -82,6 +82,7 @@ namespace Spring.Data.Support
         /// </exception>
         public int GetOrdinal(string name)
         {
+            if (name == null) throw new ArgumentNullException("name");
             if (_ordinalMap == null)
             {
                 throw new InvalidOperationException("Not yet initialized. Call Init method first.");

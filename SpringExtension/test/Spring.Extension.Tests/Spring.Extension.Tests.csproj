@@ -59,10 +59,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Support\DataReaderWrapperBaseTest.cs" />
+    <Compile Include="Data\Support\DataRecordExtensionTest.cs" />
     <Compile Include="Data\Support\DataRecordOrdinalCacheTest.cs" />
     <Compile Include="Data\Support\OdpNetDataReaderWrapperTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Spring.Extension\Spring.Extension.csproj">

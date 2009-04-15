@@ -55,7 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Support\DataRecordOrdinalCache.cs" />
-    <Compile Include="Data\Support\DataRecordByNameReader.cs" />
     <Compile Include="Data\Support\DataRecordExtension.cs" />
     <Compile Include="Data\Generic\AdoOperationsBatchExtension.cs" />
     <Compile Include="Data\Support\DataReaderWrapperBase.cs" />

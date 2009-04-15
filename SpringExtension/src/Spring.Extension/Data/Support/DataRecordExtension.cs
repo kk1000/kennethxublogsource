@@ -44,7 +44,7 @@ namespace Spring.Data.Support
     /// the position of field name. Due to this, those getters are generally
     /// slower then their position based couterpart, especially when the
     /// implementation of <see cref="IDataRecord.GetOrdinal"/> method is
-    /// inefficient. <see cref="DataRecordByNameReader"/> for faster field 
+    /// inefficient. <see cref="IDataRecordOrdinalCache"/> for faster field 
     /// name based operations.
     /// </para>
     /// </remarks>
@@ -168,7 +168,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool SafeGetBoolean(this IDataRecord record, int index, bool defaultValue)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? defaultValue : record.GetBoolean(index);
         }
 
@@ -306,7 +305,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool? GetNullableBoolean(this IDataRecord record, int index)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? default(bool?) : record.GetBoolean(index);
         }
 
@@ -423,8 +421,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool GetBoolean(this IDataRecord record, string name)
         {
-            AssertRecordNotNull(record);
-            return record.GetBoolean(GetOrdinal(record, name));
+            return record.GetBoolean(record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -445,7 +442,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool GetBoolean(this IDataRecord record, string name, string trueValue)
         {
-            return GetBoolean(record, GetOrdinal(record, name), trueValue);
+            return GetBoolean(record, record.GetOrdinal(name), trueValue);
         }
 
         /// <summary>
@@ -472,7 +469,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool GetBoolean(this IDataRecord record, string name, string trueValue, string falseValue)
         {
-            return GetBoolean(record, GetOrdinal(record, name), trueValue, falseValue);
+            return GetBoolean(record, record.GetOrdinal(name), trueValue, falseValue);
         }
 
         /// <summary>
@@ -493,7 +490,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool GetBoolean(this IDataRecord record, string name, char trueValue)
         {
-            return GetBoolean(record, GetOrdinal(record, name), trueValue);
+            return GetBoolean(record, record.GetOrdinal(name), trueValue);
         }
 
         /// <summary>
@@ -520,7 +517,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool GetBoolean(this IDataRecord record, string name, char trueValue, char? falseValue)
         {
-            return GetBoolean(record, GetOrdinal(record, name), trueValue, falseValue);
+            return GetBoolean(record, record.GetOrdinal(name), trueValue, falseValue);
         }
 
         /// <summary>
@@ -542,7 +539,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool SafeGetBoolean(this IDataRecord record, string name, bool defaultValue)
         {
-            return SafeGetBoolean(record, GetOrdinal(record, name), defaultValue);
+            return SafeGetBoolean(record, record.GetOrdinal(name), defaultValue);
         }
 
         /// <summary>
@@ -561,7 +558,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool SafeGetBoolean(this IDataRecord record, string name)
         {
-            return SafeGetBoolean(record, GetOrdinal(record, name));
+            return SafeGetBoolean(record, record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -582,7 +579,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool SafeGetBoolean(this IDataRecord record, string name, string trueValue)
         {
-            return SafeGetBoolean(record, GetOrdinal(record, name), trueValue);
+            return SafeGetBoolean(record, record.GetOrdinal(name), trueValue);
         }
 
         /// <summary>
@@ -609,7 +606,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool SafeGetBoolean(this IDataRecord record, string name, string trueValue, string falseValue)
         {
-            return SafeGetBoolean(record, GetOrdinal(record, name), trueValue, falseValue);
+            return SafeGetBoolean(record, record.GetOrdinal(name), trueValue, falseValue);
         }
 
         /// <summary>
@@ -630,7 +627,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool SafeGetBoolean(this IDataRecord record, string name, char trueValue)
         {
-            return SafeGetBoolean(record, GetOrdinal(record, name), trueValue);
+            return SafeGetBoolean(record, record.GetOrdinal(name), trueValue);
         }
 
         /// <summary>
@@ -657,7 +654,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool SafeGetBoolean(this IDataRecord record, string name, char trueValue, char? falseValue)
         {
-            return SafeGetBoolean(record, GetOrdinal(record, name), trueValue, falseValue);
+            return SafeGetBoolean(record, record.GetOrdinal(name), trueValue, falseValue);
         }
 
         /// <summary>
@@ -677,7 +674,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool? GetNullableBoolean(this IDataRecord record, string name)
         {
-            return GetNullableBoolean(record, GetOrdinal(record, name));
+            return GetNullableBoolean(record, record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -700,7 +697,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool? GetNullableBoolean(this IDataRecord record, string name, string trueValue)
         {
-            return GetNullableBoolean(record, GetOrdinal(record, name), trueValue);
+            return GetNullableBoolean(record, record.GetOrdinal(name), trueValue);
         }
 
         /// <summary>
@@ -726,7 +723,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool? GetNullableBoolean(this IDataRecord record, string name, string trueValue, string falseValue)
         {
-            return GetNullableBoolean(record, GetOrdinal(record, name), trueValue, falseValue);
+            return GetNullableBoolean(record, record.GetOrdinal(name), trueValue, falseValue);
         }
 
         /// <summary>
@@ -748,7 +745,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool? GetNullableBoolean(this IDataRecord record, string name, char trueValue)
         {
-            return GetNullableBoolean(record, GetOrdinal(record, name), trueValue);
+            return GetNullableBoolean(record, record.GetOrdinal(name), trueValue);
         }
 
         /// <summary>
@@ -774,7 +771,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static bool? GetNullableBoolean(this IDataRecord record, string name, char trueValue, char? falseValue)
         {
-            return GetNullableBoolean(record, GetOrdinal(record, name), trueValue, falseValue);
+            return GetNullableBoolean(record, record.GetOrdinal(name), trueValue, falseValue);
         }
 
         #endregion
@@ -800,7 +797,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static byte SafeGetByte(this IDataRecord record, int index, byte defaultValue)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? defaultValue : record.GetByte(index);
         }
 
@@ -840,7 +836,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static byte? GetNullableByte(this IDataRecord record, int index)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? default(byte?) : record.GetByte(index);
         }
 
@@ -860,7 +855,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static byte GetByte(this IDataRecord record, string name)
         {
-            return record.GetByte(GetOrdinal(record, name));
+            return record.GetByte(record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -882,7 +877,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static byte SafeGetByte(this IDataRecord record, string name, byte defaultValue)
         {
-            return SafeGetByte(record, GetOrdinal(record, name), defaultValue);
+            return SafeGetByte(record, record.GetOrdinal(name), defaultValue);
         }
 
         /// <summary>
@@ -901,7 +896,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static byte SafeGetByte(this IDataRecord record, string name)
         {
-            return SafeGetByte(record, GetOrdinal(record, name));
+            return SafeGetByte(record, record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -921,7 +916,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static byte? GetNullableByte(this IDataRecord record, string name)
         {
-            return GetNullableByte(record, GetOrdinal(record, name));
+            return GetNullableByte(record, record.GetOrdinal(name));
         }
 
         #endregion
@@ -947,7 +942,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static char SafeGetChar(this IDataRecord record, int index, char defaultValue)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? defaultValue : record.GetChar(index);
         }
 
@@ -987,7 +981,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static char? GetNullableChar(this IDataRecord record, int index)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? default(char?) : record.GetChar(index);
         }
 
@@ -1007,7 +1000,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static char GetChar(this IDataRecord record, string name)
         {
-            return record.GetChar(GetOrdinal(record, name));
+            return record.GetChar(record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1029,7 +1022,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static char SafeGetChar(this IDataRecord record, string name, char defaultValue)
         {
-            return SafeGetChar(record, GetOrdinal(record, name), defaultValue);
+            return SafeGetChar(record, record.GetOrdinal(name), defaultValue);
         }
 
         /// <summary>
@@ -1048,7 +1041,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static char SafeGetChar(this IDataRecord record, string name)
         {
-            return SafeGetChar(record, GetOrdinal(record, name));
+            return SafeGetChar(record, record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1068,7 +1061,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static char? GetNullableChar(this IDataRecord record, string name)
         {
-            return GetNullableChar(record, GetOrdinal(record, name));
+            return GetNullableChar(record, record.GetOrdinal(name));
         }
 
         #endregion
@@ -1094,7 +1087,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static DateTime SafeGetDateTime(this IDataRecord record, int index, DateTime defaultValue)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? defaultValue : record.GetDateTime(index);
         }
 
@@ -1134,7 +1126,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static DateTime? GetNullableDateTime(this IDataRecord record, int index)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? default(DateTime?) : record.GetDateTime(index);
         }
 
@@ -1154,7 +1145,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static DateTime GetDateTime(this IDataRecord record, string name)
         {
-            return record.GetDateTime(GetOrdinal(record, name));
+            return record.GetDateTime(record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1176,7 +1167,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static DateTime SafeGetDateTime(this IDataRecord record, string name, DateTime defaultValue)
         {
-            return SafeGetDateTime(record, GetOrdinal(record, name), defaultValue);
+            return SafeGetDateTime(record, record.GetOrdinal(name), defaultValue);
         }
 
         /// <summary>
@@ -1195,7 +1186,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static DateTime SafeGetDateTime(this IDataRecord record, string name)
         {
-            return SafeGetDateTime(record, GetOrdinal(record, name));
+            return SafeGetDateTime(record, record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1215,7 +1206,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static DateTime? GetNullableDateTime(this IDataRecord record, string name)
         {
-            return GetNullableDateTime(record, GetOrdinal(record, name));
+            return GetNullableDateTime(record, record.GetOrdinal(name));
         }
 
         #endregion
@@ -1241,7 +1232,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static decimal SafeGetDecimal(this IDataRecord record, int index, decimal defaultValue)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? defaultValue : record.GetDecimal(index);
         }
 
@@ -1281,7 +1271,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static decimal? GetNullableDecimal(this IDataRecord record, int index)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? default(decimal?) : record.GetDecimal(index);
         }
 
@@ -1301,7 +1290,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static decimal GetDecimal(this IDataRecord record, string name)
         {
-            return record.GetDecimal(GetOrdinal(record, name));
+            return record.GetDecimal(record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1323,7 +1312,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static decimal SafeGetDecimal(this IDataRecord record, string name, decimal defaultValue)
         {
-            return SafeGetDecimal(record, GetOrdinal(record, name), defaultValue);
+            return SafeGetDecimal(record, record.GetOrdinal(name), defaultValue);
         }
 
         /// <summary>
@@ -1342,7 +1331,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static decimal SafeGetDecimal(this IDataRecord record, string name)
         {
-            return SafeGetDecimal(record, GetOrdinal(record, name));
+            return SafeGetDecimal(record, record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1362,7 +1351,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static decimal? GetNullableDecimal(this IDataRecord record, string name)
         {
-            return GetNullableDecimal(record, GetOrdinal(record, name));
+            return GetNullableDecimal(record, record.GetOrdinal(name));
         }
 
         #endregion
@@ -1388,7 +1377,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static double SafeGetDouble(this IDataRecord record, int index, double defaultValue)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? defaultValue : record.GetDouble(index);
         }
 
@@ -1428,7 +1416,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static double? GetNullableDouble(this IDataRecord record, int index)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? default(double?) : record.GetDouble(index);
         }
 
@@ -1448,7 +1435,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static double GetDouble(this IDataRecord record, string name)
         {
-            return record.GetDouble(GetOrdinal(record, name));
+            return record.GetDouble(record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1470,7 +1457,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static double SafeGetDouble(this IDataRecord record, string name, double defaultValue)
         {
-            return SafeGetDouble(record, GetOrdinal(record, name), defaultValue);
+            return SafeGetDouble(record, record.GetOrdinal(name), defaultValue);
         }
 
         /// <summary>
@@ -1489,7 +1476,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static double SafeGetDouble(this IDataRecord record, string name)
         {
-            return SafeGetDouble(record, GetOrdinal(record, name));
+            return SafeGetDouble(record, record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1509,7 +1496,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static double? GetNullableDouble(this IDataRecord record, string name)
         {
-            return GetNullableDouble(record, GetOrdinal(record, name));
+            return GetNullableDouble(record, record.GetOrdinal(name));
         }
 
         #endregion
@@ -1535,7 +1522,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static float SafeGetFloat(this IDataRecord record, int index, float defaultValue)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? defaultValue : record.GetFloat(index);
         }
 
@@ -1575,7 +1561,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static float? GetNullableFloat(this IDataRecord record, int index)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? default(float?) : record.GetFloat(index);
         }
 
@@ -1595,7 +1580,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static float GetFloat(this IDataRecord record, string name)
         {
-            return record.GetFloat(GetOrdinal(record, name));
+            return record.GetFloat(record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1617,7 +1602,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static float SafeGetFloat(this IDataRecord record, string name, float defaultValue)
         {
-            return SafeGetFloat(record, GetOrdinal(record, name), defaultValue);
+            return SafeGetFloat(record, record.GetOrdinal(name), defaultValue);
         }
 
         /// <summary>
@@ -1636,7 +1621,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static float SafeGetFloat(this IDataRecord record, string name)
         {
-            return SafeGetFloat(record, GetOrdinal(record, name));
+            return SafeGetFloat(record, record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1656,7 +1641,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static float? GetNullableFloat(this IDataRecord record, string name)
         {
-            return GetNullableFloat(record, GetOrdinal(record, name));
+            return GetNullableFloat(record, record.GetOrdinal(name));
         }
 
         #endregion
@@ -1682,7 +1667,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static short SafeGetInt16(this IDataRecord record, int index, short defaultValue)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? defaultValue : record.GetInt16(index);
         }
 
@@ -1722,7 +1706,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static short? GetNullableInt16(this IDataRecord record, int index)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? default(short?) : record.GetInt16(index);
         }
 
@@ -1742,7 +1725,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static short GetInt16(this IDataRecord record, string name)
         {
-            return record.GetInt16(GetOrdinal(record, name));
+            return record.GetInt16(record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1764,7 +1747,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static short SafeGetInt16(this IDataRecord record, string name, short defaultValue)
         {
-            return SafeGetInt16(record, GetOrdinal(record, name), defaultValue);
+            return SafeGetInt16(record, record.GetOrdinal(name), defaultValue);
         }
 
         /// <summary>
@@ -1783,7 +1766,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static short SafeGetInt16(this IDataRecord record, string name)
         {
-            return SafeGetInt16(record, GetOrdinal(record, name));
+            return SafeGetInt16(record, record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1803,7 +1786,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static short? GetNullableInt16(this IDataRecord record, string name)
         {
-            return GetNullableInt16(record, GetOrdinal(record, name));
+            return GetNullableInt16(record, record.GetOrdinal(name));
         }
 
         #endregion
@@ -1829,7 +1812,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static int SafeGetInt32(this IDataRecord record, int index, int defaultValue)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? defaultValue : record.GetInt32(index);
         }
 
@@ -1869,7 +1851,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static int? GetNullableInt32(this IDataRecord record, int index)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? default(int?) : record.GetInt32(index);
         }
 
@@ -1889,7 +1870,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static int GetInt32(this IDataRecord record, string name)
         {
-            return record.GetInt32(GetOrdinal(record, name));
+            return record.GetInt32(record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1911,7 +1892,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static int SafeGetInt32(this IDataRecord record, string name, int defaultValue)
         {
-            return SafeGetInt32(record, GetOrdinal(record, name), defaultValue);
+            return SafeGetInt32(record, record.GetOrdinal(name), defaultValue);
         }
 
         /// <summary>
@@ -1930,7 +1911,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static int SafeGetInt32(this IDataRecord record, string name)
         {
-            return SafeGetInt32(record, GetOrdinal(record, name));
+            return SafeGetInt32(record, record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -1950,7 +1931,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static int? GetNullableInt32(this IDataRecord record, string name)
         {
-            return GetNullableInt32(record, GetOrdinal(record, name));
+            return GetNullableInt32(record, record.GetOrdinal(name));
         }
 
         #endregion
@@ -1976,7 +1957,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static long SafeGetInt64(this IDataRecord record, int index, long defaultValue)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? defaultValue : record.GetInt64(index);
         }
 
@@ -2016,7 +1996,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static long? GetNullableInt64(this IDataRecord record, int index)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? default(long?) : record.GetInt64(index);
         }
 
@@ -2036,7 +2015,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static long GetInt64(this IDataRecord record, string name)
         {
-            return record.GetInt64(GetOrdinal(record, name));
+            return record.GetInt64(record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -2058,7 +2037,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static long SafeGetInt64(this IDataRecord record, string name, long defaultValue)
         {
-            return SafeGetInt64(record, GetOrdinal(record, name), defaultValue);
+            return SafeGetInt64(record, record.GetOrdinal(name), defaultValue);
         }
 
         /// <summary>
@@ -2077,7 +2056,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static long SafeGetInt64(this IDataRecord record, string name)
         {
-            return SafeGetInt64(record, GetOrdinal(record, name));
+            return SafeGetInt64(record, record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -2097,7 +2076,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static long? GetNullableInt64(this IDataRecord record, string name)
         {
-            return GetNullableInt64(record, GetOrdinal(record, name));
+            return GetNullableInt64(record, record.GetOrdinal(name));
         }
 
         #endregion
@@ -2123,7 +2102,6 @@ namespace Spring.Data.Support
         /// </returns>
         public static string SafeGetString(this IDataRecord record, int index, string defaultValue)
         {
-            AssertRecordNotNull(record);
             return record.IsDBNull(index) ? defaultValue : record.GetString(index);
         }
 
@@ -2162,7 +2140,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static string GetString(this IDataRecord record, string name)
         {
-            return record.GetString(GetOrdinal(record, name));
+            return record.GetString(record.GetOrdinal(name));
         }
 
         /// <summary>
@@ -2184,7 +2162,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static string SafeGetString(this IDataRecord record, string name, string defaultValue)
         {
-            return SafeGetString(record, GetOrdinal(record, name), defaultValue);
+            return SafeGetString(record, record.GetOrdinal(name), defaultValue);
         }
 
         /// <summary>
@@ -2203,7 +2181,7 @@ namespace Spring.Data.Support
         /// </returns>
         public static string SafeGetString(this IDataRecord record, string name)
         {
-            return SafeGetString(record, GetOrdinal(record, name));
+            return SafeGetString(record, record.GetOrdinal(name));
         }
 
         #endregion
@@ -2215,7 +2193,7 @@ namespace Spring.Data.Support
             if (value == null) return null;
 
             if (value.Equals(trueValue)) return true;
-            if (falseValue == null && value.Equals(falseValue)) return false;
+            if (falseValue == null || value.Equals(falseValue)) return false;
             return null;
         }
 
@@ -2229,11 +2207,10 @@ namespace Spring.Data.Support
 
         public static bool StringToBoolean(string value, string trueValue, string falseValue)
         {
-            AssertValueNotNull(value);
             AssertTrueValueNotNull(trueValue);
 
-            if (value.Equals(trueValue)) return true;
-            if (falseValue == null && value.Equals(falseValue)) return false;
+            if (trueValue.Equals(value)) return true;
+            if (falseValue == null || falseValue.Equals(value)) return false;
             throw new ArgumentException(String.Format(
                                             "Unable to convert string '{0}' to boolean. Expecting {1} or {2}.", value, trueValue, falseValue));
         }
@@ -2249,26 +2226,9 @@ namespace Spring.Data.Support
 
         #region Private Methods
 
-        private static int GetOrdinal(IDataRecord record, string name)
-        {
-            AssertRecordNotNull(record);
-            if (name == null) throw new ArgumentNullException("name");
-            return record.GetOrdinal(name);
-        }
-
-        private static void AssertRecordNotNull(IDataRecord record)
-        {
-            if (record == null) throw new ArgumentNullException("record");
-        }
-
         private static void AssertTrueValueNotNull(string trueValue)
         {
             if (trueValue == null) throw new ArgumentNullException("trueValue");
-        }
-
-        private static void AssertValueNotNull(string value)
-        {
-            if (value == null) throw new ArgumentNullException("value");
         }
 
         #endregion
