@@ -2187,7 +2187,55 @@ namespace Spring.Data.Support
         #endregion
 
         #region Boolean Converters
-        public static bool? StringToNullableBoolean(string value, string trueValue, string falseValue)
+        // TODO: Methods in this region are candidates to be moved 
+        // to another utility class for more general purpose.
+        
+        /// <summary>
+        /// Utility method to convert <see langword="string"/> type to
+        /// <see langword="bool?"/> type.
+        /// </summary>
+        /// <remarks>
+        /// <example>
+        /// Below code convertes string "Yes" to <c>true</c>, "No" to 
+        /// <c>false</c> and any other strings are converted to <c>null</c>.
+        /// <code language="c#">
+        /// bool value = DataRecordExtension.StringToNullableBoolean(s, "Yes", "No");
+        /// </code>
+        /// </example>
+        /// <example>
+        /// Below code convertes string "true" to <c>true</c> in case insensitive
+        /// manner, any other strings are converted to <c>null</c>.
+        /// <code language="c#">
+        /// bool value = DataRecordExtension.StringToNullableBoolean(s.ToLower, "true", null);
+        /// </code>
+        /// </example>
+        /// </remarks>
+        /// <param name="value">The string value to convert.</param>
+        /// <param name="trueValue">
+        /// The string value to be considered as <c>true</c>.
+        /// </param>
+        /// <param name="falseValue">
+        /// The string value to be considered as <c>false</c>.
+        /// </param>
+        /// <returns>
+        /// <para>
+        /// <c>null</c> is returned if <paramref name="value"/> is null or
+        /// <paramref name="falseValue"/> is null and <paramref name="value"/>
+        /// is not equals to <paramref name="trueValue"/>.
+        /// </para>
+        /// <para>
+        /// <c>true</c> is returned if and only if <paramref name="value"/> is 
+        /// equals to <paramref name="trueValue"/>.
+        /// </para>
+        /// <para>
+        /// <c>false</c> is returned if and only if <paramref name="value"/> 
+        /// is not <c>null</c> and is equals to <paramref name="falseValue"/>.
+        /// </para>
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// When the <paramref name="trueValue"/> is null.
+        /// </exception>
+        private static bool? StringToNullableBoolean(string value, string trueValue, string falseValue)
         {
             AssertTrueValueNotNull(trueValue);
             if (value == null) return null;
@@ -2197,7 +2245,7 @@ namespace Spring.Data.Support
             return null;
         }
 
-        public static bool? CharToNullableBoolean(char? value, char trueValue, char? falseValue)
+        private static bool? CharToNullableBoolean(char? value, char trueValue, char? falseValue)
         {
             if (!value.HasValue) return null;
             if (value == trueValue) return true;
@@ -2205,7 +2253,7 @@ namespace Spring.Data.Support
             return null;
         }
 
-        public static bool StringToBoolean(string value, string trueValue, string falseValue)
+        private static bool StringToBoolean(string value, string trueValue, string falseValue)
         {
             AssertTrueValueNotNull(trueValue);
 
@@ -2215,7 +2263,7 @@ namespace Spring.Data.Support
                                             "Unable to convert string '{0}' to boolean. Expecting {1} or {2}.", value, trueValue, falseValue));
         }
 
-        public static bool CharToBoolean(char value, char trueValue, char? falseValue)
+        private static bool CharToBoolean(char value, char trueValue, char? falseValue)
         {
             if (value == trueValue) return true;
             if (!falseValue.HasValue || falseValue.Value == value) return false;

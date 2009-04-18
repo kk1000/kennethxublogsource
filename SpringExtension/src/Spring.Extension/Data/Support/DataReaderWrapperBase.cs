@@ -163,6 +163,14 @@ namespace Spring.Data.Support
             GC.SuppressFinalize(true);
         }
 
+        /// <summary>
+        /// For sub class to override and performs tasks associated with freeing,
+        /// releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="isDisposing">
+        /// To indicate if the method is called from <see cref="Dispose()"/>
+        /// method or the Finallizer.
+        /// </param>
         protected virtual void Dispose(bool isDisposing)
         {
             if (!this.alreadyDisposed)
@@ -532,6 +540,24 @@ namespace Spring.Data.Support
             return this.dataReader.GetInt16(i);
         }
 
+        ///<summary>
+        ///
+        ///                    Gets the 32-bit signed integer value of the specified field.
+        ///                
+        ///</summary>
+        ///
+        ///<returns>
+        ///
+        ///                    The 32-bit signed integer value of the specified field.
+        ///                
+        ///</returns>
+        ///
+        ///<param name="i">
+        ///                    The index of the field to find. 
+        ///                </param>
+        ///<exception cref="T:System.IndexOutOfRangeException">
+        ///                    The index passed was outside the range of 0 through <see cref="P:System.Data.IDataRecord.FieldCount" />. 
+        ///                </exception><filterpriority>2</filterpriority>
         public virtual int GetInt32(int i)
         {
             return this.dataReader.GetInt32(i);
@@ -623,6 +649,24 @@ namespace Spring.Data.Support
             return this.dataReader.GetSchemaTable();
         }
 
+        ///<summary>
+        ///
+        ///                    Gets the string value of the specified field.
+        ///                
+        ///</summary>
+        ///
+        ///<returns>
+        ///
+        ///                    The string value of the specified field.
+        ///                
+        ///</returns>
+        ///
+        ///<param name="i">
+        ///                    The index of the field to find. 
+        ///                </param>
+        ///<exception cref="T:System.IndexOutOfRangeException">
+        ///                    The index passed was outside the range of 0 through <see cref="P:System.Data.IDataRecord.FieldCount" />. 
+        ///                </exception><filterpriority>2</filterpriority>
         public virtual string GetString(int i)
         {
             return this.dataReader.GetString(i);

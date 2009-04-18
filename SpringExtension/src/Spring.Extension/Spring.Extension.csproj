@@ -24,6 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\..\build\Spring.Extension\Debug\Spring.Extension.XML</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -62,7 +63,7 @@
     </Compile>
     <Compile Include="Data\Support\DataRecordOrdinalCache.cs" />
     <Compile Include="Data\Support\DataRecordExtension.cs" />
-    <Compile Include="Data\Generic\AdoOperationsBatchExtension.cs" />
+    <Compile Include="Data\Generic\AdoOperationsExtension.cs" />
     <Compile Include="Data\Support\DataReaderWrapperBase.cs" />
     <Compile Include="Data\Generic\IBatchExecutor.cs" />
     <Compile Include="Data\Generic\IBatchExecutorFactory.cs" />
