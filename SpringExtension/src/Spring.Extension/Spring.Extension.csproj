@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Spring</RootNamespace>
-    <AssemblyName>Spring.Data.Extension</AssemblyName>
+    <AssemblyName>Spring.Extension</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkSubset>
@@ -19,21 +19,21 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\build\Spring.Data.Extension\Debug\</OutputPath>
+    <OutputPath>..\..\build\Spring.Extension\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\build\Spring.Data.Extension\Debug\Spring.Data.Extension.XML</DocumentationFile>
+    <DocumentationFile>..\..\build\Spring.Extension\Debug\Spring.Extension.XML</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\build\Spring.Data.Extension\Release\</OutputPath>
+    <OutputPath>..\..\build\Spring.Extension\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\build\Spring.Data.Extension\Release\Spring.Data.Extension.XML</DocumentationFile>
+    <DocumentationFile>..\..\build\Spring.Extension\Release\Spring.Extension.XML</DocumentationFile>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>

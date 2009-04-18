@@ -39,10 +39,19 @@ namespace Spring.Data.Generic
     /// <author>Kenneth Xu</author>
     public class OracleOdpTemplate : AdoTemplate, IBatchExecutorFactory
     {
+        /// <summary>
+        /// The default batch size.
+        /// </summary>
         public const int DEFALT_BATCH_SIZE = 100;
 
+        /// <summary>
+        /// Gets and sets the size of the batch to update.
+        /// </summary>
         public int BatchSize { get; set; }
 
+        /// <summary>
+        /// Construct a new instance of <see cref="OracleOdpTemplate"/>.
+        /// </summary>
         public OracleOdpTemplate()
         {
             BatchSize = DEFALT_BATCH_SIZE;
@@ -51,6 +60,10 @@ namespace Spring.Data.Generic
 
         #region IBatchExecutorFactory Members
 
+        /// <summary>
+        /// Get an instance of <see cref="IBatchExecutor"/>.
+        /// </summary>
+        /// <returns>An instance of <see cref="IBatchExecutor"/>.</returns>
         public IBatchExecutor GetExecutor()
         {
             return new BatchExecutor(this);
@@ -58,7 +71,7 @@ namespace Spring.Data.Generic
 
         #endregion
 
-        private class BatchExecutor : ICommandSetter, IBatchExecutor
+        internal class BatchExecutor : ICommandSetter, IBatchExecutor
         {
             private readonly OracleOdpTemplate _odpTemplate;
 

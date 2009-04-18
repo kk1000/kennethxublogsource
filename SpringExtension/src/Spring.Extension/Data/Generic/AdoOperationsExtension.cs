@@ -30,7 +30,7 @@ namespace Spring.Data.Generic
     /// Extension Methods for <see cref="IAdoOperations"/>.
     /// </summary>
     /// <author>Kenneth Xu</author>
-    public static class AdoOperationsBatchExtension
+    public static class AdoOperationsExtension
     {
         /// <summary>
         /// Executes batch of non queries with common command and different
