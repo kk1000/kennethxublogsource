@@ -25,13 +25,10 @@ using NUnit.Framework;
 using Oracle.DataAccess.Client;
 using Rhino.Mocks;
 using Spring.Dao;
-using Spring.Data;
 using Spring.Data.Common;
-using Spring.Data.Generic;
 using Spring.Data.Support;
-using IAdoOperations=Spring.Data.Generic.IAdoOperations;
 
-namespace Spring.Extension.Tests.Data.Generic
+namespace Spring.Data.Generic
 {
     /// <summary>
     /// Test cases for <see cref="OracleOdpTemplate"/>
@@ -83,12 +80,12 @@ namespace Spring.Extension.Tests.Data.Generic
         {
             Action<IDbParameters, int> action =
                 delegate(IDbParameters parameters, int rowNum)
-                {
-                    if (rowNum == 1)
                     {
-                        parameters.DataParameterCollection.RemoveAt(1);
-                    }
-                };
+                        if (rowNum == 1)
+                        {
+                            parameters.DataParameterCollection.RemoveAt(1);
+                        }
+                    };
             Assert.Throws<InvalidDataAccessApiUsageException>(
                 () => RunExecuateNonQueryBatch(2, 1, action));
         }
@@ -97,12 +94,12 @@ namespace Spring.Extension.Tests.Data.Generic
         {
             Action<IDbParameters, int> action =
                 delegate(IDbParameters parameters, int rowNum)
-                {
-                    if (rowNum == 1)
                     {
-                        parameters.Add("bad_field", DbType.Decimal);
-                    }
-                };
+                        if (rowNum == 1)
+                        {
+                            parameters.Add("bad_field", DbType.Decimal);
+                        }
+                    };
             Assert.Throws<InvalidDataAccessApiUsageException>(
                 () => RunExecuateNonQueryBatch(2, 1, action));
         }

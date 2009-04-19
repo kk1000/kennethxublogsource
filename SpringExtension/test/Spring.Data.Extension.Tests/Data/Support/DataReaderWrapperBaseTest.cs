@@ -22,9 +22,8 @@ using System;
 using System.Data;
 using NUnit.Framework;
 using Rhino.Mocks;
-using Spring.Data.Support;
 
-namespace Spring.Extension.Tests.Data.Support
+namespace Spring.Data.Support
 {
     /// <summary>
     /// Test cases for <see cref="DataReaderWrapperBase"/>

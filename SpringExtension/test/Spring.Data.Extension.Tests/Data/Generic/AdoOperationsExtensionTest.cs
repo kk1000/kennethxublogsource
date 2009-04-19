@@ -22,13 +22,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using Rhino.Mocks;
-using Spring.Data;
 using Spring.Data.Common;
-using Spring.Data.Generic;
 using NUnit.Framework;
-using IAdoOperations=Spring.Data.Generic.IAdoOperations;
 
-namespace Spring.Extension.Tests.Data.Generic
+namespace Spring.Data.Generic
 {
     /// <summary>
     /// Test cases for <see cref="AdoOperationsExtension"/>
