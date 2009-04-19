@@ -21,12 +21,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using NUnit.Framework;
 using Oracle.DataAccess.Client;
 using Rhino.Mocks;
-using Rhino.Mocks.Exceptions;
-using Rhino.Mocks.Interfaces;
 using Spring.Dao;
 using Spring.Data;
 using Spring.Data.Common;
@@ -42,18 +39,20 @@ namespace Spring.Extension.Tests.Data.Generic
     [TestFixture] public class OracleOdpTemplateTest
     {
         private MockRepository _mockery;
+        private IDictionary<string, int> _dataSaved;
         private const string _sql = "fake sql statement";
+        private const CommandType _cmdType = CommandType.Text;
         private Converter<string, IDbParameters> _converter;
         private OracleOdpTemplate _testee;
-        private int _batchSize = 5;
-        IDbProvider dbProvider = DbProviderFactory.GetDbProvider("Oracle.DataAccess.Client");
-
+        private const int _batchSize = 5;
+        readonly IDbProvider _dbProvider = DbProviderFactory.GetDbProvider("Oracle.DataAccess.Client");
 
         [SetUp] public void SetUp()
         {
             _testee = new OracleOdpTemplate();
             _mockery = new MockRepository();
             _converter = _mockery.CreateMock<Converter<string, IDbParameters>>();
+            _dataSaved = new Dictionary<string, int>();
         }
 
         [Test] public void DefaultBatchSizeIsSet()
@@ -130,17 +129,17 @@ namespace Spring.Extension.Tests.Data.Generic
 
         void RunExecuateNonQueryBatch(int sampleSize, int repeat, Action<IDbParameters, int> action)
         {
-            var stub = new OracleOdpTemplateStub();
-            stub.ExpectedCallExecuteNonQuery(CommandType.Text, _sql, null).WillReturn(3).RepeatTimes(repeat);
-            _testee = stub;
-            _testee.DbProvider = dbProvider;
+            var mock = _mockery.CreateMock<IAdoOperations>();
+            Expect.Call(mock.ExecuteNonQuery(CommandType.Text, _sql, (ICommandSetter) null)).Return(3).Repeat.Times(repeat)
+                .Callback(new Func<CommandType, string, ICommandSetter, bool>(ExecuteNonQueryCallback));
+            _testee.DbProvider = _dbProvider;
             _testee.BatchSize = _batchSize;
 
             var sampleData = new Dictionary<string, int>();
             for(int i=0; i<sampleSize; i++)
             {
                 string key = "string " + i;
-                IDbParameters parameters = new DbParameters(dbProvider);
+                IDbParameters parameters = new DbParameters(_dbProvider);
                 parameters.Add("string_field", DbType.String).Value = key;
                 parameters.Add("int_field", DbType.Int32).Value = i;
                 if (action != null) action(parameters, i);
@@ -149,72 +148,25 @@ namespace Spring.Extension.Tests.Data.Generic
             }
 
             _mockery.ReplayAll();
-            int result = _testee.GetExecutor().ExecuteNonQuery(_testee, CommandType.Text, _sql, sampleData.Keys, _converter);
+            int result = _testee.GetExecutor().ExecuteNonQuery(mock, _cmdType, _sql, sampleData.Keys, _converter);
             Assert.That(result, Is.EqualTo(3 * repeat));
-            CollectionAssert.AreEqual(sampleData, stub.DataSaved);
+            CollectionAssert.AreEqual(sampleData, _dataSaved);
             _mockery.VerifyAll();
-            stub.VerifyAll();
         }
 
-        private class OracleOdpTemplateStub : OracleOdpTemplate, IAdoOperations
+        private bool ExecuteNonQueryCallback(CommandType cmdType, string cmdText, ICommandSetter setter)
         {
-            const string EXPECTATION_MESSAGE =
-                        "IAdoOperations.ExecuteNonQuery(CommandType, string, ICommandSetter); Expected #{0}, Actual #{1}.";
-            private CommandType _expectedCommandType;
-            private string _expectedCommandText;
-            private int _returnValue, _repeat = 0, _callCount = 0;
-
-            private readonly IDictionary<string, int> _dataSaved = new Dictionary<string, int>();
-
-            internal IDictionary<string, int> DataSaved { get { return _dataSaved; } }
-
-            internal OracleOdpTemplateStub ExpectedCallExecuteNonQuery(CommandType cmdType, string cmdText, ICommandSetter setter)
+            if (cmdType != _cmdType) return false;
+            if (cmdText != _sql) return false;
+            OracleCommand command = new OracleCommand();
+            setter.SetValues(command);
+            object[] stringFields = (object[])command.Parameters["string_field"].Value;
+            object[] intFields = (object[])command.Parameters["int_field"].Value;
+            for (int i = 0; i < command.ArrayBindCount; i++)
             {
-                _expectedCommandType = cmdType;
-                _expectedCommandText = cmdText;
-                _repeat++;
-                return this;
+                _dataSaved.Add((string)stringFields[i], (int)intFields[i]);
             }
-
-            internal OracleOdpTemplateStub WillReturn(int returnValue)
-            {
-                _returnValue = returnValue;
-                return this;
-            }
-
-            internal OracleOdpTemplateStub RepeatTimes(int repeat)
-            {
-                _repeat += repeat-1;
-                return this;
-            }
-
-            internal void VerifyAll()
-            {
-                if (_repeat != _callCount)
-                {
-                    throw new ExpectationViolationException(string.Format(EXPECTATION_MESSAGE, _repeat, _callCount));
-                }
-            }
-
-            public new int ExecuteNonQuery(CommandType cmdType, string cmdText, ICommandSetter setter)
-            {
-                if (++_callCount > _repeat)
-                {
-                    throw new ExpectationViolationException(string.Format(EXPECTATION_MESSAGE, _repeat, _callCount));
-                }
-                Assert.AreEqual(_expectedCommandType, cmdType);
-                Assert.AreEqual(_expectedCommandText, cmdText);
-                OracleCommand command = new OracleCommand();
-                setter.SetValues(command);
-                object[] stringFields = (object[])command.Parameters["string_field"].Value;
-                object[] intFields = (object[])command.Parameters["int_field"].Value;
-                for (int i = 0; i < command.ArrayBindCount; i++)
-                {
-                    _dataSaved.Add((string)stringFields[i], (int)intFields[i]);
-                }
-                return _returnValue;
-            }
+            return true;
         }
     }
-
 }
