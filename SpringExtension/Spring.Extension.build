@@ -31,7 +31,7 @@
   <target name="sandcastle">
 
     <!-- Uncomment below if additional dependencies need to be added -->
-    <property name="sandcastle.dependency.1" value="${solution.home}\dependency\CommonLogging\*.dll"/>
+    <property name="sandcastle.dependency.1" value="${solution.home}\dependency\CommonLogging\net\2.0\${build.configuration}\*.dll"/>
     <property name="sandcastle.dependency.2" value="C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\System.Configuration.dll"/>
     <property name="sandcastle.dependency.all" value="${sandcastle.dependency.1};${sandcastle.dependency.2}"/>
 
