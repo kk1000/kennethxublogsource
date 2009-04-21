@@ -25,6 +25,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -74,6 +75,8 @@
     <Compile Include="..\..\AssemblyVersion.cs">
       <Link>AssemblyVersion.cs</Link>
     </Compile>
+    <Compile Include="Data\Common\ExtendedDbProviderTest.cs" />
+    <Compile Include="Data\Common\DbConnectionStateListenerBaseTest.cs" />
     <Compile Include="Data\Generic\AdoOperationsExtensionTest.cs" />
     <Compile Include="Data\Generic\OracleOdpTemplateTest.cs" />
     <Compile Include="Data\Support\DataReaderWrapperBaseTest.cs" />

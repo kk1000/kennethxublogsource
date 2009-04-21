@@ -50,7 +50,7 @@ namespace Spring.Data.Support
         /// <param name="dataRecord">
         /// The <see cref="IDataRecord"/> object used to initialize the cache.
         /// </param>
-        public void Init(IDataRecord dataRecord)
+        public virtual void Init(IDataRecord dataRecord)
         {
             if (dataRecord == null) throw new ArgumentNullException("dataRecord");
             if (!_isInitCompleted)
@@ -80,7 +80,7 @@ namespace Spring.Data.Support
         /// <exception cref="IndexOutOfRangeException">
         /// When cannot find the <paramref name="name"/> in cache.
         /// </exception>
-        public int GetOrdinal(string name)
+        public virtual int GetOrdinal(string name)
         {
             if (name == null) throw new ArgumentNullException("name");
             if (_ordinalMap == null)

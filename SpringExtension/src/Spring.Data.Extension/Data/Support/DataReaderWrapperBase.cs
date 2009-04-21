@@ -50,7 +50,7 @@ namespace Spring.Data.Support
         ///                
         ///</returns>
         ///<filterpriority>2</filterpriority>
-        public int Depth
+        public virtual int Depth
         {
             get
             {
@@ -89,7 +89,7 @@ namespace Spring.Data.Support
         ///                
         ///</returns>
         ///<filterpriority>2</filterpriority>
-        public bool IsClosed
+        public virtual bool IsClosed
         {
             get
             {
@@ -109,7 +109,7 @@ namespace Spring.Data.Support
         ///                
         ///</returns>
         ///<filterpriority>2</filterpriority>
-        public int RecordsAffected
+        public virtual int RecordsAffected
         {
             get
             {
@@ -128,7 +128,7 @@ namespace Spring.Data.Support
         ///The wrapped reader.
         ///</value>
         ///
-        public IDataReader WrappedReader
+        public virtual IDataReader WrappedReader
         {
             get
             {
@@ -146,7 +146,7 @@ namespace Spring.Data.Support
         ///                
         ///</summary>
         ///<filterpriority>2</filterpriority>
-        public void Close()
+        public virtual void Close()
         {
             this.dataReader.Close();
         }
@@ -157,7 +157,7 @@ namespace Spring.Data.Support
         ///                
         ///</summary>
         ///<filterpriority>2</filterpriority>
-        public void Dispose()
+        public virtual void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(true);

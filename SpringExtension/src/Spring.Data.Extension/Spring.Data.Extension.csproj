@@ -61,6 +61,9 @@
     <Compile Include="..\..\AssemblyVersion.cs">
       <Link>AssemblyVersion.cs</Link>
     </Compile>
+    <Compile Include="Data\Common\DbConnectionStateListenerBase.cs" />
+    <Compile Include="Data\Common\ExtendedDbProvider.cs" />
+    <Compile Include="Data\Common\IDbConnectionStateListener.cs" />
     <Compile Include="Data\Support\DataRecordOrdinalCache.cs" />
     <Compile Include="Data\Support\DataRecordExtension.cs" />
     <Compile Include="Data\Generic\AdoOperationsExtension.cs" />
@@ -68,6 +71,7 @@
     <Compile Include="Data\Generic\IBatchExecutor.cs" />
     <Compile Include="Data\Generic\IBatchExecutorFactory.cs" />
     <Compile Include="Data\Support\IDataRecordOrdinalCache.cs" />
+    <Compile Include="Data\Support\OdpNetClientIdentifierSetter.cs" />
     <Compile Include="Data\Support\OdpNetDataReaderWrapper.cs" />
     <Compile Include="Data\Generic\OracleOdpTemplate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

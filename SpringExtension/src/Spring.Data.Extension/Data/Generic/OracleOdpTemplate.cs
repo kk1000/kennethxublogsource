@@ -47,7 +47,7 @@ namespace Spring.Data.Generic
         /// <summary>
         /// Gets and sets the size of the batch to update.
         /// </summary>
-        public int BatchSize { get; set; }
+        public virtual int BatchSize { get; set; }
 
         /// <summary>
         /// Construct a new instance of <see cref="OracleOdpTemplate"/>.
@@ -64,7 +64,7 @@ namespace Spring.Data.Generic
         /// Get an instance of <see cref="IBatchExecutor"/>.
         /// </summary>
         /// <returns>An instance of <see cref="IBatchExecutor"/>.</returns>
-        public IBatchExecutor GetExecutor()
+        public virtual IBatchExecutor GetExecutor()
         {
             return new BatchExecutor(this);
         }
