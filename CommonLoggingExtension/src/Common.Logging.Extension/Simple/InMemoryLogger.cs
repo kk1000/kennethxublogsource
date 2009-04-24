@@ -32,28 +32,61 @@ namespace Common.Logging.Simple
     {
         private readonly IList<InMemoryLogEntry> _logEntries = new List<InMemoryLogEntry>();
         private readonly string _name;
-        private LogLevel _level = LogLevel.Off;
+        private LogLevel? _level;
+        private readonly InMemoryLoggerFactoryAdaptor _factory;
 
-        public InMemoryLogger(string name, LogLevel level)
+        /// <summary>
+        /// Construct a new instance of <see cref="InMemoryLogger"/>.
+        /// </summary>
+        /// <param name="name">The name of the logger to construct.</param>
+        /// <param name="factory">The factory this logger belongs to.</param>
+        public InMemoryLogger(string name, InMemoryLoggerFactoryAdaptor factory)
         {
             _name = name;
-            _level = level;
+            _factory = factory;
         }
 
+        /// <summary>
+        /// Gets the list of <see cref="InMemoryLogEntry"/> logged by this 
+        /// logger in memory.
+        /// </summary>
         public virtual IList<InMemoryLogEntry> LogEntries
         {
             get { return _logEntries; }
         }
 
+        /// <summary>
+        /// Gets and sets the log level of this logger.
+        /// </summary>
+        /// <remarks>
+        /// If the log lever of current logger was never set or got reset by 
+        /// <see cref="ResetLevel"/> method, then the log level is the 
+        /// current value of <see cref="InMemoryLoggerFactoryAdaptor.Level"/>
+        /// of the <see cref="InMemoryLoggerFactoryAdaptor"/> that created
+        /// this logger.
+        /// </remarks>
+        /// <seealso cref="ResetLevel"/>
         public virtual LogLevel Level
         {
-            get { return _level; }
+            get { return _level??_factory.Level; }
             set { _level = value; }
         }
 
+        /// <summary>
+        /// Gets the name of the logger.
+        /// </summary>
         public virtual string Name
         {
             get { return _name; }
+        }
+
+        /// <summary>
+        /// This clears previous set log <see cref="Level"/> of this logger.
+        /// </summary>
+        /// <seealso cref="Level"/>
+        public void ResetLevel()
+        {
+            _level = null;
         }
 
         #region ILog Members
