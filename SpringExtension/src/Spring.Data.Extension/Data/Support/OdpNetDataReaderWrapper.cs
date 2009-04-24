@@ -20,6 +20,9 @@
 
 using System;
 using System.Data;
+using System.Reflection;
+using Common.Logging;
+using Oracle.DataAccess.Client;
 using Oracle.DataAccess.Types;
 
 namespace Spring.Data.Support
@@ -29,8 +32,44 @@ namespace Spring.Data.Support
     /// to provide ODP.Net not implemented getters.
     /// </summary>
     /// <author>Kenneth Xu</author>
-    public class OdpNetDataReaderWrapper : DataReaderWrapperBase
+    public class OdpNetDataReaderWrapper : ExtendedDataReaderWrapper
     {
+        /// <summary>
+        /// The default maximal fetch buffer size.
+        /// </summary>
+        public const int DEFAULT_MAX_FETCH_SIZE = 8 * 1024 * 1024; //8M
+
+        private static readonly ILog _log = LogManager.GetLogger(typeof(OdpNetDataReaderWrapper));
+
+        static internal readonly FieldInfo RowSizeFieldInfo;
+
+        private static int _maxFetchSize = DEFAULT_MAX_FETCH_SIZE;
+
+        static volatile bool _isWrongWrappedReaderTypeWarningGiven;
+
+        private OracleDataReader oracleReader;
+
+        static OdpNetDataReaderWrapper()
+        {
+            RowSizeFieldInfo = typeof(OracleDataReader).GetField("m_rowSize", BindingFlags.Instance | BindingFlags.NonPublic);
+            if(RowSizeFieldInfo == null && _log.IsWarnEnabled)
+            {
+                _log.Warn("Unsupported Odp.Net version :" + typeof(OracleDataReader).Assembly.FullName + 
+                    ". Dynamic fetch size is off, using default fetch size of connection.");
+            }
+        }
+
+        /// <summary>
+        /// Gets and sets the maximal fetch buffer size used to constraint the 
+        /// actual <see cref="OracleDataReader.FetchSize"/> calculated from 
+        /// <see cref="RowsExpected"/> and <see cref="RowSize"/>.
+        /// </summary>
+        public static int MaxFetchSize
+        {
+            get { return _maxFetchSize; }
+            set { _maxFetchSize = value; }
+        }
+
         /// <summary>
         /// Provide the implementation for <see cref="IDataRecord.GetBoolean"/>.
         /// by assuming 
@@ -104,6 +143,95 @@ namespace Spring.Data.Support
             if (value.Length != 1) throw new OracleTruncateException(
                 "Expecting exactly one character but got '" + value + "'.");
             return value[0];
+        }
+
+        /// <summary>
+        /// The underlying reader implementation to delegate to for accessing 
+        /// data from a returned result sets.
+        /// </summary>
+        /// <remarks>
+        /// When this properties is set, it calls the setter in the base class
+        /// first, then set the fetch size of the reader.
+        /// </remarks>
+        /// <value>
+        /// The wrapped reader.
+        /// </value>
+        public override IDataReader WrappedReader
+        {
+            get
+            {
+                return base.WrappedReader;
+            }
+            set
+            {
+                base.WrappedReader = value;
+                SetFetchSize();
+            }
+        }
+
+        /// <summary>
+        /// Gets and sets the number of rows to expect from the 
+        /// <see cref="WrappedReader"/>. When the <c>WrappedReader</c> is also 
+        /// an <see cref="ExtendedDataReaderWrapper"/> and this property is
+        /// set, it will be further propagate into the <c>WrappedReader</c>.
+        /// </summary>
+        /// <remarks>
+        /// When this properties is set, it calls the setter in the base class
+        /// first, then set the fetch size of the wrapped reader.
+        /// </remarks>
+        public override int RowsExpected
+        {
+            get
+            {
+                return base.RowsExpected;
+            }
+            set
+            {
+                base.RowsExpected = value;
+                SetFetchSize();
+            }
+        }
+
+        private void SetFetchSize()
+        {
+            int rowsExpected = RowsExpected;
+            if (rowsExpected > 0 && RowSizeFieldInfo != null)
+            {
+                var unwrappedReader = GetInnerMostReader();
+                oracleReader =  unwrappedReader as OracleDataReader;
+                if (oracleReader != null)
+                {
+                    int rowSize = RowSize;
+                    if (rowSize>0)
+                    {
+                        int fetchSize = rowSize * rowsExpected;
+                        int maxSize = MaxFetchSize;
+                        if (fetchSize > maxSize)
+                        {
+                            int ratio = (fetchSize - 1)/maxSize + 1;
+                            fetchSize = (fetchSize - 1) / ratio + 1;
+                        }
+                        oracleReader.FetchSize = fetchSize;
+                    }
+                }
+                else if(!_isWrongWrappedReaderTypeWarningGiven && _log.IsWarnEnabled)
+                {
+                    _log.Warn(String.Format("Expected original reader to be {0} but got {1}. Note: warning is suspended for subsequent repeated events.", 
+                        typeof(OracleDataReader).FullName, unwrappedReader.GetType().FullName));
+                    _isWrongWrappedReaderTypeWarningGiven = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// This is to facilitate the unit test.
+        /// </summary>
+        protected internal virtual int RowSize
+        {
+            get
+            {
+                return (int) RowSizeFieldInfo.GetValue(oracleReader);
+            }
         }
     }
 }

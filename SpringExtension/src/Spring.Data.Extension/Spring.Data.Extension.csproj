@@ -37,6 +37,10 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Logging, Version=1.2.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\dependency\CommonLogging\net\2.0\$(Configuration)\Common.Logging.dll</HintPath>
+    </Reference>
     <Reference Include="LinqBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c2b14eb747628076, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\dependency\LinqBridge\net\2.0\LinqBridge.dll</HintPath>
@@ -64,16 +68,47 @@
     <Compile Include="Data\Common\DbConnectionStateListenerBase.cs" />
     <Compile Include="Data\Common\ExtendedDbProvider.cs" />
     <Compile Include="Data\Common\IDbConnectionStateListener.cs" />
-    <Compile Include="Data\Support\DataRecordOrdinalCache.cs" />
-    <Compile Include="Data\Support\DataRecordExtension.cs" />
-    <Compile Include="Data\Generic\AdoOperationsExtension.cs" />
-    <Compile Include="Data\Support\DataReaderWrapperBase.cs" />
-    <Compile Include="Data\Generic\IBatchExecutor.cs" />
-    <Compile Include="Data\Generic\IBatchExecutorFactory.cs" />
-    <Compile Include="Data\Support\IDataRecordOrdinalCache.cs" />
-    <Compile Include="Data\Support\OdpNetClientIdentifierSetter.cs" />
-    <Compile Include="Data\Support\OdpNetDataReaderWrapper.cs" />
-    <Compile Include="Data\Generic\OracleOdpTemplate.cs" />
+    <Compile Include="Data\Core\AdoOperationsExtension.cs" />
+    <Compile Include="Data\Core\DataRecordExtension.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Core\DataRecordOrdinalCache.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Generic\AdoOperationsExtension.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Generic\ExtendedRowMapperResultSetExtractor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Generic\OracleOdpTemplate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Support\DataReaderExtender.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Generic\IBatchExecutor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Generic\IBatchExecutorFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Support\DataReaderWrapperBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Support\ExtendedDataReaderWrapper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\IDataRecordOrdinalCache.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Support\OdpNetClientIdentifierSetter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Support\OdpNetDataReaderWrapper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Support\ExtendedRowCallbackResultSetExtractor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -45,16 +45,36 @@ namespace Spring.Data.Generic
         public const int DEFALT_BATCH_SIZE = 100;
 
         /// <summary>
+        /// The default maximal fetch buffer size.
+        /// </summary>
+        public const int DEFAULT_MAX_FETCH_SIZE = OdpNetDataReaderWrapper.DEFAULT_MAX_FETCH_SIZE;
+
+        private int _batchSize = DEFALT_BATCH_SIZE;
+
+        /// <summary>
         /// Gets and sets the size of the batch to update.
         /// </summary>
-        public virtual int BatchSize { get; set; }
+        public virtual int BatchSize
+        {
+            get { return _batchSize; }
+            set { _batchSize = value; }
+        }
+
+        /// <summary>
+        /// Gets and sets the <see cref="OdpNetDataReaderWrapper.MaxFetchSize"/>
+        /// of <see cref="OdpNetDataReaderWrapper"/>.
+        /// </summary>
+        public static int MaxFetchSize
+        {
+            get { return OdpNetDataReaderWrapper.MaxFetchSize; }
+            set { OdpNetDataReaderWrapper.MaxFetchSize = value; }
+        }
 
         /// <summary>
         /// Construct a new instance of <see cref="OracleOdpTemplate"/>.
         /// </summary>
         public OracleOdpTemplate()
         {
-            BatchSize = DEFALT_BATCH_SIZE;
             base.DataReaderWrapperType = typeof (OdpNetDataReaderWrapper);
         }
 

@@ -52,6 +52,16 @@ namespace Spring.Data.Generic
             _dataSaved = new Dictionary<string, int>();
         }
 
+        [Test] public void MaxFetchSizeIsFromOdpNet()
+        {
+            const int size1 = 344, size2 = 294784;
+            OracleOdpTemplate.MaxFetchSize = size1;
+            Assert.That(OdpNetDataReaderWrapper.MaxFetchSize, Is.EqualTo(size1));
+            Assert.That(OracleOdpTemplate.MaxFetchSize, Is.EqualTo(size1));
+            OdpNetDataReaderWrapper.MaxFetchSize = size2;
+            Assert.That(OracleOdpTemplate.MaxFetchSize, Is.EqualTo(size2));
+        }
+
         [Test] public void DefaultBatchSizeIsSet()
         {
             Assert.That(_testee.BatchSize, Is.EqualTo(OracleOdpTemplate.DEFALT_BATCH_SIZE));

@@ -22,8 +22,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace Spring.Data.Support
+namespace Spring.Data.Core
 {
+    // TODO: Cannot decide if this belongs here to Generic namspace?
     /// <summary>
     /// Thread safe implementation of <see cref="IDataRecordOrdinalCache"/> 
     /// that enables fast, case insensitive, lookup for to ordinal of given 

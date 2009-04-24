@@ -20,7 +20,7 @@
 
 using System.Data;
 
-namespace Spring.Data.Support
+namespace Spring.Data
 {
     /// <summary>
     /// Defines the operation of field name to ordinal cache to improve the

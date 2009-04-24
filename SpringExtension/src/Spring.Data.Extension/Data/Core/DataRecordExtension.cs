@@ -21,7 +21,7 @@
 using System;
 using System.Data;
 
-namespace Spring.Data.Support
+namespace Spring.Data.Core
 {
     /// <summary>
     /// Extension methods for <see cref="IDataRecord"/>.

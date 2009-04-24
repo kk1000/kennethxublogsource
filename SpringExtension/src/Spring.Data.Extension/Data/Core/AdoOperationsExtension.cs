@@ -19,12 +19,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Data;
 using Spring.Data.Common;
 using Spring.Data.Support;
 
-namespace Spring.Data.Generic
+namespace Spring.Data.Core
 {
     /// <summary>
     /// Extension Methods for <see cref="IAdoOperations"/>.
@@ -32,75 +31,15 @@ namespace Spring.Data.Generic
     /// <author>Kenneth Xu</author>
     public static class AdoOperationsExtension
     {
-        /// <summary>
-        /// Executes batch of non queries with common command and different
-        /// parameters. 
-        /// </summary>
-        /// <typeparam name="T">
-        /// The type of the data object.
-        /// </typeparam>
-        /// <param name="operation">
-        /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
-        /// perform database operation.
-        /// </param>
-        /// <param name="cmdType">
-        /// The type of command.
-        /// </param>
-        /// <param name="cmdText">
-        /// The text of command.
-        /// </param>
-        /// <param name="data">
-        /// A collection of data object to be updated in batch.
-        /// </param>
-        /// <param name="dataToParameters">
-        /// Delegate that converts data object to parameters.
-        /// </param>
-        /// <returns>
-        /// The total updated count if 0 or positive. When -1 is returned,
-        /// it indicates that the update count cannot be obtained due the
-        /// the limitation of the batch implementation.
-        /// </returns>
-        public static int ExecuteNonQuery<T>(
-            this IAdoOperations operation,
-            CommandType cmdType,
-            string cmdText, 
-            ICollection<T> data,
-            Converter<T, IDbParameters> dataToParameters)
-        {
-            // Argument checking
-            if (data == null || data.Count == 0) return 0;
-            if (cmdText == null) throw new ArgumentNullException("cmdText");
-            if (dataToParameters == null) throw new ArgumentNullException("dataToParameters");
 
-            if (data.Count > 1)
-            {
-                // Let's try batch
-                IBatchExecutorFactory factory = operation as IBatchExecutorFactory;
-                if (factory != null)
-                {
-                    return factory.GetExecutor().ExecuteNonQuery(
-                        operation, cmdType, cmdText, data, dataToParameters);
-                }
-            }
-
-            Setter setter = new Setter();
-            int result = 0;
-            foreach (T row in data)
-            {
-                setter.Parameters = dataToParameters(row);
-                result += operation.ExecuteNonQuery(cmdType, cmdText, setter);
-            }
-            return result;
-        }
-
-        #region QueryWithRowMapper
+        #region QueryWithRowCallback
 
         /// <summary>
-        /// Query database with given SQL command and mapping each row to a 
-        /// object via a <see cref="IRowMapper{T}"/> with help of optional
+        /// Query database with given SQL command and have each row processed
+        /// by a given <see cref="IRowCallback"/> with help of optional
         /// ordinal cache and/or the rows expected value for better performance.
         /// </summary>
-        /// <typeparam name="T">The type of object that each row maps to.</typeparam>
+        /// 
         /// <param name="operations">
         /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
         /// perform database operation.
@@ -111,9 +50,8 @@ namespace Spring.Data.Generic
         /// <param name="cmdText">
         /// The text of command.
         /// </param>
-        /// <param name="rowMapper">
-        /// The row mapper that maps each row to object of type 
-        /// <typeparamref name="T"/>.
+        /// <param name="rowCallback">
+        /// The row callback that processes each row.
         /// </param>
         /// <param name="ordinalCache">
         /// The <see cref="IDataRecordOrdinalCache"/> that caches the mapping
@@ -123,28 +61,24 @@ namespace Spring.Data.Generic
         /// Number of rows this query is expected to return. This doesn't need
         /// to be accurate but estimating at the higer end for best performance.
         /// </param>
-        /// <returns>
-        /// A list of object of type <typeparamref name="T"/> that were mapped
-        /// for the rows.
-        /// </returns>
-        public static IList<T> QueryWithRowMapper<T>(
+        public static void QueryWithRowCallback(
             this IAdoOperations operations,
             CommandType cmdType,
             string cmdText,
-            IRowMapper<T> rowMapper,
+            IRowCallback rowCallback,
             IDataRecordOrdinalCache ordinalCache,
             int rowsExpected)
         {
-            var extractor = MakeResultSetExtractor(rowMapper, ordinalCache, rowsExpected);
-            return operations.QueryWithResultSetExtractor(cmdType, cmdText, extractor);
+            var extractor = MakeResultSetExtractor(rowCallback, ordinalCache, rowsExpected);
+            operations.QueryWithResultSetExtractor(cmdType, cmdText, extractor);
         }
 
         /// <summary>
-        /// Query database with given SQL command and mapping each row to a 
-        /// object via a <see cref="IRowMapper{T}"/> with help of optional
+        /// Query database with given SQL command and have each row processed
+        /// by a given <see cref="IRowCallback"/> with help of optional
         /// ordinal cache and/or the rows expected value for better performance.
         /// </summary>
-        /// <typeparam name="T">The type of object that each row maps to.</typeparam>
+        /// 
         /// <param name="operations">
         /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
         /// perform database operation.
@@ -155,9 +89,8 @@ namespace Spring.Data.Generic
         /// <param name="cmdText">
         /// The text of command.
         /// </param>
-        /// <param name="rowMapper">
-        /// The row mapper that maps each row to object of type 
-        /// <typeparamref name="T"/>.
+        /// <param name="rowCallback">
+        /// The row callback that processes each row.
         /// </param>
         /// <param name="commandSetter">
         /// The command setter that make necessary changes to the
@@ -172,29 +105,25 @@ namespace Spring.Data.Generic
         /// Number of rows this query is expected to return. This doesn't need
         /// to be accurate but estimating at the higer end for best performance.
         /// </param>
-        /// <returns>
-        /// A list of object of type <typeparamref name="T"/> that were mapped
-        /// for the rows.
-        /// </returns>
-        public static IList<T> QueryWithRowMapper<T>(
+        public static void QueryWithRowCallback(
             this IAdoOperations operations,
             CommandType cmdType,
             string cmdText,
-            IRowMapper<T> rowMapper,
+            IRowCallback rowCallback,
             ICommandSetter commandSetter,
             IDataRecordOrdinalCache ordinalCache,
             int rowsExpected)
         {
-            var extractor = MakeResultSetExtractor(rowMapper, ordinalCache, rowsExpected);
-            return operations.QueryWithResultSetExtractor(cmdType, cmdText, extractor, commandSetter);
+            var extractor = MakeResultSetExtractor(rowCallback, ordinalCache, rowsExpected);
+            operations.QueryWithResultSetExtractor(cmdType, cmdText, extractor, commandSetter);
         }
 
         /// <summary>
-        /// Query database with given SQL command and mapping each row to a 
-        /// object via a <see cref="IRowMapper{T}"/> with help of optional
+        /// Query database with given SQL command and have each row processed
+        /// by a given <see cref="IRowCallback"/> with help of optional
         /// ordinal cache and/or the rows expected value for better performance.
         /// </summary>
-        /// <typeparam name="T">The type of object that each row maps to.</typeparam>
+        /// 
         /// <param name="operations">
         /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
         /// perform database operation.
@@ -205,9 +134,8 @@ namespace Spring.Data.Generic
         /// <param name="cmdText">
         /// The text of command.
         /// </param>
-        /// <param name="rowMapper">
-        /// The row mapper that maps each row to object of type 
-        /// <typeparamref name="T"/>.
+        /// <param name="rowCallback">
+        /// The row callback that processes each row.
         /// </param>
         /// <param name="parameters">
         /// The parameters with all neccessary values populated.
@@ -220,29 +148,25 @@ namespace Spring.Data.Generic
         /// Number of rows this query is expected to return. This doesn't need
         /// to be accurate but estimating at the higer end for best performance.
         /// </param>
-        /// <returns>
-        /// A list of object of type <typeparamref name="T"/> that were mapped
-        /// for the rows.
-        /// </returns>
-        public static IList<T> QueryWithRowMapper<T>(
+        public static void QueryWithRowCallback(
             this IAdoOperations operations,
             CommandType cmdType,
             string cmdText,
-            IRowMapper<T> rowMapper,
+            IRowCallback rowCallback,
             IDbParameters parameters,
             IDataRecordOrdinalCache ordinalCache,
             int rowsExpected)
         {
-            var extractor = MakeResultSetExtractor(rowMapper, ordinalCache, rowsExpected);
-            return operations.QueryWithResultSetExtractor(cmdType, cmdText, extractor, parameters);
+            var extractor = MakeResultSetExtractor(rowCallback, ordinalCache, rowsExpected);
+            operations.QueryWithResultSetExtractor(cmdType, cmdText, extractor, parameters);
         }
 
         /// <summary>
-        /// Query database with given SQL command and mapping each row to a 
-        /// object via a <see cref="IRowMapper{T}"/> with help of optional
+        /// Query database with given SQL command and have each row processed
+        /// by a given <see cref="IRowCallback"/> with help of optional
         /// ordinal cache and/or the rows expected value for better performance.
         /// </summary>
-        /// <typeparam name="T">The type of object that each row maps to.</typeparam>
+        /// 
         /// <param name="operations">
         /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
         /// perform database operation.
@@ -253,9 +177,8 @@ namespace Spring.Data.Generic
         /// <param name="cmdText">
         /// The text of command.
         /// </param>
-        /// <param name="rowMapper">
-        /// The row mapper that maps each row to object of type 
-        /// <typeparamref name="T"/>.
+        /// <param name="rowCallback">
+        /// The row callback that processes each row.
         /// </param>
         /// <param name="parameterValue">
         /// The value of the parameter.
@@ -277,242 +200,24 @@ namespace Spring.Data.Generic
         /// <param name="size">
         /// The size of parameter.
         /// </param>
-        /// <returns>
-        /// A list of object of type <typeparamref name="T"/> that were mapped
-        /// for the rows.
-        /// </returns>
-        public static IList<T> QueryWithRowMapper<T>(
+        public static void QueryWithRowCallback(
             this IAdoOperations operations,
             CommandType cmdType,
             string cmdText,
-            IRowMapper<T> rowMapper,
+            IRowCallback rowCallback,
             string parameterName, Enum dbType, int size, object parameterValue,
             IDataRecordOrdinalCache ordinalCache,
             int rowsExpected)
         {
-            var extractor = MakeResultSetExtractor(rowMapper, ordinalCache, rowsExpected);
-            return operations.QueryWithResultSetExtractor(
+            var extractor = MakeResultSetExtractor(rowCallback, ordinalCache, rowsExpected);
+            operations.QueryWithResultSetExtractor(
                 cmdType, cmdText, extractor, parameterName, dbType, size, parameterValue);
         }
 
-        private static IResultSetExtractor<IList<T>> MakeResultSetExtractor<T>(
-            IRowMapper<T> rowMapper, IDataRecordOrdinalCache ordinalCache, int rowsExpected)
+        private static IResultSetExtractor MakeResultSetExtractor(
+            IRowCallback rowCallback, IDataRecordOrdinalCache ordinalCache, int rowsExpected)
         {
-            return new ExtendedRowMapperResultSetExtractor<T>(rowMapper)
-                       {
-                           OrdinalCache = ordinalCache,
-                           RowsExpected = rowsExpected
-                       };
-        }
-
-        #endregion
-
-        #region QueryWithRowMapperDelegate
-
-        /// <summary>
-        /// Query database with given SQL command and mapping each row to a 
-        /// object via a <see cref="RowMapperDelegate{T}"/> with help of optional
-        /// ordinal cache and/or the rows expected value for better performance.
-        /// </summary>
-        /// <typeparam name="T">The type of object that each row maps to.</typeparam>
-        /// <param name="operations">
-        /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
-        /// perform database operation.
-        /// </param>
-        /// <param name="cmdType">
-        /// The type of command.
-        /// </param>
-        /// <param name="cmdText">
-        /// The text of command.
-        /// </param>
-        /// <param name="rowMapperDelegate">
-        /// The row mapper delegate that maps each row to object of type 
-        /// <typeparamref name="T"/>.
-        /// </param>
-        /// <param name="ordinalCache">
-        /// The <see cref="IDataRecordOrdinalCache"/> that caches the mapping
-        /// from field name to field index.
-        /// </param>
-        /// <param name="rowsExpected">
-        /// Number of rows this query is expected to return. This doesn't need
-        /// to be accurate but estimating at the higer end for best performance.
-        /// </param>
-        /// <returns>
-        /// A list of object of type <typeparamref name="T"/> that were mapped
-        /// for the rows.
-        /// </returns>
-        public static IList<T> QueryWithRowMapperDelegate<T>(
-            this IAdoOperations operations,
-            CommandType cmdType,
-            string cmdText,
-            RowMapperDelegate<T> rowMapperDelegate,
-            IDataRecordOrdinalCache ordinalCache,
-            int rowsExpected)
-        {
-            var extractor = MakeResultSetExtractor(rowMapperDelegate, ordinalCache, rowsExpected);
-            return operations.QueryWithResultSetExtractor(cmdType, cmdText, extractor);
-        }
-
-        /// <summary>
-        /// Query database with given SQL command and mapping each row to a 
-        /// object via a <see cref="RowMapperDelegate{T}"/> with help of optional
-        /// ordinal cache and/or the rows expected value for better performance.
-        /// </summary>
-        /// <typeparam name="T">The type of object that each row maps to.</typeparam>
-        /// <param name="operations">
-        /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
-        /// perform database operation.
-        /// </param>
-        /// <param name="cmdType">
-        /// The type of command.
-        /// </param>
-        /// <param name="cmdText">
-        /// The text of command.
-        /// </param>
-        /// <param name="rowMapperDelegate">
-        /// The row mapper delegate that maps each row to object of type 
-        /// <typeparamref name="T"/>.
-        /// </param>
-        /// <param name="commandSetter">
-        /// The command setter that make necessary changes to the
-        /// <see cref="IDbCommand"/> object before it is executed.
-        /// For example, set the parameters.
-        /// </param>
-        /// <param name="ordinalCache">
-        /// The <see cref="IDataRecordOrdinalCache"/> that caches the mapping
-        /// from field name to field index.
-        /// </param>
-        /// <param name="rowsExpected">
-        /// Number of rows this query is expected to return. This doesn't need
-        /// to be accurate but estimating at the higer end for best performance.
-        /// </param>
-        /// <returns>
-        /// A list of object of type <typeparamref name="T"/> that were mapped
-        /// for the rows.
-        /// </returns>
-        public static IList<T> QueryWithRowMapperDelegate<T>(
-            this IAdoOperations operations,
-            CommandType cmdType,
-            string cmdText,
-            RowMapperDelegate<T> rowMapperDelegate,
-            ICommandSetter commandSetter,
-            IDataRecordOrdinalCache ordinalCache,
-            int rowsExpected)
-        {
-            var extractor = MakeResultSetExtractor(rowMapperDelegate, ordinalCache, rowsExpected);
-            return operations.QueryWithResultSetExtractor(cmdType, cmdText, extractor, commandSetter);
-        }
-
-        /// <summary>
-        /// Query database with given SQL command and mapping each row to a 
-        /// object via a <see cref="RowMapperDelegate{T}"/> with help of optional
-        /// ordinal cache and/or the rows expected value for better performance.
-        /// </summary>
-        /// <typeparam name="T">The type of object that each row maps to.</typeparam>
-        /// <param name="operations">
-        /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
-        /// perform database operation.
-        /// </param>
-        /// <param name="cmdType">
-        /// The type of command.
-        /// </param>
-        /// <param name="cmdText">
-        /// The text of command.
-        /// </param>
-        /// <param name="rowMapperDelegate">
-        /// The row mapper delegate that maps each row to object of type 
-        /// <typeparamref name="T"/>.
-        /// </param>
-        /// <param name="parameters">
-        /// The parameters with all neccessary values populated.
-        /// </param>
-        /// <param name="ordinalCache">
-        /// The <see cref="IDataRecordOrdinalCache"/> that caches the mapping
-        /// from field name to field index.
-        /// </param>
-        /// <param name="rowsExpected">
-        /// Number of rows this query is expected to return. This doesn't need
-        /// to be accurate but estimating at the higer end for best performance.
-        /// </param>
-        /// <returns>
-        /// A list of object of type <typeparamref name="T"/> that were mapped
-        /// for the rows.
-        /// </returns>
-        public static IList<T> QueryWithRowMapperDelegate<T>(
-            this IAdoOperations operations,
-            CommandType cmdType,
-            string cmdText,
-            RowMapperDelegate<T> rowMapperDelegate,
-            IDbParameters parameters,
-            IDataRecordOrdinalCache ordinalCache,
-            int rowsExpected)
-        {
-            var extractor = MakeResultSetExtractor(rowMapperDelegate, ordinalCache, rowsExpected);
-            return operations.QueryWithResultSetExtractor(cmdType, cmdText, extractor, parameters);
-        }
-
-        /// <summary>
-        /// Query database with given SQL command and mapping each row to a 
-        /// object via a <see cref="RowMapperDelegate{T}"/> with help of optional
-        /// ordinal cache and/or the rows expected value for better performance.
-        /// </summary>
-        /// <typeparam name="T">The type of object that each row maps to.</typeparam>
-        /// <param name="operations">
-        /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
-        /// perform database operation.
-        /// </param>
-        /// <param name="cmdType">
-        /// The type of command.
-        /// </param>
-        /// <param name="cmdText">
-        /// The text of command.
-        /// </param>
-        /// <param name="rowMapperDelegate">
-        /// The row mapper delegate that maps each row to object of type 
-        /// <typeparamref name="T"/>.
-        /// </param>
-        /// <param name="parameterValue">
-        /// The value of the parameter.
-        /// </param>
-        /// <param name="ordinalCache">
-        /// The <see cref="IDataRecordOrdinalCache"/> that caches the mapping
-        /// from field name to field index.
-        /// </param>
-        /// <param name="parameterName">
-        /// The name of the parameter.
-        /// </param>
-        /// <param name="rowsExpected">
-        /// Number of rows this query is expected to return. This doesn't need
-        /// to be accurate but estimating at the higer end for best performance.
-        /// </param>
-        /// <param name="dbType">
-        /// Type type of the parameter.
-        /// </param>
-        /// <param name="size">
-        /// The size of parameter.
-        /// </param>
-        /// <returns>
-        /// A list of object of type <typeparamref name="T"/> that were mapped
-        /// for the rows.
-        /// </returns>
-        public static IList<T> QueryWithRowMapperDelegate<T>(
-            this IAdoOperations operations,
-            CommandType cmdType,
-            string cmdText,
-            RowMapperDelegate<T> rowMapperDelegate,
-            string parameterName, Enum dbType, int size, object parameterValue,
-            IDataRecordOrdinalCache ordinalCache,
-            int rowsExpected)
-        {
-            var extractor = MakeResultSetExtractor(rowMapperDelegate, ordinalCache, rowsExpected);
-            return operations.QueryWithResultSetExtractor(
-                cmdType, cmdText, extractor, parameterName, dbType, size, parameterValue);
-        }
-
-        private static IResultSetExtractor<IList<T>> MakeResultSetExtractor<T>(
-            RowMapperDelegate<T> rowMapperDelegate, IDataRecordOrdinalCache ordinalCache, int rowsExpected)
-        {
-            return new ExtendedRowMapperResultSetExtractor<T>(rowMapperDelegate)
+            return new ExtendedRowCallbackResultSetExtractor(rowCallback)
             {
                 OrdinalCache = ordinalCache,
                 RowsExpected = rowsExpected
@@ -521,14 +226,198 @@ namespace Spring.Data.Generic
 
         #endregion
 
-        private class Setter : ICommandSetter
-        {
-            internal IDbParameters Parameters;
+        #region QueryWithRowCallbackDelegate
 
-            public void SetValues(IDbCommand dbCommand)
-            {
-                ParameterUtils.CopyParameters(dbCommand, Parameters);
-            }
+        /// <summary>
+        /// Query database with given SQL command and have each row processed
+        /// by a given <see cref="RowCallbackDelegate"/> with help of optional
+        /// ordinal cache and/or the rows expected value for better performance.
+        /// </summary>
+        /// 
+        /// <param name="operations">
+        /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
+        /// perform database operation.
+        /// </param>
+        /// <param name="cmdType">
+        /// The type of command.
+        /// </param>
+        /// <param name="cmdText">
+        /// The text of command.
+        /// </param>
+        /// <param name="rowCallbackDelegate">
+        /// The row callback delegate that processes each row.
+        /// </param>
+        /// <param name="ordinalCache">
+        /// The <see cref="IDataRecordOrdinalCache"/> that caches the mapping
+        /// from field name to field index.
+        /// </param>
+        /// <param name="rowsExpected">
+        /// Number of rows this query is expected to return. This doesn't need
+        /// to be accurate but estimating at the higer end for best performance.
+        /// </param>
+        public static void QueryWithRowCallbackDelegate(
+            this IAdoOperations operations,
+            CommandType cmdType,
+            string cmdText,
+            RowCallbackDelegate rowCallbackDelegate,
+            IDataRecordOrdinalCache ordinalCache,
+            int rowsExpected)
+        {
+            var extractor = MakeResultSetExtractor(rowCallbackDelegate, ordinalCache, rowsExpected);
+            operations.QueryWithResultSetExtractor(cmdType, cmdText, extractor);
         }
+
+        /// <summary>
+        /// Query database with given SQL command and have each row processed
+        /// by a given <see cref="RowCallbackDelegate"/> with help of optional
+        /// ordinal cache and/or the rows expected value for better performance.
+        /// </summary>
+        /// 
+        /// <param name="operations">
+        /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
+        /// perform database operation.
+        /// </param>
+        /// <param name="cmdType">
+        /// The type of command.
+        /// </param>
+        /// <param name="cmdText">
+        /// The text of command.
+        /// </param>
+        /// <param name="rowCallbackDelegate">
+        /// The row callback delegate that processes each row.
+        /// </param>
+        /// <param name="commandSetter">
+        /// The command setter that make necessary changes to the
+        /// <see cref="IDbCommand"/> object before it is executed.
+        /// For example, set the parameters.
+        /// </param>
+        /// <param name="ordinalCache">
+        /// The <see cref="IDataRecordOrdinalCache"/> that caches the mapping
+        /// from field name to field index.
+        /// </param>
+        /// <param name="rowsExpected">
+        /// Number of rows this query is expected to return. This doesn't need
+        /// to be accurate but estimating at the higer end for best performance.
+        /// </param>
+        public static void QueryWithRowCallbackDelegate(
+            this IAdoOperations operations,
+            CommandType cmdType,
+            string cmdText,
+            RowCallbackDelegate rowCallbackDelegate,
+            ICommandSetter commandSetter,
+            IDataRecordOrdinalCache ordinalCache,
+            int rowsExpected)
+        {
+            var extractor = MakeResultSetExtractor(rowCallbackDelegate, ordinalCache, rowsExpected);
+            operations.QueryWithResultSetExtractor(cmdType, cmdText, extractor, commandSetter);
+        }
+
+        /// <summary>
+        /// Query database with given SQL command and have each row processed
+        /// by a given <see cref="RowCallbackDelegate"/> with help of optional
+        /// ordinal cache and/or the rows expected value for better performance.
+        /// </summary>
+        /// 
+        /// <param name="operations">
+        /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
+        /// perform database operation.
+        /// </param>
+        /// <param name="cmdType">
+        /// The type of command.
+        /// </param>
+        /// <param name="cmdText">
+        /// The text of command.
+        /// </param>
+        /// <param name="rowCallbackDelegate">
+        /// The row callback delegate that processes each row.
+        /// </param>
+        /// <param name="parameters">
+        /// The parameters with all neccessary values populated.
+        /// </param>
+        /// <param name="ordinalCache">
+        /// The <see cref="IDataRecordOrdinalCache"/> that caches the mapping
+        /// from field name to field index.
+        /// </param>
+        /// <param name="rowsExpected">
+        /// Number of rows this query is expected to return. This doesn't need
+        /// to be accurate but estimating at the higer end for best performance.
+        /// </param>
+        public static void QueryWithRowCallbackDelegate(
+            this IAdoOperations operations,
+            CommandType cmdType,
+            string cmdText,
+            RowCallbackDelegate rowCallbackDelegate,
+            IDbParameters parameters,
+            IDataRecordOrdinalCache ordinalCache,
+            int rowsExpected)
+        {
+            var extractor = MakeResultSetExtractor(rowCallbackDelegate, ordinalCache, rowsExpected);
+            operations.QueryWithResultSetExtractor(cmdType, cmdText, extractor, parameters);
+        }
+
+        /// <summary>
+        /// Query database with given SQL command and have each row processed
+        /// by a given <see cref="RowCallbackDelegate"/> with help of optional
+        /// ordinal cache and/or the rows expected value for better performance.
+        /// </summary>
+        /// 
+        /// <param name="operations">
+        /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
+        /// perform database operation.
+        /// </param>
+        /// <param name="cmdType">
+        /// The type of command.
+        /// </param>
+        /// <param name="cmdText">
+        /// The text of command.
+        /// </param>
+        /// <param name="rowCallbackDelegate">
+        /// The row callback delegate that processes each row.
+        /// </param>
+        /// <param name="parameterValue">
+        /// The value of the parameter.
+        /// </param>
+        /// <param name="ordinalCache">
+        /// The <see cref="IDataRecordOrdinalCache"/> that caches the mapping
+        /// from field name to field index.
+        /// </param>
+        /// <param name="parameterName">
+        /// The name of the parameter.
+        /// </param>
+        /// <param name="rowsExpected">
+        /// Number of rows this query is expected to return. This doesn't need
+        /// to be accurate but estimating at the higer end for best performance.
+        /// </param>
+        /// <param name="dbType">
+        /// Type type of the parameter.
+        /// </param>
+        /// <param name="size">
+        /// The size of parameter.
+        /// </param>
+        public static void QueryWithRowCallbackDelegate(
+            this IAdoOperations operations,
+            CommandType cmdType,
+            string cmdText,
+            RowCallbackDelegate rowCallbackDelegate,
+            string parameterName, Enum dbType, int size, object parameterValue,
+            IDataRecordOrdinalCache ordinalCache,
+            int rowsExpected)
+        {
+            var extractor = MakeResultSetExtractor(rowCallbackDelegate, ordinalCache, rowsExpected);
+            operations.QueryWithResultSetExtractor(
+                cmdType, cmdText, extractor, parameterName, dbType, size, parameterValue);
+        }
+
+        private static IResultSetExtractor MakeResultSetExtractor(
+            RowCallbackDelegate rowCallbackDelegate, IDataRecordOrdinalCache ordinalCache, int rowsExpected)
+        {
+            return new ExtendedRowCallbackResultSetExtractor(rowCallbackDelegate)
+            {
+                OrdinalCache = ordinalCache,
+                RowsExpected = rowsExpected
+            };
+        }
+
+        #endregion
     }
 }

@@ -19,4 +19,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("fbec9736-be93-4853-b8ca-377383ad9200")]
 
 // Unit test support.
-[assembly: InternalsVisibleTo("Spring.Extension.Tests")]
+[assembly: InternalsVisibleTo("Spring.Data.Extension.Tests")]

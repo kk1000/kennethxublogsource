@@ -23,7 +23,7 @@ using System.Data;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace Spring.Data.Support
+namespace Spring.Data.Core
 {
     /// <summary>
     /// Test cases for <see cref="DataRecordOrdinalCache"/>

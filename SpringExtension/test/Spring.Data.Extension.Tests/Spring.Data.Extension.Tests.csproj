@@ -43,6 +43,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\dependency\CommonLogging\net\2.0\$(Configuration)\Common.Logging.dll</HintPath>
     </Reference>
+    <Reference Include="Common.Logging.Extension, Version=1.0.0.55, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\dependency\CommonLogging\net\2.0\debug\Common.Logging.Extension.dll</HintPath>
+    </Reference>
     <Reference Include="LinqBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c2b14eb747628076, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\dependency\LinqBridge\net\2.0\LinqBridge.dll</HintPath>
@@ -77,11 +81,26 @@
     </Compile>
     <Compile Include="Data\Common\ExtendedDbProviderTest.cs" />
     <Compile Include="Data\Common\DbConnectionStateListenerBaseTest.cs" />
-    <Compile Include="Data\Generic\AdoOperationsExtensionTest.cs" />
-    <Compile Include="Data\Generic\OracleOdpTemplateTest.cs" />
+    <Compile Include="Data\Core\AdoOperationsExtensionTest.cs" />
+    <Compile Include="Data\Core\DataRecordExtensionTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Core\DataRecordOrdinalCacheTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Generic\AdoOperationsExtensionTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Generic\ExtendedRowMapperResultSetExtractorTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Generic\OracleOdpTemplateTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Support\DataReaderExtenderTest.cs" />
+    <Compile Include="Data\Support\ExtendedDataReaderWrapperTest.cs" />
     <Compile Include="Data\Support\DataReaderWrapperBaseTest.cs" />
-    <Compile Include="Data\Support\DataRecordExtensionTest.cs" />
-    <Compile Include="Data\Support\DataRecordOrdinalCacheTest.cs" />
+    <Compile Include="Data\Support\ExtendedRowCallbackResultSetExtractorTest.cs" />
     <Compile Include="Data\Support\OdpNetDataReaderWrapperTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -90,6 +109,9 @@
       <Project>{4892082C-437F-4120-96E5-B76136C6B550}</Project>
       <Name>Spring.Data.Extension</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
