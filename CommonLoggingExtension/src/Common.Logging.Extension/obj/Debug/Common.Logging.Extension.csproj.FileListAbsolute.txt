@@ -1,0 +1,6 @@
+L:\Sharneng\SpringExtension\src\Common.Logging.Extension\obj\Debug\ResolveAssemblyReference.cache
+L:\Sharneng\SpringExtension\src\Common.Logging.Extension\bin\Debug\Common.Logging.Extension.dll
+L:\Sharneng\SpringExtension\src\Common.Logging.Extension\bin\Debug\Common.Logging.Extension.pdb
+L:\Sharneng\SpringExtension\src\Common.Logging.Extension\obj\Debug\Common.Logging.Extension.dll
+L:\Sharneng\SpringExtension\src\Common.Logging.Extension\obj\Debug\Common.Logging.Extension.pdb
+L:\Sharneng\SpringExtension\src\Common.Logging.Extension\bin\Debug\Common.Logging.dll
