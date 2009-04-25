@@ -51,7 +51,8 @@ namespace Spring.Data.Support
 
         static OdpNetDataReaderWrapper()
         {
-            RowSizeFieldInfo = typeof(OracleDataReader).GetField("m_rowSize", BindingFlags.Instance | BindingFlags.NonPublic);
+            RowSizeFieldInfo = typeof(OracleDataReader).GetField(
+                "m_rowSize", BindingFlags.Instance | BindingFlags.NonPublic);
             if(RowSizeFieldInfo == null && _log.IsWarnEnabled)
             {
                 _log.Warn("Unsupported Odp.Net version :" + typeof(OracleDataReader).Assembly.FullName + 
@@ -216,7 +217,9 @@ namespace Spring.Data.Support
                 }
                 else if(!_isWrongWrappedReaderTypeWarningGiven && _log.IsWarnEnabled)
                 {
-                    _log.Warn(String.Format("Expected original reader to be {0} but got {1}. Note: warning is suspended for subsequent repeated events.", 
+                    _log.Warn(String.Format(
+                        "Expected original reader to be {0} but got {1}. " + 
+                        "Note: warning is suspended for subsequent repeated events.", 
                         typeof(OracleDataReader).FullName, unwrappedReader.GetType().FullName));
                     _isWrongWrappedReaderTypeWarningGiven = true;
                 }

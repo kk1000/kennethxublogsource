@@ -35,9 +35,22 @@ namespace Spring.Data.Support
     /// <author>Kenneth xu</author>
     public class ExtendedRowCallbackResultSetExtractor : DataReaderExtender, IResultSetExtractor
     {
-        internal readonly IRowCallback _rowCallback;
+        /// <summary>
+        /// An <see cref="IRowCallback"/> to be called for each row.
+        /// </summary>
+        internal protected IRowCallback _rowCallback;
 
         internal readonly RowCallbackDelegate _rowCallbackDelegate;
+
+        /// <summary>
+        /// Protected constructor to give subclass the flexibility of how
+        /// callback is set. It also sets the <see cref="_rowCallback"/> to 
+        /// itself if subclass also implements <see cref="IRowCallback"/>.
+        /// </summary>
+        protected ExtendedRowCallbackResultSetExtractor()
+        {
+            _rowCallback = this as IRowCallback;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExtendedRowCallbackResultSetExtractor"/> 

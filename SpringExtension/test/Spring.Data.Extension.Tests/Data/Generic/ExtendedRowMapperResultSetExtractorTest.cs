@@ -98,5 +98,14 @@ namespace Spring.Data.Generic
             _mockery.VerifyAll();
 
         }
+
+        [Test] public void ProtectedConstructorSetsItselfWhenAlsoRowCallback()
+        {
+            var testee = _mockery.PartialMultiMock<ExtendedRowMapperResultSetExtractor<T>>(
+                typeof (IRowMapper<T>));
+            _mockery.ReplayAll();
+            Assert.That(testee._rowMapper, Is.SameAs(testee));
+            _mockery.VerifyAll();
+        }
     }
 }

@@ -18,7 +18,6 @@
 
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Data;
 using NUnit.Framework;
 using Rhino.Mocks;
@@ -91,6 +90,15 @@ namespace Spring.Data.Support
             testee.ExtractData(_dataReader);
             _mockery.VerifyAll();
 
+        }
+
+        [Test] public void ProtectedConstructorSetsItselfWhenAlsoRowCallback()
+        {
+            var testee = _mockery.PartialMultiMock<ExtendedRowCallbackResultSetExtractor>(
+                typeof (IRowCallback));
+            _mockery.ReplayAll();
+            Assert.That(testee._rowCallback, Is.SameAs(testee));
+            _mockery.VerifyAll();
         }
     }
 }

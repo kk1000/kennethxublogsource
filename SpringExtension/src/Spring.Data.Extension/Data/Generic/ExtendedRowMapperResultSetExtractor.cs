@@ -56,18 +56,28 @@ namespace Spring.Data.Generic
 	public class ExtendedRowMapperResultSetExtractor<T> : DataReaderExtender, IResultSetExtractor<IList<T>> 
 	{
 		#region Fields
-        
-	    internal readonly IRowMapper<T> _rowMapper;
+
+        /// <summary>
+        /// An <see cref="IRowMapper{T}"/> to be called for each row.
+        /// </summary>
+        internal protected IRowMapper<T> _rowMapper;
 
         internal readonly RowMapperDelegate<T> _rowMapperDelegate;
 	    
 		#endregion
 
-        #region Properties
-
-        #endregion
-
         #region Constructor (s)
+
+        /// <summary>
+        /// Protected constructor to give subclass the flexibility of how row 
+        /// mapper is set. It also sets the <see cref="_rowMapper"/> to itself 
+        /// if subclass also implements <see cref="IRowMapper{T}"/>.
+        /// </summary>
+        protected ExtendedRowMapperResultSetExtractor()
+        {
+            _rowMapper = this as IRowMapper<T>;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ExtendedRowMapperResultSetExtractor{T}"/> 
         /// class, which will use the given <paramref name="rowMapper"/> to extract the result.

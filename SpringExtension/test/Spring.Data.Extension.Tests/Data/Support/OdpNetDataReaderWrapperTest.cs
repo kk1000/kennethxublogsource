@@ -26,7 +26,6 @@ using Common.Logging.Simple;
 using NUnit.Framework;
 using Oracle.DataAccess.Client;
 using Rhino.Mocks;
-using Spring.Data.Generic;
 
 namespace Spring.Data.Support
 {
@@ -40,12 +39,21 @@ namespace Spring.Data.Support
         private MockRepository _mockery;
         private OdpNetDataReaderWrapper _testee;
         private IDataReader _wrapped;
+        private InMemoryLoggerFactoryAdaptor _loggerFactory;
+        private InMemoryLogger _logger;
 
         [SetUp] public void SetUp()
         {
+            _loggerFactory = (InMemoryLoggerFactoryAdaptor)LogManager.Adapter;
+            _logger = _loggerFactory.GetInMemoryLogger(typeof(OdpNetDataReaderWrapper));
             _mockery = new MockRepository();
             _testee = new OdpNetDataReaderWrapper();
             _wrapped = _mockery.CreateMock<IDataReader>();
+        }
+
+        [TearDown] public void TearDown()
+        {
+            _loggerFactory.ClearAll();
         }
 
         [Test] public void GetCharMethod()
@@ -120,16 +128,14 @@ namespace Spring.Data.Support
 
         [Test] public void GiveWarningWhenNonOdpReaderOnlyOnce()
         {
-            var factory = (InMemoryLoggerFactoryAdaptor) LogManager.Adapter;
-            InMemoryLogger logger = factory.GetInMemoryLogger(typeof (OdpNetDataReaderWrapper));
-            logger.Level = LogLevel.Warn;
+            _logger.Level = LogLevel.Warn;
             _mockery.ReplayAll();
             _testee.WrappedReader = _wrapped;
             _testee.RowsExpected = 2313;
             _testee.RowsExpected = 948;
-            var query = from entry in logger.LogEntries
+            var query = from entry in _logger.LogEntries
                         where entry.Message.ToString().Contains(
-                            string.Format("Expected original reader to be " + typeof (OracleDataReader).FullName))
+                            "Expected original reader to be " + typeof (OracleDataReader).FullName)
                         select entry;
             Assert.That(query.Count(), Is.EqualTo(1));
             Assert.That(query.First().LogLevel, Is.EqualTo(LogLevel.Warn));
