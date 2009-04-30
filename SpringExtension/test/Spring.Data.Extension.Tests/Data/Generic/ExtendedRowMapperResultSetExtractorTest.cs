@@ -59,8 +59,7 @@ namespace Spring.Data.Generic
                 () => new ExtendedRowMapperResultSetExtractor<T>((RowMapperDelegate<T>)null));
         }
 
-        [TestCase(0), TestCase(2), TestCase(10)]
-        public void ExtractDataWithRowMapper(int n)
+        [Test] public void ExtractDataWithRowMapper([Values(0, 2, 10)] int n)
         {
             var expected = new List<T>(n);
             for(int i=0; i<n; i++)
@@ -79,8 +78,7 @@ namespace Spring.Data.Generic
 
         }
 
-        [TestCase(0), TestCase(2), TestCase(10)]
-        public void ExtractDataWithRowMapperDelegate(int n)
+        [Test] public void ExtractDataWithRowMapperDelegate([Values(0, 2, 10)] int n)
         {
             var expected = new List<T>(n);
             for(int i=0; i<n; i++)

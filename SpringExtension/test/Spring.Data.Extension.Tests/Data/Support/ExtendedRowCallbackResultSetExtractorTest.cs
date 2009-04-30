@@ -28,8 +28,6 @@ namespace Spring.Data.Support
     /// Test cases for <see cref="ExtendedRowCallbackResultSetExtractor"/>.
     /// </summary>
     /// <author>Kenneth Xu</author>
-    [TestFixture(typeof(string))]
-    [TestFixture(typeof(int))]
     public class ExtendedRowCallbackResultSetExtractorTest
     {
         private MockRepository _mockery;
@@ -60,8 +58,7 @@ namespace Spring.Data.Support
                 () => new ExtendedRowCallbackResultSetExtractor((RowCallbackDelegate)null));
         }
 
-        [TestCase(0), TestCase(2), TestCase(10)]
-        public void ExtractDataWithRowMapper(int n)
+        [Test] public void ExtractDataWithRowMapper([Values(0, 2, 10)] int n)
         {
             for (int i = 0; i < n; i++)
             {
@@ -76,8 +73,7 @@ namespace Spring.Data.Support
 
         }
 
-        [TestCase(0), TestCase(2), TestCase(10)]
-        public void ExtractDataWithRowMapperDelegate(int n)
+        [Test] public void ExtractDataWithRowMapperDelegate([Values(0, 2, 10)] int n)
         {
             for (int i = 0; i < n; i++)
             {
