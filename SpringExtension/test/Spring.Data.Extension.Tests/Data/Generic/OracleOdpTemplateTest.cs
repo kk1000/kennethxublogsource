@@ -114,27 +114,11 @@ namespace Spring.Data.Generic
                 () => RunExecuateNonQueryBatch(2, 1, action));
         }
 
-        [Test] public void ExecuateNonQueryHalfBatch()
-        {
-            RunExecuateNonQueryBatch(_batchSize/2, 1, null);
-        }
-
-        [Test] public void ExecuateNonQueryFullBatch()
-        {
-            RunExecuateNonQueryBatch(_batchSize, 1, null);
-        }
-
-        [Test] public void ExecuateNonQueryTwoBatches()
-        {
-            RunExecuateNonQueryBatch(_batchSize * 2, 2, null);
-        }
-
-        [Test] public void ExecuateNonQueryTwoAndHalfBatches()
-        {
-            RunExecuateNonQueryBatch(_batchSize * 5 / 2, 3, null);
-        }
-
-        void RunExecuateNonQueryBatch(int sampleSize, int repeat, Action<IDbParameters, int> action)
+        [TestCase(_batchSize / 2, 1, null, TestName = "ExecuateNonQueryHalfBatch")]
+        [TestCase(_batchSize, 1, null, TestName = "ExecuateNonQueryFullBatch")]
+        [TestCase(_batchSize * 2, 2, null, TestName = "ExecuateNonQueryTwoBatches")]
+        [TestCase(_batchSize * 5 / 2, 3, null, TestName = "ExecuateNonQueryTwoAndHalfBatches")]
+        public void RunExecuateNonQueryBatch(int sampleSize, int repeat, Action<IDbParameters, int> action)
         {
             var mock = _mockery.CreateMock<IAdoOperations>();
             Expect.Call(mock.ExecuteNonQuery(CommandType.Text, _sql, (ICommandSetter) null)).Return(3).Repeat.Times(repeat)

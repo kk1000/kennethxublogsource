@@ -73,6 +73,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.61.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\dependency\SQLite\System.Data.SQLite.DLL</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +101,7 @@
     <Compile Include="Data\Generic\OracleOdpTemplateTest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Data\Support\CurrentTheadIdentityToDbSetterTest.cs" />
     <Compile Include="Data\Support\DataReaderExtenderTest.cs" />
     <Compile Include="Data\Support\ExtendedDataReaderWrapperTest.cs" />
     <Compile Include="Data\Support\DataReaderWrapperBaseTest.cs" />

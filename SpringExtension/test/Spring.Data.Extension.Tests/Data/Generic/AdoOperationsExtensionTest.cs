@@ -47,15 +47,15 @@ namespace Spring.Data.Generic
 
         [Test] public void ExecutNonQueryChokesOnNullCommandText()
         {
-            Exception e = Assert.Throws<ArgumentNullException>(() =>
-                                                               AdoOperationsExtension.ExecuteNonQuery(_adoOperations, CommandType.Text, null, new string[1], _converter));
+            Exception e = Assert.Throws<ArgumentNullException>(
+                () => AdoOperationsExtension.ExecuteNonQuery(_adoOperations, CommandType.Text, null, new string[1], _converter));
             StringAssert.Contains("cmdText", e.Message);
         }
 
         [Test] public void ExecutNonQueryChokesOnNullDataToParameters()
         {
-            Exception e = Assert.Throws<ArgumentNullException>(() =>
-                                                               AdoOperationsExtension.ExecuteNonQuery(_adoOperations, CommandType.Text, _sql, new string[1], null));
+            Exception e = Assert.Throws<ArgumentNullException>(
+                () => AdoOperationsExtension.ExecuteNonQuery(_adoOperations, CommandType.Text, _sql, new string[1], null));
             StringAssert.Contains("dataToParameters", e.Message);
         }
 
@@ -115,7 +115,7 @@ namespace Spring.Data.Generic
             Assert.That(result, Is.EqualTo(10));
             _mockery.VerifyAll();
         }
-    }
+        }
 
     [TestFixture(typeof(string)), TestFixture(typeof(int))]
     public class AdoOperationsExtensionTest<T>
@@ -174,6 +174,31 @@ namespace Spring.Data.Generic
                                   ReferenceEquals(sql, _sql) &&
                                   ValidateExtendedRowMapperResultSetExtractor(extractor)
                               ));
+            _mockery.ReplayAll();
+            _rowsExpected = rowsExpected;
+            var result = _adoOperations.QueryWithRowMapper(
+                commandType, _sql, _rowMapper, setter, _ordinalCache, rowsExpected);
+            Assert.That(result, Is.SameAs(_expectedList));
+            _mockery.VerifyAll();
+        }
+
+        [TestCase(CommandType.Text, 1)]
+        [TestCase(CommandType.StoredProcedure, 10)]
+        public void QueryWithRowMapperWithCommandSetterDelegate(CommandType commandType, int rowsExpected)
+        {
+            var command = _mockery.Stub<IDbCommand>();
+            var setter = _mockery.CreateMock<Action<IDbCommand>>();
+            Expect.Call(_adoOperations.QueryWithResultSetExtractor<IList<T>>(CommandType.Text, _sql, null, (ICommandSetter)null))
+                .Return(_expectedList)
+                .Callback(new Func<CommandType, string, IResultSetExtractor<IList<T>>, ICommandSetter, bool>(
+                              (cmdType, sql, extractor, cmdSetter) =>
+                                  {
+                                      cmdSetter.SetValues(command);
+                                      return cmdType == commandType &&
+                                             ReferenceEquals(sql, _sql) &&
+                                             ValidateExtendedRowMapperResultSetExtractor(extractor);
+                                  }));
+            setter(command);
             _mockery.ReplayAll();
             _rowsExpected = rowsExpected;
             var result = _adoOperations.QueryWithRowMapper(
@@ -278,6 +303,31 @@ namespace Spring.Data.Generic
                                   ReferenceEquals(sql, _sql) &&
                                   ValidateExtendedRowMapperDelegateResultSetExtractor(extractor)
                               ));
+            _mockery.ReplayAll();
+            _rowsExpected = rowsExpected;
+            var result = _adoOperations.QueryWithRowMapperDelegate(
+                commandType, _sql, _rowMapperDelegate, setter, _ordinalCache, rowsExpected);
+            Assert.That(result, Is.SameAs(_expectedList));
+            _mockery.VerifyAll();
+        }
+
+        [TestCase(CommandType.Text, 1)]
+        [TestCase(CommandType.StoredProcedure, 10)]
+        public void QueryWithRowMapperDelegateWithCommandSetterDelegate(CommandType commandType, int rowsExpected)
+        {
+            var command = _mockery.Stub<IDbCommand>();
+            var setter = _mockery.CreateMock<Action<IDbCommand>>();
+            Expect.Call(_adoOperations.QueryWithResultSetExtractor<IList<T>>(CommandType.Text, _sql, null, (ICommandSetter)null))
+                .Return(_expectedList)
+                .Callback(new Func<CommandType, string, IResultSetExtractor<IList<T>>, ICommandSetter, bool>(
+                              (cmdType, sql, extractor, cmdSetter) =>
+                                  {
+                                      cmdSetter.SetValues(command);
+                                      return cmdType == commandType &&
+                                             ReferenceEquals(sql, _sql) &&
+                                             ValidateExtendedRowMapperDelegateResultSetExtractor(extractor);
+                                  }));
+            setter(command);
             _mockery.ReplayAll();
             _rowsExpected = rowsExpected;
             var result = _adoOperations.QueryWithRowMapperDelegate(

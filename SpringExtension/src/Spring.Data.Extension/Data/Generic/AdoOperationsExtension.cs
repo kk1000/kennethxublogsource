@@ -83,7 +83,7 @@ namespace Spring.Data.Generic
                 }
             }
 
-            Setter setter = new Setter();
+            ParameterSetter setter = new ParameterSetter();
             int result = 0;
             foreach (T row in data)
             {
@@ -187,6 +187,57 @@ namespace Spring.Data.Generic
         {
             var extractor = MakeResultSetExtractor(rowMapper, ordinalCache, rowsExpected);
             return operations.QueryWithResultSetExtractor(cmdType, cmdText, extractor, commandSetter);
+        }
+
+        /// <summary>
+        /// Query database with given SQL command and mapping each row to a 
+        /// object via a <see cref="IRowMapper{T}"/> with help of optional
+        /// ordinal cache and/or the rows expected value for better performance.
+        /// </summary>
+        /// <typeparam name="T">The type of object that each row maps to.</typeparam>
+        /// <param name="operations">
+        /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
+        /// perform database operation.
+        /// </param>
+        /// <param name="cmdType">
+        /// The type of command.
+        /// </param>
+        /// <param name="cmdText">
+        /// The text of command.
+        /// </param>
+        /// <param name="rowMapper">
+        /// The row mapper that maps each row to object of type 
+        /// <typeparamref name="T"/>.
+        /// </param>
+        /// <param name="commandSetterDelegate">
+        /// The command setter that make necessary changes to the
+        /// <see cref="IDbCommand"/> object before it is executed.
+        /// For example, set the parameters.
+        /// </param>
+        /// <param name="ordinalCache">
+        /// The <see cref="IDataRecordOrdinalCache"/> that caches the mapping
+        /// from field name to field index.
+        /// </param>
+        /// <param name="rowsExpected">
+        /// Number of rows this query is expected to return. This doesn't need
+        /// to be accurate but estimating at the higer end for best performance.
+        /// </param>
+        /// <returns>
+        /// A list of object of type <typeparamref name="T"/> that were mapped
+        /// for the rows.
+        /// </returns>
+        public static IList<T> QueryWithRowMapper<T>(
+            this IAdoOperations operations,
+            CommandType cmdType,
+            string cmdText,
+            IRowMapper<T> rowMapper,
+            Action<IDbCommand> commandSetterDelegate,
+            IDataRecordOrdinalCache ordinalCache,
+            int rowsExpected)
+        {
+            var commandSetter = new DelegateSetter { CommandSetterDelegate = commandSetterDelegate };
+            return QueryWithRowMapper(operations, cmdType, cmdText, rowMapper,
+                commandSetter, ordinalCache, rowsExpected);
         }
 
         /// <summary>
@@ -405,6 +456,57 @@ namespace Spring.Data.Generic
 
         /// <summary>
         /// Query database with given SQL command and mapping each row to a 
+        /// object via a <see cref="IRowMapper{T}"/> with help of optional
+        /// ordinal cache and/or the rows expected value for better performance.
+        /// </summary>
+        /// <typeparam name="T">The type of object that each row maps to.</typeparam>
+        /// <param name="operations">
+        /// An <see cref="Spring.Data.Generic.IAdoOperations"/> object to 
+        /// perform database operation.
+        /// </param>
+        /// <param name="cmdType">
+        /// The type of command.
+        /// </param>
+        /// <param name="cmdText">
+        /// The text of command.
+        /// </param>
+        /// <param name="rowMapperDelegate">
+        /// The row mapper that maps each row to object of type 
+        /// <typeparamref name="T"/>.
+        /// </param>
+        /// <param name="commandSetterDelegate">
+        /// The command setter that make necessary changes to the
+        /// <see cref="IDbCommand"/> object before it is executed.
+        /// For example, set the parameters.
+        /// </param>
+        /// <param name="ordinalCache">
+        /// The <see cref="IDataRecordOrdinalCache"/> that caches the mapping
+        /// from field name to field index.
+        /// </param>
+        /// <param name="rowsExpected">
+        /// Number of rows this query is expected to return. This doesn't need
+        /// to be accurate but estimating at the higer end for best performance.
+        /// </param>
+        /// <returns>
+        /// A list of object of type <typeparamref name="T"/> that were mapped
+        /// for the rows.
+        /// </returns>
+        public static IList<T> QueryWithRowMapperDelegate<T>(
+            this IAdoOperations operations,
+            CommandType cmdType,
+            string cmdText,
+            RowMapperDelegate<T> rowMapperDelegate,
+            Action<IDbCommand> commandSetterDelegate,
+            IDataRecordOrdinalCache ordinalCache,
+            int rowsExpected)
+        {
+            var commandSetter = new DelegateSetter { CommandSetterDelegate = commandSetterDelegate };
+            return QueryWithRowMapperDelegate(operations, cmdType, cmdText, rowMapperDelegate,
+                commandSetter, ordinalCache, rowsExpected);
+        }
+
+        /// <summary>
+        /// Query database with given SQL command and mapping each row to a 
         /// object via a <see cref="RowMapperDelegate{T}"/> with help of optional
         /// ordinal cache and/or the rows expected value for better performance.
         /// </summary>
@@ -521,7 +623,7 @@ namespace Spring.Data.Generic
 
         #endregion
 
-        private class Setter : ICommandSetter
+        private class ParameterSetter : ICommandSetter
         {
             internal IDbParameters Parameters;
 
@@ -530,5 +632,16 @@ namespace Spring.Data.Generic
                 ParameterUtils.CopyParameters(dbCommand, Parameters);
             }
         }
+
+        private class DelegateSetter : ICommandSetter
+        {
+            internal Action<IDbCommand> CommandSetterDelegate;
+
+            public void SetValues(IDbCommand dbCommand)
+            {
+                CommandSetterDelegate(dbCommand);
+            }
+        }
+
     }
 }

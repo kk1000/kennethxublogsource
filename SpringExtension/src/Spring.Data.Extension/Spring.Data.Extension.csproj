@@ -84,6 +84,7 @@
     <Compile Include="Data\Generic\OracleOdpTemplate.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Data\Support\CurrentTheadIdentityToDbSetter.cs" />
     <Compile Include="Data\Support\DataReaderExtender.cs">
       <SubType>Code</SubType>
     </Compile>
