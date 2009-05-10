@@ -33,6 +33,7 @@ namespace Common.Reflection.Inception
         static void Main(string[] args)
         {
             Console.WriteLine("C.SayHello() = " + new C().SayHello("World"));
+            Console.ReadKey();
         }
 
         public static DynamicMethod CreateNonVirtualDynamicMethod(MethodInfo method)
@@ -57,12 +58,14 @@ namespace Common.Reflection.Inception
         }
 
         public static TDelegate GetNonVirtualMethod<TDelegate>(this MethodInfo method)
+            where TDelegate : class 
         {
             var dynamicMethod = CreateNonVirtualDynamicMethod(method);
-            return (TDelegate)(object)dynamicMethod.CreateDelegate(typeof(TDelegate));
+            return dynamicMethod.CreateDelegate(typeof(TDelegate)) as TDelegate;
         }
 
         public static TDelegate GetNonVirtualMethod<TDelegate>(this Type type, string name)
+            where TDelegate : class 
         {
             Type delegateType = typeof(TDelegate);
             if (!typeof(MulticastDelegate).IsAssignableFrom(delegateType))
@@ -85,7 +88,7 @@ namespace Common.Reflection.Inception
                                         null, types, null);
             if (method == null) return default(TDelegate);
             var dynamicMethod = CreateNonVirtualDynamicMethod(method);
-            return (TDelegate)(object)dynamicMethod.CreateDelegate(delegateType);
+            return dynamicMethod.CreateDelegate(delegateType) as TDelegate;
         }
     }
 

@@ -36,7 +36,12 @@ namespace Common.Reflection.PerformanceTest
 
         static void Main(string[] args)
         {
+            Console.WriteLine("===== First  Round =====");
             PerformanceTest();
+            Console.WriteLine("===== Second Round =====");
+            PerformanceTest();
+            Console.Write("Press any key to continue...");
+            Console.ReadKey();
         }
 
         public static void PerformanceTest()
@@ -81,7 +86,7 @@ namespace Common.Reflection.PerformanceTest
             {
                 sub.PerfTest(0, o);
             }
-            WriteResult("Direct Method Call", (DateTime.Now - start).TotalMilliseconds);
+            WriteResult("Direct Virtual Call", (DateTime.Now - start).TotalMilliseconds, loop);
         }
 
         private static void MethodInfoInvokePerformanceTest()
@@ -94,7 +99,7 @@ namespace Common.Reflection.PerformanceTest
             {
                 methodInfo.Invoke(sub, new object[] { 1, o });
             }
-            WriteResult("MethodInfo.Invoke", (DateTime.Now - start).TotalMilliseconds * 1000);
+            WriteResult("MethodInfo.Invoke", (DateTime.Now - start).TotalMilliseconds, loop/1000);
         }
 
         private static void DynamicMethodInvokePerformanceTest()
@@ -107,7 +112,7 @@ namespace Common.Reflection.PerformanceTest
             {
                 dynamicMethod.Invoke(null, new object[] { sub, 1, o });
             }
-            WriteResult("DynamicMethod.Invoke", (DateTime.Now - start).TotalMilliseconds * 1000);
+            WriteResult("DynamicMethod.Invoke", (DateTime.Now - start).TotalMilliseconds, loop/1000);
         }
 
         private static void DelegatePerformanceTest(string testName, Func<int, object, int> callDelegate)
@@ -118,12 +123,13 @@ namespace Common.Reflection.PerformanceTest
             {
                 callDelegate(1, o);
             }
-            WriteResult(testName, (DateTime.Now - start).TotalMilliseconds);
+            WriteResult(testName, (DateTime.Now - start).TotalMilliseconds, loop);
         }
 
-        private static void WriteResult(string callType, double milliSeconds)
+        private static void WriteResult(string callType, double milliSeconds, int count)
         {
-            var s = string.Format("{0:#,##0} invocations using {1,-22}: {2,7:#,##0}ms", loop, callType, milliSeconds);
+            double nsPerCall = milliSeconds*(1000000/(double)count);
+            var s = string.Format("{0,-22}: {1,10:#,##0.000}ns", callType, nsPerCall);
             Console.Out.WriteLine(s);
         }
 

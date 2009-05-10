@@ -37,7 +37,7 @@ namespace Common.Reflection.UnitTests
         [Test] public void ChokesOnMethodMisMatch()
         {
             var e = Assert.Throws<NoMatchException>(
-                () => typeof (Base).GetStaticMethod<Action<string, ReflectionsTest>>("PublicStatic"));
+                () => typeof (Base).GetStaticMethodOrFail<Action<string, ReflectionsTest>>("PublicStatic"));
             StringAssert.Contains(typeof(Base).FullName, e.Message);
             StringAssert.Contains("PublicStatic", e.Message);
             StringAssert.Contains(typeof(string).FullName, e.Message);

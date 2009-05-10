@@ -40,10 +40,10 @@ namespace Common.Reflection
 
         #region Public Extension Methods
 
-        public static TDelegate GetStaticMethod<TDelegate>(
-            this Type type, string name)
+        public static TDelegate GetStaticMethod<TDelegate>(this Type type, string name)
+            where TDelegate : class
         {
-            return (TDelegate)GetStaticMethod<TDelegate>(type, name, false);
+            return GetStaticMethod<TDelegate>(type, name, false);
         }
 
         /// <summary>
@@ -54,88 +54,102 @@ namespace Common.Reflection
         /// <param name="name"></param>
         /// <returns></returns>
         public static TDelegate GetStaticMethodOrFail<TDelegate>(this Type type, string name)
+            where TDelegate : class 
         {
-            return (TDelegate)GetStaticMethod<TDelegate>(type, name, true);
+            return GetStaticMethod<TDelegate>(type, name, true);
         }
 
         public static TDelegate GetInstanceMethod<TDelegate>(this Type type, string name)
+            where TDelegate : class
         {
-            return (TDelegate)GetInstanceMethod<TDelegate>(type, name, false);
+            return GetInstanceMethod<TDelegate>(type, name, false);
         }
 
         public static TDelegate GetInstanceMethodOrFail<TDelegate>(this Type type, string name)
+            where TDelegate : class
         {
-            return (TDelegate)GetInstanceMethod<TDelegate>(type, name, true);
+            return GetInstanceMethod<TDelegate>(type, name, true);
         }
 
         public static TDelegate GetInstanceMethod<TDelegate>(this object obj, string name)
+            where TDelegate : class
         {
-            return (TDelegate)GetInstanceMethod<TDelegate>(obj, name, false);
+            return GetInstanceMethod<TDelegate>(obj, name, false);
         }
 
         public static TDelegate GetInstanceMethodOrFail<TDelegate>(this object obj, string name)
+            where TDelegate : class
         {
-            return (TDelegate)GetInstanceMethod<TDelegate>(obj, name, false);
+            return GetInstanceMethod<TDelegate>(obj, name, false);
         }
 
         public static TDelegate GetNonVirtualInvoker<TDelegate>(this Type type, string name)
+            where TDelegate : class
         {
-            return (TDelegate)GetNonVirtualInvoker<TDelegate>(type, name, false);
+            return GetNonVirtualInvoker<TDelegate>(type, name, false);
         }
 
         public static TDelegate GetNonVirtualInvokerOrFail<TDelegate>(this Type type, string name)
+            where TDelegate : class
         {
-            return (TDelegate)GetNonVirtualInvoker<TDelegate>(type, name, true);
+            return GetNonVirtualInvoker<TDelegate>(type, name, true);
         }
 
         public static TDelegate GetNonVirtualInvoker<TDelegate>(this object obj, Type type, string name)
+            where TDelegate : class
         {
-            return (TDelegate)GetNonVirtualInvoker<TDelegate>(obj, type, name, false);
+            return GetNonVirtualInvoker<TDelegate>(obj, type, name, false);
         }
 
         public static TDelegate GetNonVirtualInvokerOrFail<TDelegate>(this object obj, Type type, string name)
+            where TDelegate : class
         {
-            return (TDelegate)GetNonVirtualInvoker<TDelegate>(obj, type, name, true);
+            return GetNonVirtualInvoker<TDelegate>(obj, type, name, true);
         }
 
         #endregion
 
         #region Private Methods
 
-        private static object GetStaticMethod<T>(Type type, string name, bool failFast)
+        private static T GetStaticMethod<T>(Type type, string name, bool failFast)
+            where T : class 
         {
             MethodInfo method = GetMethodOrFail(typeof(T), type, name, ALL_STATIC_METHOD, false, failFast);
-            return method==null ? null : Delegate.CreateDelegate(typeof(T), method);
+            return method==null ? null : Delegate.CreateDelegate(typeof(T), method) as T;
         }
 
-        private static object GetInstanceMethod<T>(Type type, string name, bool failFast)
+        private static T GetInstanceMethod<T>(Type type, string name, bool failFast)
+            where T : class 
         {
             MethodInfo method = GetMethodOrFail(typeof(T), type, name, ALL_INSTANCE_METHOD, true, failFast);
-            return (method==null) ? null : Delegate.CreateDelegate(typeof(T), method);
+            return (method==null) ? null : Delegate.CreateDelegate(typeof(T), method) as T;
         }
 
-        private static object GetInstanceMethod<T>(object obj, string name, bool failFast)
+        private static T GetInstanceMethod<T>(object obj, string name, bool failFast)
+            where T : class
         {
             MethodInfo method = GetMethodOrFail(typeof(T), obj.GetType(), name, ALL_INSTANCE_METHOD, false, failFast);
-            return method==null ? null : Delegate.CreateDelegate(typeof(T), obj, method);
+            return method==null ? null : Delegate.CreateDelegate(typeof(T), obj, method) as T;
         }
 
-        private static object GetNonVirtualInvoker<T>(Type type, string name, bool failFast)
+        private static T GetNonVirtualInvoker<T>(Type type, string name, bool failFast)
+            where T : class 
         {
             MethodInfo method = GetMethodOrFail(typeof(T), type, name, ALL_INSTANCE_METHOD, true, failFast);
             if (method == null) return null;
             return method.IsVirtual ?
-                CreateDynamicMethod(method).CreateDelegate(typeof(T)) :
-                Delegate.CreateDelegate(typeof(T), method);
+                CreateDynamicMethod(method).CreateDelegate(typeof(T)) as T:
+                Delegate.CreateDelegate(typeof(T), method) as T;
         }
 
-        private static object GetNonVirtualInvoker<T>(object obj, Type type, string name, bool failFast)
+        private static T GetNonVirtualInvoker<T>(object obj, Type type, string name, bool failFast)
+            where T : class
         {
             MethodInfo method = GetMethodOrFail(typeof(T), type, name, ALL_INSTANCE_METHOD, false, failFast);
             if (method == null) return null;
             return method.IsVirtual ?
-                CreateDynamicMethod(method).CreateDelegate(typeof(T), obj) :
-                Delegate.CreateDelegate(typeof(T), obj, method);
+                CreateDynamicMethod(method).CreateDelegate(typeof(T), obj) as T:
+                Delegate.CreateDelegate(typeof(T), obj, method) as T;
         }
 
         internal static DynamicMethod CreateDynamicMethod(MethodInfo method)
@@ -161,7 +175,8 @@ namespace Common.Reflection
 
         private static MethodInfo GetMethodOrFail(Type delegateType, Type type, string name, BindingFlags bindingAttr, bool excludeFirst, bool failFast)
         {
-            ParameterInfo[] parameters = GetDelegateParameters(delegateType);
+            AssertIsDelegate(delegateType);
+            ParameterInfo[] parameters = delegateType.GetMethod("Invoke").GetParameters();
             Type[] types = ExtractTypesFromParameters(parameters, excludeFirst);
             var method = type.GetMethod(name, bindingAttr, null, types, null);
             if (method == null && failFast)
@@ -184,7 +199,7 @@ namespace Common.Reflection
             return types;
         }
 
-        private static ParameterInfo[] GetDelegateParameters(Type delegateType)
+        internal static void AssertIsDelegate(Type delegateType)
         {
             if (!typeof(MulticastDelegate).IsAssignableFrom(delegateType))
             {
@@ -192,8 +207,6 @@ namespace Common.Reflection
                     "Expecting type parameter to be a Delegate type, but got " +
                     delegateType.FullName);
             }
-            var invoke = delegateType.GetMethod("Invoke");
-            return invoke.GetParameters();
         }
 
         #endregion;
