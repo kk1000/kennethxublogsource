@@ -43,7 +43,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Common.Reflection\Common.Reflection.csproj">
+    <ProjectReference Include="..\..\src\Common.Reflection\Common.Reflection.net-3.5.csproj">
       <Project>{0C2B5DC5-98FC-4531-ACFC-D15DCECF8A80}</Project>
       <Name>Common.Reflection</Name>
     </ProjectReference>

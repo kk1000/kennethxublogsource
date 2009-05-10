@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Reflection.UnitTests.net.2.0", "test\Common.Reflection.UnitTests\Common.Reflection.UnitTests.net.2.0.csproj", "{B9CCE23C-5FDD-49A4-931F-4B4E8C491463}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Reflection.UnitTests.net-2.0", "test\Common.Reflection.UnitTests\Common.Reflection.UnitTests.net-2.0.csproj", "{B9CCE23C-5FDD-49A4-931F-4B4E8C491463}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Reflection.net.2.0", "src\Common.Reflection\Common.Reflection.net.2.0.csproj", "{0C2B5DC5-98FC-4531-ACFC-D15DCECF8A80}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Reflection.net-2.0", "src\Common.Reflection\Common.Reflection.net-2.0.csproj", "{0C2B5DC5-98FC-4531-ACFC-D15DCECF8A80}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
