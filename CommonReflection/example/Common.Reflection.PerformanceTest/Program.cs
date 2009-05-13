@@ -66,7 +66,7 @@ namespace Common.Reflection.PerformanceTest
 
         private static void MethodInfoDelegatePerformanceTest()
         {
-            var methodInfoDelegate = new Sub().GetInstanceMethod<Func<int, object, int>>(methodName);
+            var methodInfoDelegate = new Sub().GetInstanceInvoker<Func<int, object, int>>(methodName);
             DelegatePerformanceTest("MethodInfo Delegate", methodInfoDelegate);
         }
 

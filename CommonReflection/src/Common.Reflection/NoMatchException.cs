@@ -19,8 +19,6 @@
 #endregion
 
 using System;
-using System.Reflection;
-using System.Text;
 
 namespace Common.Reflection
 {
@@ -31,38 +29,30 @@ namespace Common.Reflection
     public class NoMatchException : SystemException
     {
         /// <summary>
-        /// Construct a new instance of <see cref="NoMatchException"/>.
+        /// Construct a new instance of <see cref="NoMatchException"/> with
+        /// given error <paramref name="message"/> and <paramref name="inner"/>
+        /// exeption.
         /// </summary>
-        /// <param name="type">
-        /// The type on which the method is being searched.
+        /// <param name="message">
+        /// The text message describes the cause of exception.
         /// </param>
-        /// <param name="bindingFlags">
-        /// The binding flags used to match the method.
+        /// <param name="inner">
+        /// The inner exception if any.
         /// </param>
-        /// <param name="methodName">
-        /// The name of the named.
-        /// </param>
-        /// <param name="parameters">
-        /// Number and types of method parameter to match.
-        /// </param>
-        public NoMatchException(Type type, BindingFlags bindingFlags, string methodName, params Type[] parameters)
-            :base(buildMessage(type, bindingFlags, methodName, parameters))
+        public NoMatchException(string message, Exception inner) : base(message, inner)
         {
         }
 
-        private static string buildMessage(Type type, BindingFlags bindingFlags, string methodName, params Type[] parameters)
+        /// <summary>
+        /// Construct a new instance of <see cref="NoMatchException"/> with
+        /// given error <paramref name="message"/>.
+        /// </summary>
+        /// <param name="message">
+        /// The text message describes the cause of exception.
+        /// </param>
+        public NoMatchException(string message)
+            : base(message)
         {
-            StringBuilder sb = new StringBuilder()
-                .Append("No matching method found in the type ")
-                .Append(type.FullName)
-                .Append(" for signature ").Append(methodName).Append("(");
-            foreach (Type parameter in parameters)
-            {
-                sb.Append(parameter.FullName).Append(", ");
-            }
-            sb.Length -= 2;
-            sb.Append(") with binding flags: ").Append(bindingFlags).Append(".");
-            return sb.ToString();
         }
     }
 }
