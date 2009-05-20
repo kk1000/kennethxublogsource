@@ -28,7 +28,7 @@ namespace Common.Logging.Simple
     /// for unit test.
     /// </summary>
     /// <author>Kenneth Xu</author>
-    public class InMemoryLoggerFactoryAdaptor : ILoggerFactoryAdapter
+    public class InMemoryLoggerFactoryAdapter : ILoggerFactoryAdapter
     {
         readonly IDictionary<string, InMemoryLogger> _repository = 
             new Dictionary<string, InMemoryLogger>();

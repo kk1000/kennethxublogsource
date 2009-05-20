@@ -33,14 +33,14 @@ namespace Common.Logging.Simple
         private readonly IList<InMemoryLogEntry> _logEntries = new List<InMemoryLogEntry>();
         private readonly string _name;
         private LogLevel? _level;
-        private readonly InMemoryLoggerFactoryAdaptor _factory;
+        private readonly InMemoryLoggerFactoryAdapter _factory;
 
         /// <summary>
         /// Construct a new instance of <see cref="InMemoryLogger"/>.
         /// </summary>
         /// <param name="name">The name of the logger to construct.</param>
         /// <param name="factory">The factory this logger belongs to.</param>
-        public InMemoryLogger(string name, InMemoryLoggerFactoryAdaptor factory)
+        public InMemoryLogger(string name, InMemoryLoggerFactoryAdapter factory)
         {
             _name = name;
             _factory = factory;
@@ -61,8 +61,8 @@ namespace Common.Logging.Simple
         /// <remarks>
         /// If the log lever of current logger was never set or got reset by 
         /// <see cref="ResetLevel"/> method, then the log level is the 
-        /// current value of <see cref="InMemoryLoggerFactoryAdaptor.Level"/>
-        /// of the <see cref="InMemoryLoggerFactoryAdaptor"/> that created
+        /// current value of <see cref="InMemoryLoggerFactoryAdapter.Level"/>
+        /// of the <see cref="InMemoryLoggerFactoryAdapter"/> that created
         /// this logger.
         /// </remarks>
         /// <seealso cref="ResetLevel"/>
