@@ -19,6 +19,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -82,9 +83,11 @@ namespace Common.Reflection.PerformanceTest
             Base sub = new Sub();
             object o = new object();
 
-            DateTime start = DateTime.Now;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             for (int i = loop; i > 0; i--) sub.PerfTest(0, o);
-            WriteResult("Direct Virtual Call", (DateTime.Now - start).TotalMilliseconds, loop);
+            stopwatch.Stop();
+            WriteResult("Direct Virtual Call", stopwatch.ElapsedMilliseconds, loop);
         }
 
         private static void MethodInfoInvokePerformanceTest()
@@ -92,10 +95,12 @@ namespace Common.Reflection.PerformanceTest
             object o = new object();
             Sub sub = new Sub();
             MethodInfo methodInfo = sub.GetType().GetMethod(methodName);
-            DateTime start = DateTime.Now;
-            for (int i = loop/1000; i > 0; i--)
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            for (int i = loop / 1000; i > 0; i--)
                 methodInfo.Invoke(sub, new object[] {1, o});
-            WriteResult("MethodInfo.Invoke", (DateTime.Now - start).TotalMilliseconds, loop/1000);
+            stopwatch.Stop();
+            WriteResult("MethodInfo.Invoke", stopwatch.ElapsedMilliseconds, loop/1000);
         }
 
         private static void DynamicMethodInvokePerformanceTest()
@@ -103,18 +108,22 @@ namespace Common.Reflection.PerformanceTest
             Base sub = new Sub();
             DynamicMethod dynamicMethod = Reflections.CreateDynamicMethod(typeof(Base).GetMethod(methodName));
             object o = new object();
-            DateTime start = DateTime.Now;
-            for (int i = loop/1000; i > 0; i--)
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            for (int i = loop / 1000; i > 0; i--)
                 dynamicMethod.Invoke(null, new object[] {sub, 1, o});
-            WriteResult("DynamicMethod.Invoke", (DateTime.Now - start).TotalMilliseconds, loop/1000);
+            stopwatch.Stop();
+            WriteResult("DynamicMethod.Invoke", stopwatch.ElapsedMilliseconds, loop/1000);
         }
 
         private static void DelegatePerformanceTest(string testName, Func<int, object, int> callDelegate)
         {
             object o = new object();
-            DateTime start = DateTime.Now;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             for (int i = loop; i > 0; i--) callDelegate(1, o);
-            WriteResult(testName, (DateTime.Now - start).TotalMilliseconds, loop);
+            stopwatch.Stop();
+            WriteResult(testName, stopwatch.ElapsedMilliseconds, loop);
         }
 
         private static void WriteResult(string callType, double milliSeconds, int count)
