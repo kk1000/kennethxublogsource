@@ -61,7 +61,8 @@ namespace Common.Reflection.PerformanceTest
 
         private static void RegularDelegatePerformanceTest()
         {
-            DelegatePerformanceTest("Regular Delegate", new Sub().PerfTestDelegate);
+            Base b = new Sub();
+            DelegatePerformanceTest("Regular Delegate", b.PerfTest);
         }
 
         private static void MethodInfoDelegatePerformanceTest()
@@ -82,23 +83,18 @@ namespace Common.Reflection.PerformanceTest
             object o = new object();
 
             DateTime start = DateTime.Now;
-            for (int i = loop; i > 0; i--)
-            {
-                sub.PerfTest(0, o);
-            }
+            for (int i = loop; i > 0; i--) sub.PerfTest(0, o);
             WriteResult("Direct Virtual Call", (DateTime.Now - start).TotalMilliseconds, loop);
         }
 
         private static void MethodInfoInvokePerformanceTest()
         {
-            Base sub = new Sub();
-            MethodInfo methodInfo = sub.GetType().GetMethod(methodName);
             object o = new object();
+            Sub sub = new Sub();
+            MethodInfo methodInfo = sub.GetType().GetMethod(methodName);
             DateTime start = DateTime.Now;
-            for (int i = loop / 1000; i > 0; i--)
-            {
-                methodInfo.Invoke(sub, new object[] { 1, o });
-            }
+            for (int i = loop/1000; i > 0; i--)
+                methodInfo.Invoke(sub, new object[] {1, o});
             WriteResult("MethodInfo.Invoke", (DateTime.Now - start).TotalMilliseconds, loop/1000);
         }
 
@@ -108,10 +104,8 @@ namespace Common.Reflection.PerformanceTest
             DynamicMethod dynamicMethod = Reflections.CreateDynamicMethod(typeof(Base).GetMethod(methodName));
             object o = new object();
             DateTime start = DateTime.Now;
-            for (int i = loop / 1000; i > 0; i--)
-            {
-                dynamicMethod.Invoke(null, new object[] { sub, 1, o });
-            }
+            for (int i = loop/1000; i > 0; i--)
+                dynamicMethod.Invoke(null, new object[] {sub, 1, o});
             WriteResult("DynamicMethod.Invoke", (DateTime.Now - start).TotalMilliseconds, loop/1000);
         }
 
@@ -119,10 +113,7 @@ namespace Common.Reflection.PerformanceTest
         {
             object o = new object();
             DateTime start = DateTime.Now;
-            for (int i = loop; i > 0; i--)
-            {
-                callDelegate(1, o);
-            }
+            for (int i = loop; i > 0; i--) callDelegate(1, o);
             WriteResult(testName, (DateTime.Now - start).TotalMilliseconds, loop);
         }
 
@@ -135,23 +126,12 @@ namespace Common.Reflection.PerformanceTest
 
         private class Base
         {
-            public virtual int PerfTest(int i, object o)
-            {
-                return 0;
-            }
-
-            public Func<int, object, int> PerfTestDelegate
-            {
-                get { return PerfTest; }
-            }
+            public virtual int PerfTest(int i, object o) { return 0; }
         }
 
         private class Sub : Base
         {
-            public override int PerfTest(int i, object o)
-            {
-                return 1;
-            }
+            public override int PerfTest(int i, object o) { return 1; }
         }
 
     }
