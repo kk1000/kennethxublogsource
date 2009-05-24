@@ -1,0 +1,55 @@
+OS Name:                   Microsoft(R) Windows(R) Server 2003 Standard x64 Edition
+OS Version:                5.2.3790 Service Pack 2 Build 3790
+OS Manufacturer:           Microsoft Corporation
+OS Configuration:          Member Server
+OS Build Type:             Multiprocessor Free
+System Manufacturer:       HP
+System Model:              ProLiant DL580 G4
+System Type:               x64-based PC
+Processor(s):              16 Processor(s) Installed.
+                           [01]: EM64T Family 15 Model 6 Stepping 8 GenuineIntel ~3392 Mhz
+                           ... repeated lines omitted.
+                           [16]: EM64T Family 15 Model 6 Stepping 8 GenuineIntel ~3392 Mhz
+BIOS Version:              UNKNOWN
+Total Physical Memory:     16,382 MB
+Available Physical Memory: 15,233 MB
+Page File: Max Size:       17,822 MB
+Page File: Available:      17,350 MB
+Page File: In Use:         472 MB
+
+
+D:\>InterlockVsMonitor.exe 1
+Using 1 threads:
+          InterlockAtomic.RunCompareExchange   (ns):    138 Average,    138 Minimal,    138 Maxmial
+            MonitorAtomic.RunCompareExchange   (ns):    463 Average,    463 Minimal,    463 Maxmial
+    MonitorVolatileAtomic.RunCompareExchange   (ns):    311 Average,    311 Minimal,    311 Maxmial
+          InterlockAtomic.RunExchange          (ns):    133 Average,    133 Minimal,    133 Maxmial
+            MonitorAtomic.RunExchange          (ns):    457 Average,    457 Minimal,    457 Maxmial
+    MonitorVolatileAtomic.RunExchange          (ns):    257 Average,    257 Minimal,    257 Maxmial
+
+D:\>InterlockVsMonitor.exe 2
+Using 2 threads:
+          InterlockAtomic.RunCompareExchange   (ns):   1855 Average,   1855 Minimal,   1855 Maxmial
+            MonitorAtomic.RunCompareExchange   (ns):    876 Average,    873 Minimal,    879 Maxmial
+    MonitorVolatileAtomic.RunCompareExchange   (ns):    482 Average,    448 Minimal,    517 Maxmial
+          InterlockAtomic.RunExchange          (ns):   1821 Average,   1821 Minimal,   1822 Maxmial
+            MonitorAtomic.RunExchange          (ns):    825 Average,    760 Minimal,    891 Maxmial
+    MonitorVolatileAtomic.RunExchange          (ns):    501 Average,    498 Minimal,    505 Maxmial
+
+D:\>InterlockVsMonitor.exe 4
+Using 4 threads:
+          InterlockAtomic.RunCompareExchange   (ns):   4158 Average,   4158 Minimal,   4160 Maxmial
+            MonitorAtomic.RunCompareExchange   (ns):   1763 Average,   1731 Minimal,   1815 Maxmial
+    MonitorVolatileAtomic.RunCompareExchange   (ns):    955 Average,    929 Minimal,    998 Maxmial
+          InterlockAtomic.RunExchange          (ns):   4192 Average,   4172 Minimal,   4199 Maxmial
+            MonitorAtomic.RunExchange          (ns):   1766 Average,   1628 Minimal,   1824 Maxmial
+    MonitorVolatileAtomic.RunExchange          (ns):    948 Average,    786 Minimal,   1016 Maxmial
+
+D:\>InterlockVsMonitor.exe 16
+Using 16 threads:
+          InterlockAtomic.RunCompareExchange   (ns):   8399 Average,   8347 Minimal,   8435 Maxmial
+            MonitorAtomic.RunCompareExchange   (ns):  11881 Average,  11595 Minimal,  12082 Maxmial
+    MonitorVolatileAtomic.RunCompareExchange   (ns):   7296 Average,   6994 Minimal,   7411 Maxmial
+          InterlockAtomic.RunExchange          (ns):   8214 Average,   8180 Minimal,   8257 Maxmial
+            MonitorAtomic.RunExchange          (ns):  11984 Average,  11556 Minimal,  12197 Maxmial
+    MonitorVolatileAtomic.RunExchange          (ns):   7086 Average,   6707 Minimal,   7327 Maxmial

@@ -14,7 +14,7 @@ namespace InterlockVsMonitor
         
         static void Main(string[] args)
         {
-            int threadCount = 3;
+            int threadCount = 1;
             if (args.Length > 0)
             {
                 try
@@ -30,10 +30,13 @@ namespace InterlockVsMonitor
 
             var a = new Program { _atomic = new InterlockAtomic() };
             var b = new Program { _atomic = new MonitorAtomic() };
+            var c = new Program { _atomic = new MonitorVolatileAtomic() };
             RunAll(a.RunCompareExchange, threadCount);
             RunAll(b.RunCompareExchange, threadCount);
+            RunAll(c.RunCompareExchange, threadCount);
             RunAll(a.RunExchange, threadCount);
             RunAll(b.RunExchange, threadCount);
+            RunAll(c.RunExchange, threadCount);
         }
 
 
@@ -57,21 +60,29 @@ namespace InterlockVsMonitor
 
         private void RunCompareExchange()
         {
+            int result1, result2, result3;
             for (int i = loop - 1; i >= 0; i--)
             {
-                _atomic.CompareExchange(10, 30);
-                _atomic.CompareExchange(100, 50);
                 _atomic.CompareExchange(50, 100);
+                result1 = _atomic.Value;
+                _atomic.CompareExchange(100, 50);
+                result2 = _atomic.Value;
+                _atomic.CompareExchange(50, 100);
+                result3 = _atomic.Value;
             }
         }
 
         private void RunExchange()
         {
+            int result1, result2, result3;
             for (int i = loop - 1; i >= 0; i--)
             {
                 _atomic.Exchange(30);
+                result1 = _atomic.Value;
                 _atomic.Exchange(50);
+                result2 = _atomic.Value;
                 _atomic.Exchange(100);
+                result3 = _atomic.Value;
             }
         }
 
@@ -84,7 +95,7 @@ namespace InterlockVsMonitor
                 works[i] = () => RecordElapsed(work, false);
             }
             RunAll(works);
-            Console.WriteLine("{0,20}.{1,-20} (ns): {2,6} Average, {3,6} Minimal, {4,6} Maxmial",
+            Console.WriteLine("{0,25}.{1,-20} (ns): {2,6} Average, {3,6} Minimal, {4,6} Maxmial",
                 work.Target, work.Method.Name,
                 accumulator.Average, accumulator.Minimal, accumulator.Maximal);
         }
@@ -186,13 +197,20 @@ namespace InterlockVsMonitor
 
     internal interface IAtomic
     {
+        int Value { get; set; }
         int CompareExchange(int newValue, int expected);
         int Exchange(int newValue);
     }
 
     internal class InterlockAtomic : IAtomic
     {
-        private int _value = 50;
+        private volatile int _value = 50;
+
+        public int Value
+        {
+            get { return _value; }
+            set { _value = value; }
+        }
 
         public virtual int CompareExchange(int newValue, int expected)
         {
@@ -210,7 +228,11 @@ namespace InterlockVsMonitor
 
         private int _value = 50;
 
-        #region IAtomic Members
+        public int Value
+        {
+            get { lock (this) return _value; }
+            set { lock (this) _value = value; }
+        }
 
         public virtual int CompareExchange(int newValue, int expected)
         {
@@ -231,7 +253,37 @@ namespace InterlockVsMonitor
                 return orig;
             }
         }
+    }
 
-        #endregion
+    internal class MonitorVolatileAtomic : IAtomic
+    {
+
+        private volatile int _value = 50;
+
+        public int Value
+        {
+            get { return _value; }
+            set { lock (this) _value = value; }
+        }
+
+        public virtual int CompareExchange(int newValue, int expected)
+        {
+            lock (this)
+            {
+                int orig = _value;
+                if (expected == orig) _value = newValue;
+                return orig;
+            }
+        }
+
+        public virtual int Exchange(int newValue)
+        {
+            lock (this)
+            {
+                int orig = _value;
+                _value = newValue;
+                return orig;
+            }
+        }
     }
 }
