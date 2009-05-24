@@ -18,35 +18,7 @@ Virtual Memory: Max Size:  2,048 MB
 Virtual Memory: Available: 2,007 MB
 Virtual Memory: In Use:    41 MB
 
-L:\OpenSource\InterlockVsMonitor\InterlockVsMonitor\bin\Release>InterlockVsMonitor.exe 1
-Using 1 threads:
-     InterlockAtomic.RunCompareExchange   (ns):     71 Average,     71 Minimal,     71 Maxmial
-       MonitorAtomic.RunCompareExchange   (ns):    219 Average,    219 Minimal,    219 Maxmial
-     InterlockAtomic.RunExchange          (ns):     65 Average,     65 Minimal,     65 Maxmial
-       MonitorAtomic.RunExchange          (ns):    218 Average,    218 Minimal,    218 Maxmial
-
-L:\OpenSource\InterlockVsMonitor\InterlockVsMonitor\bin\Release>InterlockVsMonitor.exe 2
-Using 2 threads:
-     InterlockAtomic.RunCompareExchange   (ns):    251 Average,    246 Minimal,    257 Maxmial
-       MonitorAtomic.RunCompareExchange   (ns):    500 Average,    487 Minimal,    513 Maxmial
-     InterlockAtomic.RunExchange          (ns):    232 Average,    229 Minimal,    236 Maxmial
-       MonitorAtomic.RunExchange          (ns):    424 Average,    329 Minimal,    520 Maxmial
-
-L:\OpenSource\InterlockVsMonitor\InterlockVsMonitor\bin\Release>InterlockVsMonitor.exe 4
-Using 4 threads:
-     InterlockAtomic.RunCompareExchange   (ns):    349 Average,    340 Minimal,    359 Maxmial
-       MonitorAtomic.RunCompareExchange   (ns):    916 Average,    745 Minimal,   1018 Maxmial
-     InterlockAtomic.RunExchange          (ns):    428 Average,    392 Minimal,    474 Maxmial
-       MonitorAtomic.RunExchange          (ns):    948 Average,    853 Minimal,   1082 Maxmial
-
-L:\OpenSource\InterlockVsMonitor\InterlockVsMonitor\bin\Release>InterlockVsMonitor.exe 16
-Using 16 threads:
-     InterlockAtomic.RunCompareExchange   (ns):   1022 Average,    602 Minimal,   1414 Maxmial
-       MonitorAtomic.RunCompareExchange   (ns):   3474 Average,   2562 Minimal,   4104 Maxmial
-     InterlockAtomic.RunExchange          (ns):   1986 Average,   1520 Minimal,   2420 Maxmial
-       MonitorAtomic.RunExchange          (ns):   3381 Average,   2150 Minimal,   4008 Maxmial
-
-L:\OpenSource\InterlockVsMonitor\InterlockVsMonitor\bin\Release>InterlockVsMonitor.exe 1
+D:\>InterlockVsMonitor.exe 1
 Using 1 threads:
           InterlockAtomic.RunCompareExchange   (ns):     81 Average,     81 Minimal,     81 Maxmial
             MonitorAtomic.RunCompareExchange   (ns):    428 Average,    428 Minimal,    428 Maxmial
@@ -55,7 +27,7 @@ Using 1 threads:
             MonitorAtomic.RunExchange          (ns):    544 Average,    544 Minimal,    544 Maxmial
     MonitorVolatileAtomic.RunExchange          (ns):    277 Average,    277 Minimal,    277 Maxmial
 
-L:\OpenSource\InterlockVsMonitor\InterlockVsMonitor\bin\Release>InterlockVsMonitor.exe 2
+D:\>InterlockVsMonitor.exe 2
 Using 2 threads:
           InterlockAtomic.RunCompareExchange   (ns):    180 Average,    176 Minimal,    184 Maxmial
             MonitorAtomic.RunCompareExchange   (ns):    917 Average,    795 Minimal,   1039 Maxmial
@@ -64,7 +36,7 @@ Using 2 threads:
             MonitorAtomic.RunExchange          (ns):   1007 Average,    973 Minimal,   1041 Maxmial
     MonitorVolatileAtomic.RunExchange          (ns):    485 Average,    446 Minimal,    524 Maxmial
 
-L:\OpenSource\InterlockVsMonitor\InterlockVsMonitor\bin\Release>InterlockVsMonitor.exe 4
+D:\>InterlockVsMonitor.exe 4
 Using 4 threads:
           InterlockAtomic.RunCompareExchange   (ns):    345 Average,    305 Minimal,    370 Maxmial
             MonitorAtomic.RunCompareExchange   (ns):   1901 Average,   1711 Minimal,   2064 Maxmial
@@ -73,7 +45,7 @@ Using 4 threads:
             MonitorAtomic.RunExchange          (ns):   1797 Average,   1488 Minimal,   2030 Maxmial
     MonitorVolatileAtomic.RunExchange          (ns):    816 Average,    561 Minimal,   1151 Maxmial
 
-L:\OpenSource\InterlockVsMonitor\InterlockVsMonitor\bin\Release>InterlockVsMonitor.exe 16
+D:\>InterlockVsMonitor.exe 16
 Using 16 threads:
           InterlockAtomic.RunCompareExchange   (ns):    998 Average,    736 Minimal,   1424 Maxmial
             MonitorAtomic.RunCompareExchange   (ns):   8315 Average,   3623 Minimal,   9941 Maxmial
