@@ -29,7 +29,7 @@ namespace InterlockVsMonitor
 
         public long Average
         {
-            get { return _total / _count; }
+            get { lock (this) return _total / _count; }
         }
 
         public void Accumulate(long element)
