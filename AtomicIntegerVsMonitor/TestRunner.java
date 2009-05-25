@@ -39,7 +39,7 @@ public class TestRunner {
     {
     	atomic.set(50);
         action = RUN_COMPARE_AND_SET;
-        runMultiThreadInParallel();
+        runTestInParallel();
     }
     
     private void runIncrementInParallel()
@@ -47,14 +47,14 @@ public class TestRunner {
 	{
     	atomic.set(0);
         action = RUN_INCREMENT;
-        runMultiThreadInParallel();
+        runTestInParallel();
         if (atomic.get() != loop * 3 * threadCount)
         {
         	throw new RuntimeException("Increment count error.");
         }
 	}
     
-    private void runMultiThreadInParallel()
+    private void runTestInParallel()
 		throws InterruptedException 
 	{
 		accumulator = new Accumulator();
