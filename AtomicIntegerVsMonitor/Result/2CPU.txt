@@ -1,3 +1,23 @@
+OS Name:                   Microsoft Windows XP Professional
+OS Version:                5.1.2600 Service Pack 2 Build 2600
+OS Manufacturer:           Microsoft Corporation
+OS Configuration:          Standalone Workstation
+OS Build Type:             Multiprocessor Free
+Original Install Date:     12/9/2007, 12:21:37 PM
+System Up Time:            6 Days, 21 Hours, 53 Minutes, 27 Seconds
+System Manufacturer:       LENOVO
+System Model:              7675CTO
+System type:               X86-based PC
+Processor(s):              2 Processor(s) Installed.
+                           [01]: x86 Family 6 Model 15 Stepping 11 GenuineIntel ~1177 Mhz
+                           [02]: x86 Family 6 Model 15 Stepping 11 GenuineIntel ~1176 Mhz
+BIOS Version:              LENOVO - 2190
+Total Physical Memory:     3,062 MB
+Available Physical Memory: 1,511 MB
+Virtual Memory: Max Size:  2,048 MB
+Virtual Memory: Available: 2,007 MB
+Virtual Memory: In Use:    41 MB
+
 java version "1.6.0_13"
 Java(TM) SE Runtime Environment (build 1.6.0_13-b03)
 Java HotSpot(TM) Client VM (build 11.3-b02, mixed mode, sharing)

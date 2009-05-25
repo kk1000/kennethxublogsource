@@ -1,3 +1,25 @@
+OS Name:                   Microsoft(R) Windows(R) Server 2003, Standard Edition
+OS Version:                5.2.3790 Service Pack 1 Build 3790
+OS Manufacturer:           Microsoft Corporation
+OS Configuration:          Member Server
+OS Build Type:             Multiprocessor Free
+Original Install Date:     4/26/2006, 9:56:51 AM
+System Up Time:            38 Days, 10 Hours, 20 Minutes, 13 Seconds
+System Manufacturer:       HP
+System Model:              ProLiant DL380 G3
+System Type:               X86-based PC
+Processor(s):              4 Processor(s) Installed.
+                           [01]: x86 Family 15 Model 2 Stepping 9 GenuineIntel ~2784 Mhz
+                           [02]: x86 Family 15 Model 2 Stepping 9 GenuineIntel ~2784 Mhz
+                           [03]: x86 Family 15 Model 2 Stepping 9 GenuineIntel ~2784 Mhz
+                           [04]: x86 Family 15 Model 2 Stepping 9 GenuineIntel ~2784 Mhz
+BIOS Version:              COMPAQ - 2
+Total Physical Memory:     3,583 MB
+Available Physical Memory: 2,096 MB
+Page File: Max Size:       1,380 MB
+Page File: Available:      65 MB
+Page File: In Use:         1,315 MB
+
 java version "1.6.0_13"
 Java(TM) SE Runtime Environment (build 1.6.0_13-b03)
 Java HotSpot(TM) Client VM (build 11.3-b02, mixed mode, sharing)

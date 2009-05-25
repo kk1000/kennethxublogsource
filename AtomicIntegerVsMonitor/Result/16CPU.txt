@@ -1,3 +1,22 @@
+OS Name:                   Microsoft(R) Windows(R) Server 2003 Standard x64 Edition
+OS Version:                5.2.3790 Service Pack 2 Build 3790
+OS Manufacturer:           Microsoft Corporation
+OS Configuration:          Member Server
+OS Build Type:             Multiprocessor Free
+System Manufacturer:       HP
+System Model:              ProLiant DL580 G4
+System Type:               x64-based PC
+Processor(s):              16 Processor(s) Installed.
+                           [01]: EM64T Family 15 Model 6 Stepping 8 GenuineIntel ~3392 Mhz
+                           ... repeated lines omitted.
+                           [16]: EM64T Family 15 Model 6 Stepping 8 GenuineIntel ~3392 Mhz
+BIOS Version:              UNKNOWN
+Total Physical Memory:     16,382 MB
+Available Physical Memory: 15,233 MB
+Page File: Max Size:       17,822 MB
+Page File: Available:      17,350 MB
+Page File: In Use:         472 MB
+
 java version "1.6.0_13"
 Java(TM) SE Runtime Environment (build 1.6.0_13-b03)
 Java HotSpot(TM) 64-Bit Server VM (build 11.3-b02, mixed mode)
