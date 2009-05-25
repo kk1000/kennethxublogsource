@@ -1,0 +1,60 @@
+D:\>java -version
+java version "1.6.0_13"
+Java(TM) SE Runtime Environment (build 1.6.0_13-b03)
+Java HotSpot(TM) 64-Bit Server VM (build 11.3-b02, mixed mode)
+
+D:\>java -classpath AtomicIntegerVsMonitor.jar TestRunner 1
+Using 1 threads:
+        AtomicIntegerTest.runCompareAndSet     (ns):     94 Average,     94 Minimal,     94 Maxmial
+        MonitorAtomicTest.runCompareAndSet     (ns):    250 Average,    250 Minimal,    250 Maxmial
+        AtomicIntegerTest.runIncrement         (ns):    110 Average,    110 Minimal,    110 Maxmial
+        MonitorAtomicTest.runIncrement         (ns):    250 Average,    250 Minimal,    250 Maxmial
+
+D:\>java -classpath AtomicIntegerVsMonitor.jar TestRunner 1
+Using 1 threads:
+        AtomicIntegerTest.runCompareAndSet     (ns):    110 Average,    110 Minimal,    110 Maxmial
+        MonitorAtomicTest.runCompareAndSet     (ns):    250 Average,    250 Minimal,    250 Maxmial
+        AtomicIntegerTest.runIncrement         (ns):    109 Average,    109 Minimal,    109 Maxmial
+        MonitorAtomicTest.runIncrement         (ns):    266 Average,    266 Minimal,    266 Maxmial
+
+D:\>java -classpath AtomicIntegerVsMonitor.jar TestRunner 2
+Using 2 threads:
+        AtomicIntegerTest.runCompareAndSet     (ns):   1828 Average,   1828 Minimal,   1828 Maxmial
+        MonitorAtomicTest.runCompareAndSet     (ns):   2805 Average,   2797 Minimal,   2813 Maxmial
+        AtomicIntegerTest.runIncrement         (ns):    476 Average,    437 Minimal,    515 Maxmial
+        MonitorAtomicTest.runIncrement         (ns):   2289 Average,   2282 Minimal,   2297 Maxmial
+
+D:\>java -classpath AtomicIntegerVsMonitor.jar TestRunner 2
+Using 2 threads:
+        AtomicIntegerTest.runCompareAndSet     (ns):    913 Average,    906 Minimal,    921 Maxmial
+        MonitorAtomicTest.runCompareAndSet     (ns):   2438 Average,   2438 Minimal,   2438 Maxmial
+        AtomicIntegerTest.runIncrement         (ns):   1062 Average,   1062 Minimal,   1062 Maxmial
+        MonitorAtomicTest.runIncrement         (ns):   2383 Average,   2375 Minimal,   2391 Maxmial
+
+D:\>java -classpath AtomicIntegerVsMonitor.jar TestRunner 4
+Using 4 threads:
+        AtomicIntegerTest.runCompareAndSet     (ns):   3262 Average,   3250 Minimal,   3266 Maxmial
+        MonitorAtomicTest.runCompareAndSet     (ns):   7593 Average,   7406 Minimal,   7734 Maxmial
+        AtomicIntegerTest.runIncrement         (ns):   2547 Average,   2547 Minimal,   2547 Maxmial
+        MonitorAtomicTest.runIncrement         (ns):   5671 Average,   5562 Minimal,   5734 Maxmial
+
+D:\>java -classpath AtomicIntegerVsMonitor.jar TestRunner 4
+Using 4 threads:
+        AtomicIntegerTest.runCompareAndSet     (ns):   3156 Average,   3156 Minimal,   3156 Maxmial
+        MonitorAtomicTest.runCompareAndSet     (ns):   6906 Average,   6547 Minimal,   7157 Maxmial
+        AtomicIntegerTest.runIncrement         (ns):   2547 Average,   2547 Minimal,   2547 Maxmial
+        MonitorAtomicTest.runIncrement         (ns):   5761 Average,   5703 Minimal,   5797 Maxmial
+
+D:\>java -classpath AtomicIntegerVsMonitor.jar TestRunner 16
+Using 16 threads:
+        AtomicIntegerTest.runCompareAndSet     (ns):   9734 Average,   9734 Minimal,   9734 Maxmial
+        MonitorAtomicTest.runCompareAndSet     (ns):  22013 Average,  20813 Minimal,  22203 Maxmial
+        AtomicIntegerTest.runIncrement         (ns):  46144 Average,  45531 Minimal,  46672 Maxmial
+        MonitorAtomicTest.runIncrement         (ns):  18932 Average,  18562 Minimal,  19078 Maxmial
+
+D:\>java -classpath AtomicIntegerVsMonitor.jar TestRunner 16
+Using 16 threads:
+        AtomicIntegerTest.runCompareAndSet     (ns):   9735 Average,   9735 Minimal,   9735 Maxmial
+        MonitorAtomicTest.runCompareAndSet     (ns):  30933 Average,  24859 Minimal,  33999 Maxmial
+        AtomicIntegerTest.runIncrement         (ns):  46042 Average,  45594 Minimal,  46516 Maxmial
+        MonitorAtomicTest.runIncrement         (ns):  18407 Average,  17937 Minimal,  18546 Maxmial
