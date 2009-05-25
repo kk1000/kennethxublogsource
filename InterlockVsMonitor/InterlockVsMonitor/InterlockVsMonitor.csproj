@@ -42,6 +42,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Accumulator.cs" />
+    <Compile Include="Barrier.cs" />
+    <Compile Include="ThreadingHelper.cs" />
+    <Compile Include="IAtomic.cs" />
+    <Compile Include="InterlockedAtomic.cs" />
+    <Compile Include="MonitorOnlyAtomic.cs" />
+    <Compile Include="MonitorVolatileAtomic.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
