@@ -10,9 +10,7 @@ using System.Reflection;
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: AssemblyTrademarkAttribute("Kenneth Xu")]
+[assembly: AssemblyTrademarkAttribute("")]
 [assembly: AssemblyCultureAttribute("")]
 [assembly: AssemblyVersionAttribute("1.0.1.*")]
-[assembly: AssemblyCompanyAttribute("Kenneth Xu")]
-[assembly: AssemblyCopyrightAttribute("Copyright (c) 2009 Kenneth xu")]
 
