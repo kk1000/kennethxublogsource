@@ -79,7 +79,7 @@ namespace Common.Reflection
         /// <returns>
         /// A delegate of type <typeparamref name="TDelegate"/>.
         /// </returns>
-        /// <exception name="NoMatchException">
+        /// <exception name="MissingMethodException">
         /// When there is no matching method found.
         /// </exception>
         /// <seealso cref="GetStaticInvoker{TDelegate}"/>
@@ -141,7 +141,7 @@ namespace Common.Reflection
         /// A delegate of type <typeparamref name="TDelegate"/> or null when
         /// no matching method if found.
         /// </returns>
-        /// <exception name="NoMatchException">
+        /// <exception name="MissingMethodException">
         /// When there is no matching method found.
         /// </exception>
         /// <seealso cref="GetInstanceInvoker{TDelegate}(System.Type,string)"/>
@@ -200,7 +200,7 @@ namespace Common.Reflection
         /// A delegate of type <typeparamref name="TDelegate"/> or null when
         /// no matching method if found.
         /// </returns>
-        /// <exception name="NoMatchException">
+        /// <exception name="MissingMethodException">
         /// When there is no matching method found.
         /// </exception>
         /// <seealso cref="GetInstanceInvokerOrFail{TDelegate}(System.Type,string)"/>
@@ -262,7 +262,7 @@ namespace Common.Reflection
         /// <returns>
         /// A delegate of type <typeparamref name="TDelegate"/>.
         /// </returns>
-        /// <exception name="NoMatchException">
+        /// <exception name="MissingMethodException">
         /// When there is no matching method found.
         /// </exception>
         /// <seealso cref="GetNonVirtualInvoker{TDelegate}(Type,string)"/>
@@ -329,7 +329,7 @@ namespace Common.Reflection
         /// A delegate of type <typeparamref name="TDelegate"/> or null when
         /// no matching method if found.
         /// </returns>
-        /// <exception name="NoMatchException">
+        /// <exception name="MissingMethodException">
         /// When there is no matching method found.
         /// </exception>
         /// <seealso cref="GetNonVirtualInvokerOrFail{TDelegate}(Type,string)"/>
@@ -416,7 +416,7 @@ namespace Common.Reflection
         /// <returns>
         /// A delegate of type <typeparamref name="TDelegate"/>.
         /// </returns>
-        /// <exception name="NoMatchException">
+        /// <exception name="MissingMethodException">
         /// When there is no matching method found.
         /// </exception>
         public static TDelegate GetInvokerOrFail<TDelegate>(object obj, Type type, string name, BindingFlags bindingAttr, Predicate<MethodInfo> filter, string filterMessage)
@@ -533,7 +533,7 @@ namespace Common.Reflection
                 catch (ArgumentException ex)
                 {
                     if (!_failFast) return null;
-                    throw new NoMatchException(BuildExceptionMessage(), ex);
+                    throw new MissingMethodException(BuildExceptionMessage(), ex);
                 }
             }
 
@@ -555,7 +555,7 @@ namespace Common.Reflection
                     if (!_targetType.IsAssignableFrom(instanceType))
                     {
                         if (!_failFast) return null;
-                        throw new NoMatchException(string.Format(
+                        throw new MissingMethodException(string.Format(
                             "Target type {0} is not assignable to the first parameter of delegate {1}.",
                             _targetType, instanceType));
                     }
@@ -579,7 +579,7 @@ namespace Common.Reflection
                 }
                 if (method == null && _failFast)
                 {
-                    throw new NoMatchException(BuildExceptionMessage());
+                    throw new MissingMethodException(BuildExceptionMessage());
                 }
                 return method;
             }

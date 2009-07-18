@@ -39,7 +39,7 @@ namespace Common.Reflection.UnitTests
 
         [Test] public void GetStaticInvokerOrFail_Chokes_WhenParameterMisMatch()
         {
-            var e = Assert.Throws<NoMatchException>(
+            var e = Assert.Throws<MissingMethodException>(
                 () => typeof (Base).GetStaticInvokerOrFail<Action<string, ReflectionsTest<T>>>("PublicStatic"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicStatic", e.Message);
@@ -54,7 +54,7 @@ namespace Common.Reflection.UnitTests
 
         [Test] public void GetStaticInvoker_Chokes_WhenReturnTypeMisMatch()
         {
-            var e = Assert.Throws<NoMatchException>(
+            var e = Assert.Throws<MissingMethodException>(
                 () => typeof(Base).GetStaticInvokerOrFail<Func<T, double>>("PublicStatic"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicStatic", e.Message);
@@ -70,14 +70,14 @@ namespace Common.Reflection.UnitTests
 
         [Test] public void GetInstanceInvokerOrFail_Chokes_WhenParameterMisMatch()
         {
-            var e = Assert.Throws<NoMatchException>(
+            var e = Assert.Throws<MissingMethodException>(
                 () => typeof(Base).GetInstanceInvokerOrFail<Action<Base, string, ReflectionsTest<T>>>("PublicInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicInstance", e.Message);
             StringAssert.Contains(typeof(string).ToString(), e.Message);
             StringAssert.Contains(typeof(ReflectionsTest<T>).ToString(), e.Message);
 
-            e = Assert.Throws<NoMatchException>(
+            e = Assert.Throws<MissingMethodException>(
                 () => new Base().GetInstanceInvokerOrFail<Action<string, ReflectionsTest<T>>>("PublicInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicInstance", e.Message);
@@ -93,14 +93,14 @@ namespace Common.Reflection.UnitTests
 
         [Test] public void GetInstanceInvokerOrFail_Chokes_WhenReturnTypeMisMatch()
         {
-            var e = Assert.Throws<NoMatchException>(
+            var e = Assert.Throws<MissingMethodException>(
                 () => typeof(Base).GetInstanceInvokerOrFail<Func<Base, double>>("PublicInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicInstance", e.Message);
             StringAssert.Contains(typeof(T).ToString(), e.Message);
             StringAssert.Contains(typeof(double).ToString(), e.Message);
 
-            e = Assert.Throws<NoMatchException>(
+            e = Assert.Throws<MissingMethodException>(
                 () => new Base().GetInstanceInvokerOrFail<Func<double>>("PublicInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicInstance", e.Message);
@@ -116,14 +116,14 @@ namespace Common.Reflection.UnitTests
 
         [Test] public void GetNonVirtualInvokerOrFail_Chokes_WhenParameterMisMatch()
         {
-            var e = Assert.Throws<NoMatchException>(
+            var e = Assert.Throws<MissingMethodException>(
                 () => typeof(Base).GetNonVirtualInvokerOrFail<Action<Base, string, ReflectionsTest<T>>>("PublicVirtualInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicVirtualInstance", e.Message);
             StringAssert.Contains(typeof(string).ToString(), e.Message);
             StringAssert.Contains(typeof(ReflectionsTest<T>).ToString(), e.Message);
 
-            e = Assert.Throws<NoMatchException>(
+            e = Assert.Throws<MissingMethodException>(
                 () => new Base().GetNonVirtualInvokerOrFail<Action<Base, string, ReflectionsTest<T>>>(typeof(Base), "PublicVirtualInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicVirtualInstance", e.Message);
@@ -139,14 +139,14 @@ namespace Common.Reflection.UnitTests
 
         [Test] public void GetNonVirtualInvokerOrFail_Chokes_WhenReturnTypeMisMatch()
         {
-            var e = Assert.Throws<NoMatchException>(
+            var e = Assert.Throws<MissingMethodException>(
                 () => typeof(Base).GetNonVirtualInvokerOrFail<Func<Base, T, double>>("PublicVirtualInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicVirtualInstance", e.Message);
             StringAssert.Contains(typeof(T).ToString(), e.Message);
             StringAssert.Contains(typeof(double).ToString(), e.Message);
 
-            e = Assert.Throws<NoMatchException>(
+            e = Assert.Throws<MissingMethodException>(
                 () => new Base().GetNonVirtualInvokerOrFail<Func<T, double>>(typeof(Base), "PublicVirtualInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicVirtualInstance", e.Message);
@@ -219,7 +219,7 @@ namespace Common.Reflection.UnitTests
 
         [Test] public void GetInstanceInvokerOrFailByType_Chokes_WhenFirstParameterMismatch()
         {
-            var e = Assert.Throws<NoMatchException>(
+            var e = Assert.Throws<MissingMethodException>(
                 () => typeof(Base).GetInstanceInvokerOrFail<Func<string, T, string, int, T>>("PublicInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains(typeof(string).ToString(), e.Message);
@@ -232,7 +232,7 @@ namespace Common.Reflection.UnitTests
 
         [Test] public void GetNonVirtualInvokerOrFailByType_Chokes_WhenFirstParameterMismatch()
         {
-            var e = Assert.Throws<NoMatchException>(
+            var e = Assert.Throws<MissingMethodException>(
                 () => typeof(Base).GetNonVirtualInvokerOrFail<Func<string, object, T, object>>("PublicVirtualInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains(typeof(string).ToString(), e.Message);
@@ -476,7 +476,7 @@ namespace Common.Reflection.UnitTests
                 BindingFlags.Instance | BindingFlags.NonPublic, m=>m.IsFamily, message);
             Assert.NotNull(dProtected);
 
-            var e = Assert.Throws<NoMatchException>(
+            var e = Assert.Throws<MissingMethodException>(
                 delegate
                     {
                         Reflections.GetInvokerOrFail<Action<T>>(

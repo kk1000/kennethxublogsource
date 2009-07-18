@@ -51,7 +51,6 @@
     <Compile Include="..\..\AssemblyVersion.cs">
       <Link>AssemblyVersion.cs</Link>
     </Compile>
-    <Compile Include="NoMatchException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflections.cs" />
   </ItemGroup>
