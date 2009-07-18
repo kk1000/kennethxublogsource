@@ -37,9 +37,11 @@ namespace DynamicProxy
             // int result;
             if (hasReturn) ilg.DeclareLocal(interfaceMethod.ReturnType);
 
+#if DEBUG
             //  Console.WriteLine("Proxy before call " + explictMethod);
             ilg.Emit(OpCodes.Ldstr, "Proxy before call " + explictMethod);
             ilg.Emit(OpCodes.Call, ConsoleWriteLine);
+#endif
 
             // num = Base_2_BarMethod(this, arg1);
             ilg.Emit(OpCodes.Ldsfld, fieldBuilder);
@@ -51,9 +53,11 @@ namespace DynamicProxy
             // save return result if any.
             if (hasReturn) ilg.Emit(OpCodes.Stloc_0);
 
+#if DEBUG
             //  Console.WriteLine("Proxy after call " + explictMethod);
             ilg.Emit(OpCodes.Ldstr, "Proxy after call " + explictMethod);
             ilg.Emit(OpCodes.Call, ConsoleWriteLine);
+#endif
 
             // return
             if (hasReturn) ilg.Emit(OpCodes.Ldloc_0);

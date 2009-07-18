@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection.Emit;
 using System.Reflection;
 
@@ -23,7 +24,7 @@ namespace DynamicProxy
 
             int IFoo.BarMethod(int i)
             {
-                return i*i;
+                return i;
             }
         }
 
@@ -42,6 +43,42 @@ namespace DynamicProxy
             proxy.FooMethod(out result);
             Console.WriteLine(result);
             Console.WriteLine(proxy.BarMethod(5));
+#if !DEBUG
+            Console.WriteLine("Warm up:");
+            PerformanceTest(proxy, new Foo(), 1000);
+            Console.WriteLine("Test:");
+            PerformanceTest(proxy, new Foo(), 20000);
+#endif
+        }
+
+        private static void PerformanceTest(IFoo proxy, IFoo original, int loop1)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            int result = 0;
+            stopwatch.Start();
+            for (int i = loop1 - 1; i >= 0; i--)
+            {
+                for (int j = loop1 - 1; j >= 0; j--)
+                {
+                    result += original.BarMethod(1);
+                }
+            }
+            stopwatch.Stop();
+            Console.WriteLine("Original result " + result + " took " + stopwatch.ElapsedTicks);
+            stopwatch.Reset();
+
+            result = 0;
+            stopwatch.Start();
+            for (int i = loop1 - 1; i >= 0; i--)
+            {
+                for (int j = loop1 - 1; j >= 0; j--)
+                {
+                    result += proxy.BarMethod(1);
+                }
+            }
+            stopwatch.Stop();
+            Console.WriteLine("Proxy result " + result + " took " + stopwatch.ElapsedTicks);
+            stopwatch.Reset();
         }
 
         private static Type OverrideFoo(ModuleBuilder mb)
