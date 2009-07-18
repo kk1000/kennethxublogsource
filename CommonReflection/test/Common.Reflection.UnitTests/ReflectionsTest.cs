@@ -19,6 +19,7 @@
 #endregion
 
 using System;
+using System.Reflection;
 using NUnit.Framework;
 
 namespace Common.Reflection.UnitTests
@@ -429,6 +430,60 @@ namespace Common.Reflection.UnitTests
             Assert.AreSame(s1, result);
             Assert.AreEqual(expected, Sub.JustCalled);
             Assert.AreEqual(expectedOut, intout);
+        }
+
+        [Test] public void GetInvoker_FiltersMethod()
+        {
+            Base b = new Base();
+
+            var dProtected = Reflections.GetInvoker<Func<T>>(
+                b, b.GetType(), "ProtectedVirtualInstance",
+                BindingFlags.Instance | BindingFlags.NonPublic, null);
+            Assert.NotNull(dProtected);
+
+            var dPrivate = Reflections.GetInvoker<Action<T>>(
+                b, b.GetType(), "PrivateInstance",
+                BindingFlags.Instance | BindingFlags.NonPublic, null);
+            Assert.NotNull(dPrivate);
+
+            dProtected = Reflections.GetInvoker<Func<T>>(
+                b, b.GetType(), "ProtectedVirtualInstance",
+                BindingFlags.Instance | BindingFlags.NonPublic, m=>m.IsFamily);
+            Assert.NotNull(dProtected);
+
+            dPrivate = Reflections.GetInvoker<Action<T>>(
+                b, b.GetType(), "PrivateInstance",
+                BindingFlags.Instance | BindingFlags.NonPublic, m => m.IsFamily);
+            Assert.Null(dPrivate);
+        }
+
+        [Test] public void GetInvokerOrFail_FiltersMethod()
+        {
+            Base b = new Base();
+            var message = "protected methods only";
+            var dProtected = Reflections.GetInvokerOrFail<Func<T>>(
+                b, b.GetType(), "ProtectedVirtualInstance",
+                BindingFlags.Instance | BindingFlags.NonPublic, null, null);
+            Assert.NotNull(dProtected);
+
+            var dPrivate = Reflections.GetInvokerOrFail<Action<T>>(
+                b, b.GetType(), "PrivateInstance",
+                BindingFlags.Instance | BindingFlags.NonPublic, null, null);
+            Assert.NotNull(dPrivate);
+
+            dProtected = Reflections.GetInvokerOrFail<Func<T>>(
+                b, b.GetType(), "ProtectedVirtualInstance",
+                BindingFlags.Instance | BindingFlags.NonPublic, m=>m.IsFamily, message);
+            Assert.NotNull(dProtected);
+
+            var e = Assert.Throws<NoMatchException>(
+                delegate
+                    {
+                        Reflections.GetInvokerOrFail<Action<T>>(
+                            b, b.GetType(), "PrivateInstance",
+                            BindingFlags.Instance | BindingFlags.NonPublic, m => m.IsFamily, message);
+                    });
+            StringAssert.Contains(message, e.Message);
         }
 
         private delegate IDisposable LostParameterByTypeDelegate(Sub o, int a, string b, Sub c, out int d);

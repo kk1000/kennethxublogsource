@@ -260,8 +260,7 @@ namespace Common.Reflection
         /// The name of the method.
         /// </param>
         /// <returns>
-        /// A delegate of type <typeparamref name="TDelegate"/> or null when
-        /// no matching method if found.
+        /// A delegate of type <typeparamref name="TDelegate"/>.
         /// </returns>
         /// <exception name="NoMatchException">
         /// When there is no matching method found.
@@ -341,6 +340,95 @@ namespace Common.Reflection
             return new DelegateBuilder<TDelegate>(obj, type, name, true).CreateInvoker(true);
         }
 
+        /// <summary>
+        /// This is a more general purpose method to obtain a delegate of type
+        /// specified by parameter <typeparamref name="TDelegate"/> that can 
+        /// be used to call on the specific <paramref name="obj">object</paramref> 
+        /// to the method of given <paramref name="name"/> defined in the given 
+        /// <paramref name="type"/> or its ancestor. The method signature must be 
+        /// compatible with the signature of <typeparamref name="TDelegate"/>.
+        /// </summary>
+        /// <typeparam name="TDelegate">
+        /// Type of a .Net delegate.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The object instance to invoke the method or null for static methods
+        /// and open instance methods.
+        /// </param>
+        /// <param name="type">
+        /// The type to find the method.
+        /// </param>
+        /// <param name="name">
+        /// The name of the method.
+        /// </param>
+        /// <param name="bindingAttr">
+        /// A bitmask comprised of one or more <see cref="BindingFlags"/> that 
+        /// specify how the search is conducted.  -or- Zero, to return null.
+        /// </param>
+        /// <param name="filter">
+        /// The additional filter to include/exclude methods.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <typeparamref name="TDelegate"/> or null when
+        /// no matching method if found.
+        /// </returns>
+        public static TDelegate GetInvoker<TDelegate>(object obj, Type type, string name, BindingFlags bindingAttr, Predicate<MethodInfo> filter)
+            where TDelegate : class
+        {
+            return new DelegateBuilder<TDelegate>(obj, type, name, false, bindingAttr)
+                       {
+                           MethodFilter = filter, 
+                       }.CreateInvoker();
+        }
+
+        /// <summary>
+        /// This is a more general purpose method to obtain a delegate of type
+        /// specified by parameter <typeparamref name="TDelegate"/> that can 
+        /// be used to call on the specific <paramref name="obj">object</paramref> 
+        /// to the method of given <paramref name="name"/> defined in the given 
+        /// <paramref name="type"/> or its ancestor. The method signature must be 
+        /// compatible with the signature of <typeparamref name="TDelegate"/>.
+        /// </summary>
+        /// <typeparam name="TDelegate">
+        /// Type of a .Net delegate.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The object instance to invoke the method or null for static methods
+        /// and open instance methods.
+        /// </param>
+        /// <param name="type">
+        /// The type to find the method.
+        /// </param>
+        /// <param name="name">
+        /// The name of the method.
+        /// </param>
+        /// <param name="bindingAttr">
+        /// A bitmask comprised of one or more <see cref="BindingFlags"/> that 
+        /// specify how the search is conducted.  -or- Zero, to return null.
+        /// </param>
+        /// <param name="filter">
+        /// The additional filter to include/exclude methods.
+        /// </param>
+        /// <param name="filterMessage">
+        /// The description of the additional filter criteria that will be
+        /// included in the exception message when no matching method found.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <typeparamref name="TDelegate"/>.
+        /// </returns>
+        /// <exception name="NoMatchException">
+        /// When there is no matching method found.
+        /// </exception>
+        public static TDelegate GetInvokerOrFail<TDelegate>(object obj, Type type, string name, BindingFlags bindingAttr, Predicate<MethodInfo> filter, string filterMessage)
+            where TDelegate : class
+        {
+            return new DelegateBuilder<TDelegate>(obj, type, name, true, bindingAttr)
+            {
+                MethodFilter = filter,
+                MethodFilterMessage = filterMessage
+            }.CreateInvoker();
+        }
+
         #endregion
 
         #region Internal Methods
@@ -396,6 +484,9 @@ namespace Common.Reflection
             private Type _returnType;
             private Type[] _parameterTypes;
 
+            internal Predicate<MethodInfo> MethodFilter { get; set; }
+            internal string MethodFilterMessage { get; set; }
+
             public DelegateBuilder(object targetObject, Type targetType, string methodName, bool failFast)
                 :this(targetObject, targetType, methodName, failFast, ALL_INSTANCE_METHOD)
             {
@@ -406,7 +497,7 @@ namespace Common.Reflection
             {
             }
 
-            private DelegateBuilder(object targetObject, Type targetType, string methodName, bool failFast, BindingFlags bindingAttr)
+            internal DelegateBuilder(object targetObject, Type targetType, string methodName, bool failFast, BindingFlags bindingAttr)
             {
                 AssertIsDelegate(typeof(T));
 
@@ -481,6 +572,11 @@ namespace Common.Reflection
                 _parameterTypes = types;
 
                 var method = _targetType.GetMethod(_methodName, _bindingAttr, null, _parameterTypes, null);
+                var methodFilter = MethodFilter;
+                if(method !=null && methodFilter != null && !methodFilter(method))
+                {
+                    method = null;
+                }
                 if (method == null && _failFast)
                 {
                     throw new NoMatchException(BuildExceptionMessage());
@@ -504,7 +600,12 @@ namespace Common.Reflection
                     }
                     sb.Length -= 2;
                 }
-                sb.Append(") with binding flags: ").Append(_bindingAttr).Append(".");
+                sb.Append(") with binding flags: ").Append(_bindingAttr);
+                if (MethodFilter != null)
+                {
+                    sb.Append(" with filter ").Append(MethodFilterMessage??MethodFilter.ToString());
+                }
+                sb.Append(".");
                 return sb.ToString();
             }
         }
