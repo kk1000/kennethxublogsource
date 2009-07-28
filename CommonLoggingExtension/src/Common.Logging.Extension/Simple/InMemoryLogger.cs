@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using Common.Logging.Factory;
 
 namespace Common.Logging.Simple
 {
@@ -28,7 +29,8 @@ namespace Common.Logging.Simple
     /// via <see cref="LogEntries"/>.
     /// </summary>
     /// <author>Kenneth Xu</author>
-    public class InMemoryLogger : ILog
+    /// <author>Jan Willem Boer, janwillem@jwenr.nl</author>
+    public class InMemoryLogger : AbstractLogger
     {
         private readonly IList<InMemoryLogEntry> _logEntries = new List<InMemoryLogEntry>();
         private readonly string _name;
@@ -89,101 +91,42 @@ namespace Common.Logging.Simple
             _level = null;
         }
 
-        #region ILog Members
-
-        public virtual void Debug(object message, Exception exception)
-        {
-            Log(LogLevel.Debug, message, exception);
-        }
-
-        public virtual void Debug(object message)
-        {
-            Debug(message, null);
-        }
-
-        public virtual void Error(object message, Exception exception)
-        {
-            Log(LogLevel.Error, message, exception);
-        }
-
-        public virtual void Error(object message)
-        {
-            Error(message, null);
-        }
-
-        public virtual void Fatal(object message, Exception exception)
-        {
-            Log(LogLevel.Fatal, message, exception);
-        }
-
-        public virtual void Fatal(object message)
-        {
-            Fatal(message, null);
-        }
-
-        public virtual void Info(object message, Exception exception)
-        {
-            Log(LogLevel.Info, message, exception);
-        }
-
-        public virtual void Info(object message)
-        {
-            Info(message, null);
-        }
-
-        public virtual bool IsDebugEnabled
+        #region abstractlogger overrides
+        public override bool IsDebugEnabled
         {
             get { return Level >= LogLevel.Debug; }
         }
 
-        public virtual bool IsErrorEnabled
+        public override bool IsErrorEnabled
         {
             get { return Level >= LogLevel.Error; }
         }
 
-        public virtual bool IsFatalEnabled
+        public override bool IsFatalEnabled
         {
             get { return Level >= LogLevel.Fatal; }
         }
 
-        public virtual bool IsInfoEnabled
+        public override bool IsInfoEnabled
         {
             get { return Level >= LogLevel.Info; }
         }
 
-        public virtual bool IsTraceEnabled
+        public override bool IsTraceEnabled
         {
             get { return Level >= LogLevel.Trace; }
         }
 
-        public virtual bool IsWarnEnabled
+        public override bool IsWarnEnabled
         {
             get { return Level >= LogLevel.Warn; }
         }
-
-        public virtual void Trace(object message, Exception exception)
-        {
-            Log(LogLevel.Trace, message, exception);
-        }
-
-        public virtual void Trace(object message)
-        {
-            Trace(message, null);
-        }
-
-        public virtual void Warn(object message, Exception exception)
-        {
-            Log(LogLevel.Warn, message, exception);
-        }
-
-        public virtual void Warn(object message)
-        {
-            Warn(message, null);
-        }
-
         #endregion
 
-        private void Log(LogLevel level, object message, Exception exception)
+        /// <summary>
+        /// log writer function that is called by abstractlogger
+        /// </summary>
+        protected override void WriteInternal(LogLevel level, object message, Exception exception)
         {
             if (level < _level) return;
 

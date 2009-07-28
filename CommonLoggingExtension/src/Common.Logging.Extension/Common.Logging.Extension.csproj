@@ -51,6 +51,7 @@
     <Compile Include="..\..\AssemblyVersion.cs">
       <Link>AssemblyVersion.cs</Link>
     </Compile>
+    <Compile Include="Factory\AbstractLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Simple\InMemoryLogEntry.cs" />
     <Compile Include="Simple\InMemoryLogger.cs" />
