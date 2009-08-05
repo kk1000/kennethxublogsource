@@ -38,13 +38,13 @@ namespace Spring.Data.Common
         private IDbConnectionStateListener _listener;
         private IDbProvider _dbProvider;
         private ExtendedDbProvider _testee;
-        private InMemoryLoggerFactoryAdaptor _loggerFactory;
+        private InMemoryLoggerFactoryAdapter _loggerFactory;
         private InMemoryLogger _logger;
 
         [SetUp]
         public void SetUp()
         {
-            _loggerFactory = (InMemoryLoggerFactoryAdaptor)LogManager.Adapter;
+            _loggerFactory = (InMemoryLoggerFactoryAdapter)LogManager.Adapter;
             _logger = _loggerFactory.GetInMemoryLogger(typeof(ExtendedDbProvider));
             _testee = new ExtendedDbProvider();
             _mockery = new MockRepository();

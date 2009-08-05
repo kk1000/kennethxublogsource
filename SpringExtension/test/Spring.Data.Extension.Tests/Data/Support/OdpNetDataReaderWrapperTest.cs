@@ -39,12 +39,12 @@ namespace Spring.Data.Support
         private MockRepository _mockery;
         private OdpNetDataReaderWrapper _testee;
         private IDataReader _wrapped;
-        private InMemoryLoggerFactoryAdaptor _loggerFactory;
+        private InMemoryLoggerFactoryAdapter _loggerFactory;
         private InMemoryLogger _logger;
 
         [SetUp] public void SetUp()
         {
-            _loggerFactory = (InMemoryLoggerFactoryAdaptor)LogManager.Adapter;
+            _loggerFactory = (InMemoryLoggerFactoryAdapter)LogManager.Adapter;
             _logger = _loggerFactory.GetInMemoryLogger(typeof(OdpNetDataReaderWrapper));
             _mockery = new MockRepository();
             _testee = new OdpNetDataReaderWrapper();
