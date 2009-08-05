@@ -40,8 +40,8 @@ namespace Spring.Data.Support
         {
             testee = new DataReaderExtender();
             _mockery = new MockRepository();
-            _dataReader = _mockery.CreateMock<IDataReader>();
-            _ordinalCache = _mockery.CreateMock<IDataRecordOrdinalCache>();
+            _dataReader = _mockery.StrictMock<IDataReader>();
+            _ordinalCache = _mockery.StrictMock<IDataRecordOrdinalCache>();
         }
 
         [Test]

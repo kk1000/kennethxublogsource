@@ -39,7 +39,7 @@ namespace Spring.Data.Support
         {
             _mockery = new MockRepository();
             _testee = new DataReaderWrapperBase();
-            _wrapped = _mockery.CreateMock<IDataReader>();
+            _wrapped = _mockery.StrictMock<IDataReader>();
             _testee.WrappedReader = _wrapped;
         }
 

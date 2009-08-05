@@ -226,6 +226,7 @@ namespace Spring.Data.Generic
         /// A list of object of type <typeparamref name="T"/> that were mapped
         /// for the rows.
         /// </returns>
+        [Obsolete("Use DelegateCommandSetter class instead.")]
         public static IList<T> QueryWithRowMapper<T>(
             this IAdoOperations operations,
             CommandType cmdType,
@@ -235,7 +236,7 @@ namespace Spring.Data.Generic
             IDataRecordOrdinalCache ordinalCache,
             int rowsExpected)
         {
-            var commandSetter = new DelegateSetter { CommandSetterDelegate = commandSetterDelegate };
+            var commandSetter = new DelegateCommandSetter(commandSetterDelegate);
             return QueryWithRowMapper(operations, cmdType, cmdText, rowMapper,
                 commandSetter, ordinalCache, rowsExpected);
         }
@@ -491,6 +492,7 @@ namespace Spring.Data.Generic
         /// A list of object of type <typeparamref name="T"/> that were mapped
         /// for the rows.
         /// </returns>
+        [Obsolete("Use DelegateCommandSetter class instead.")]
         public static IList<T> QueryWithRowMapperDelegate<T>(
             this IAdoOperations operations,
             CommandType cmdType,
@@ -500,7 +502,7 @@ namespace Spring.Data.Generic
             IDataRecordOrdinalCache ordinalCache,
             int rowsExpected)
         {
-            var commandSetter = new DelegateSetter { CommandSetterDelegate = commandSetterDelegate };
+            var commandSetter = new DelegateCommandSetter(commandSetterDelegate);
             return QueryWithRowMapperDelegate(operations, cmdType, cmdText, rowMapperDelegate,
                 commandSetter, ordinalCache, rowsExpected);
         }
@@ -632,16 +634,5 @@ namespace Spring.Data.Generic
                 ParameterUtils.CopyParameters(dbCommand, Parameters);
             }
         }
-
-        private class DelegateSetter : ICommandSetter
-        {
-            internal Action<IDbCommand> CommandSetterDelegate;
-
-            public void SetValues(IDbCommand dbCommand)
-            {
-                CommandSetterDelegate(dbCommand);
-            }
-        }
-
     }
 }

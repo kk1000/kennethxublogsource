@@ -39,9 +39,9 @@ namespace Spring.Data.Support
         public void SetUp()
         {
             _mockery = new MockRepository();
-            _rowMapper = _mockery.CreateMock<IRowCallback>();
-            _rowMapperDelegate = _mockery.CreateMock<RowCallbackDelegate>();
-            _dataReader = _mockery.CreateMock<IDataReader>();
+            _rowMapper = _mockery.StrictMock<IRowCallback>();
+            _rowMapperDelegate = _mockery.StrictMock<RowCallbackDelegate>();
+            _dataReader = _mockery.StrictMock<IDataReader>();
         }
 
         [Test]

@@ -20,6 +20,7 @@
 
 using System.Data;
 using System.Data.Common;
+using Common.Logging;
 
 namespace Spring.Data.Common
 {
@@ -30,6 +31,10 @@ namespace Spring.Data.Common
     /// <author>Kenneth Xu</author>
     public class ExtendedDbProvider : DelegatingDbProvider
     {
+        private static readonly ILog _log = LogManager.GetLogger(typeof (ExtendedDbProvider));
+
+        private volatile bool _isNonDbConnectionErrorGiven;
+
         /// <summary>
         /// Gets and sets a connection state listener to be notified about 
         /// connection state changes.
@@ -48,10 +53,25 @@ namespace Spring.Data.Common
         {
             IDbConnection conn = TargetDbProvider.CreateConnection();
 
-            var dbConnection = conn as DbConnection;
-            if (dbConnection != null)
+            var listener = ConnectionStateListener;
+            if (listener != null)
             {
-                dbConnection.StateChange += StateChangeEventHandler;
+                var dbConnection = conn as DbConnection;
+                if (dbConnection != null)
+                {
+                    dbConnection.StateChange += StateChangeEventHandler;
+                }
+                else if (!_isNonDbConnectionErrorGiven && _log.IsErrorEnabled)
+                {
+                    _log.Error(string.Format(
+                                   "Unable to detected connection state change as the " +
+                                   "connection object from {0} doesn't inherit from {1}. " +
+                                   "{2} will not be called.", 
+                                   TargetDbProvider, 
+                                   typeof (DbConnection).FullName,
+                                   listener));
+                    _isNonDbConnectionErrorGiven = true;
+                }
             }
             return conn;
         }

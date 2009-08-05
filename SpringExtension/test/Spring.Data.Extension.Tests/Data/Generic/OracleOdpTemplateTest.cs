@@ -48,7 +48,7 @@ namespace Spring.Data.Generic
         {
             _testee = new OracleOdpTemplate();
             _mockery = new MockRepository();
-            _converter = _mockery.CreateMock<Converter<string, IDbParameters>>();
+            _converter = _mockery.StrictMock<Converter<string, IDbParameters>>();
             _dataSaved = new Dictionary<string, int>();
         }
 
@@ -120,7 +120,7 @@ namespace Spring.Data.Generic
         [TestCase(_batchSize * 5 / 2, 3, null, TestName = "ExecuateNonQueryTwoAndHalfBatches")]
         public void RunExecuateNonQueryBatch(int sampleSize, int repeat, Action<IDbParameters, int> action)
         {
-            var mock = _mockery.CreateMock<IAdoOperations>();
+            var mock = _mockery.StrictMock<IAdoOperations>();
             Expect.Call(mock.ExecuteNonQuery(CommandType.Text, _sql, (ICommandSetter) null)).Return(3).Repeat.Times(repeat)
                 .Callback(new Func<CommandType, string, ICommandSetter, bool>(ExecuteNonQueryCallback));
             _testee.DbProvider = _dbProvider;

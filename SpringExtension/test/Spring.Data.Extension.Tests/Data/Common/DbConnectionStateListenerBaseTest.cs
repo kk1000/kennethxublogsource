@@ -38,8 +38,8 @@ namespace Spring.Data.Common
         public void SetUp()
         {
             _mockery = new MockRepository();
-            _listener = _mockery.CreateMock<DbConnectionStateListenerBase>();
-            _connection = _mockery.CreateMock<IDbConnection>();
+            _listener = _mockery.StrictMock<DbConnectionStateListenerBase>();
+            _connection = _mockery.StrictMock<IDbConnection>();
         }
 
         [Test] public void WhenConnectionOpen()

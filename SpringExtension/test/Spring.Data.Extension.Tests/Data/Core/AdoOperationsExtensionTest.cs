@@ -45,10 +45,10 @@ namespace Spring.Data.Core
         public void SetUp()
         {
             _mockery = new MockRepository();
-            _adoOperations = _mockery.CreateMock<IAdoOperations>();
-            _ordinalCache = _mockery.CreateMock<IDataRecordOrdinalCache>();
-            _rowCallback = _mockery.CreateMock<IRowCallback>();
-            _rowCallbackDelegate = _mockery.CreateMock<RowCallbackDelegate>();
+            _adoOperations = _mockery.StrictMock<IAdoOperations>();
+            _ordinalCache = _mockery.StrictMock<IDataRecordOrdinalCache>();
+            _rowCallback = _mockery.StrictMock<IRowCallback>();
+            _rowCallbackDelegate = _mockery.StrictMock<RowCallbackDelegate>();
         }
 
         #region QueryWithRowCallback
@@ -76,7 +76,7 @@ namespace Spring.Data.Core
         [TestCase(CommandType.StoredProcedure, 10)]
         public void QueryWithRowCallbackWithCommandSetter(CommandType commandType, int rowsExpected)
         {
-            var setter = _mockery.CreateMock<ICommandSetter>();
+            var setter = _mockery.StrictMock<ICommandSetter>();
             Expect.Call(_adoOperations.QueryWithResultSetExtractor(CommandType.Text, _sql, null, setter))
                 .Return(null)
                 .Callback(new Func<CommandType, string, IResultSetExtractor, ICommandSetter, bool>(
@@ -97,7 +97,7 @@ namespace Spring.Data.Core
         [TestCase(CommandType.StoredProcedure, 10)]
         public void QueryWithRowCallbackWithDbParameters(CommandType commandType, int rowsExpected)
         {
-            var parameters = _mockery.CreateMock<IDbParameters>();
+            var parameters = _mockery.StrictMock<IDbParameters>();
             Expect.Call(_adoOperations.QueryWithResultSetExtractor(CommandType.Text, _sql, null, parameters))
                 .Return(null)
                 .Callback(new Func<CommandType, string, IResultSetExtractor, IDbParameters, bool>(
@@ -176,7 +176,7 @@ namespace Spring.Data.Core
         [TestCase(CommandType.StoredProcedure, 10)]
         public void QueryWithRowCallbackDelegateWithCommandSetter(CommandType commandType, int rowsExpected)
         {
-            var setter = _mockery.CreateMock<ICommandSetter>();
+            var setter = _mockery.StrictMock<ICommandSetter>();
             Expect.Call(_adoOperations.QueryWithResultSetExtractor(CommandType.Text, _sql, null, setter))
                 .Return(null)
                 .Callback(new Func<CommandType, string, IResultSetExtractor, ICommandSetter, bool>(
@@ -197,7 +197,7 @@ namespace Spring.Data.Core
         [TestCase(CommandType.StoredProcedure, 10)]
         public void QueryWithRowCallbackDelegateWithDbParameters(CommandType commandType, int rowsExpected)
         {
-            var parameters = _mockery.CreateMock<IDbParameters>();
+            var parameters = _mockery.StrictMock<IDbParameters>();
             Expect.Call(_adoOperations.QueryWithResultSetExtractor(CommandType.Text, _sql, null, parameters))
                 .Return(null)
                 .Callback(new Func<CommandType, string, IResultSetExtractor, IDbParameters, bool>(

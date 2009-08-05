@@ -48,7 +48,7 @@ namespace Spring.Data.Support
             _logger = _loggerFactory.GetInMemoryLogger(typeof(OdpNetDataReaderWrapper));
             _mockery = new MockRepository();
             _testee = new OdpNetDataReaderWrapper();
-            _wrapped = _mockery.CreateMock<IDataReader>();
+            _wrapped = _mockery.StrictMock<IDataReader>();
         }
 
         [TearDown] public void TearDown()
@@ -170,7 +170,7 @@ namespace Spring.Data.Support
         private void SetRowsExpectedSetsBatchSizeWhenOdpReader(int rowsExpected, int rowSize, int fetchSize)
         {
             _testee = _mockery.PartialMock<OdpNetDataReaderWrapper>();
-            var wrapped = _mockery.CreateMock<OracleDataReader>();
+            var wrapped = _mockery.StrictMock<OracleDataReader>();
             wrapped.FetchSize = fetchSize;
             Expect.Call(_testee.RowSize).Return(rowSize);
             _mockery.ReplayAll();

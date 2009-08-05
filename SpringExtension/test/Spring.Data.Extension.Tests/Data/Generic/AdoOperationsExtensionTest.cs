@@ -41,8 +41,8 @@ namespace Spring.Data.Generic
         [SetUp] public void SetUp()
         {
             _mockery = new MockRepository();
-            _adoOperations = _mockery.CreateMock<IAdoOperations>();
-            _converter = _mockery.CreateMock<Converter<string, IDbParameters>>();
+            _adoOperations = _mockery.StrictMock<IAdoOperations>();
+            _converter = _mockery.StrictMock<Converter<string, IDbParameters>>();
         }
 
         [Test] public void ExecutNonQueryChokesOnNullCommandText()
@@ -71,9 +71,9 @@ namespace Spring.Data.Generic
         [Test] public void ExecuteNonQueryCallsBatchExecutor()
         {
             var collection = new[] {"x", "y", "c", "r"};
-            _adoOperations = _mockery.CreateMultiMock<IAdoOperations>(typeof(IBatchExecutorFactory));
+            _adoOperations = _mockery.StrictMultiMock<IAdoOperations>(typeof(IBatchExecutorFactory));
             var factory = (IBatchExecutorFactory)_adoOperations;
-            var batchExecutor = _mockery.CreateMock<IBatchExecutor>();
+            var batchExecutor = _mockery.StrictMock<IBatchExecutor>();
 
             Expect.Call(factory.GetExecutor()).Return(batchExecutor);
             Expect.Call(batchExecutor.ExecuteNonQuery(_adoOperations, CommandType.Text, _sql, collection, _converter)).Return(10);
@@ -93,7 +93,7 @@ namespace Spring.Data.Generic
                                      {"b", 5}, 
                                      {"x", 3} 
                                  };
-            IDbParameters parameters = _mockery.CreateMock<IDbParameters>();
+            IDbParameters parameters = _mockery.StrictMock<IDbParameters>();
 
             foreach (var pair in collection)
             {
@@ -132,10 +132,10 @@ namespace Spring.Data.Generic
         [SetUp] public void SetUp()
         {
             _mockery = new MockRepository();
-            _adoOperations = _mockery.CreateMock<IAdoOperations>();
-            _ordinalCache = _mockery.CreateMock<IDataRecordOrdinalCache>();
-            _rowMapper = _mockery.CreateMock<IRowMapper<T>>();
-            _rowMapperDelegate = _mockery.CreateMock<RowMapperDelegate<T>>();
+            _adoOperations = _mockery.StrictMock<IAdoOperations>();
+            _ordinalCache = _mockery.StrictMock<IDataRecordOrdinalCache>();
+            _rowMapper = _mockery.StrictMock<IRowMapper<T>>();
+            _rowMapperDelegate = _mockery.StrictMock<RowMapperDelegate<T>>();
         }
 
         #region QueryWithRowMapper
@@ -164,7 +164,7 @@ namespace Spring.Data.Generic
         [TestCase(CommandType.StoredProcedure, 10)]
         public void QueryWithRowMapperWithCommandSetter(CommandType commandType, int rowsExpected)
         {
-            var setter = _mockery.CreateMock<ICommandSetter>();
+            var setter = _mockery.StrictMock<ICommandSetter>();
             Expect.Call(_adoOperations.QueryWithResultSetExtractor<IList<T>>(CommandType.Text, _sql, null, setter))
                 .Return(_expectedList)
                 .Callback(new Func<CommandType, string, IResultSetExtractor<IList<T>>, ICommandSetter, bool>(
@@ -187,7 +187,7 @@ namespace Spring.Data.Generic
         public void QueryWithRowMapperWithCommandSetterDelegate(CommandType commandType, int rowsExpected)
         {
             var command = _mockery.Stub<IDbCommand>();
-            var setter = _mockery.CreateMock<Action<IDbCommand>>();
+            var setter = _mockery.StrictMock<Action<IDbCommand>>();
             Expect.Call(_adoOperations.QueryWithResultSetExtractor<IList<T>>(CommandType.Text, _sql, null, (ICommandSetter)null))
                 .Return(_expectedList)
                 .Callback(new Func<CommandType, string, IResultSetExtractor<IList<T>>, ICommandSetter, bool>(
@@ -201,7 +201,9 @@ namespace Spring.Data.Generic
             setter(command);
             _mockery.ReplayAll();
             _rowsExpected = rowsExpected;
+#pragma warning disable 612,618
             var result = _adoOperations.QueryWithRowMapper(
+#pragma warning restore 612,618
                 commandType, _sql, _rowMapper, setter, _ordinalCache, rowsExpected);
             Assert.That(result, Is.SameAs(_expectedList));
             _mockery.VerifyAll();
@@ -211,7 +213,7 @@ namespace Spring.Data.Generic
         [TestCase(CommandType.StoredProcedure, 10)]
         public void QueryWithRowMapperWithDbParameters(CommandType commandType, int rowsExpected)
         {
-            var parameters = _mockery.CreateMock<IDbParameters>();
+            var parameters = _mockery.StrictMock<IDbParameters>();
             Expect.Call(_adoOperations.QueryWithResultSetExtractor<IList<T>>(CommandType.Text, _sql, null, parameters))
                 .Return(_expectedList)
                 .Callback(new Func<CommandType, string, IResultSetExtractor<IList<T>>, IDbParameters, bool>(
@@ -293,7 +295,7 @@ namespace Spring.Data.Generic
         [TestCase(CommandType.StoredProcedure, 10)]
         public void QueryWithRowMapperDelegateWithCommandSetter(CommandType commandType, int rowsExpected)
         {
-            var setter = _mockery.CreateMock<ICommandSetter>();
+            var setter = _mockery.StrictMock<ICommandSetter>();
             Expect.Call(_adoOperations.QueryWithResultSetExtractor<IList<T>>(CommandType.Text, _sql, null, setter))
                 .Return(_expectedList)
                 .Callback(new Func<CommandType, string, IResultSetExtractor<IList<T>>, ICommandSetter, bool>(
@@ -316,7 +318,7 @@ namespace Spring.Data.Generic
         public void QueryWithRowMapperDelegateWithCommandSetterDelegate(CommandType commandType, int rowsExpected)
         {
             var command = _mockery.Stub<IDbCommand>();
-            var setter = _mockery.CreateMock<Action<IDbCommand>>();
+            var setter = _mockery.StrictMock<Action<IDbCommand>>();
             Expect.Call(_adoOperations.QueryWithResultSetExtractor<IList<T>>(CommandType.Text, _sql, null, (ICommandSetter)null))
                 .Return(_expectedList)
                 .Callback(new Func<CommandType, string, IResultSetExtractor<IList<T>>, ICommandSetter, bool>(
@@ -330,7 +332,9 @@ namespace Spring.Data.Generic
             setter(command);
             _mockery.ReplayAll();
             _rowsExpected = rowsExpected;
+#pragma warning disable 612,618
             var result = _adoOperations.QueryWithRowMapperDelegate(
+#pragma warning restore 612,618
                 commandType, _sql, _rowMapperDelegate, setter, _ordinalCache, rowsExpected);
             Assert.That(result, Is.SameAs(_expectedList));
             _mockery.VerifyAll();
@@ -340,7 +344,7 @@ namespace Spring.Data.Generic
         [TestCase(CommandType.StoredProcedure, 10)]
         public void QueryWithRowMapperDelegateWithDbParameters(CommandType commandType, int rowsExpected)
         {
-            var parameters = _mockery.CreateMock<IDbParameters>();
+            var parameters = _mockery.StrictMock<IDbParameters>();
             Expect.Call(_adoOperations.QueryWithResultSetExtractor<IList<T>>(CommandType.Text, _sql, null, parameters))
                 .Return(_expectedList)
                 .Callback(new Func<CommandType, string, IResultSetExtractor<IList<T>>, IDbParameters, bool>(

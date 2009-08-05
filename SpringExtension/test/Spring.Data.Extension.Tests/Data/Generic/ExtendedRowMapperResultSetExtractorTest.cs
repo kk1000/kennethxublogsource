@@ -42,9 +42,9 @@ namespace Spring.Data.Generic
         [SetUp] public void SetUp()
         {
             _mockery = new MockRepository();
-            _rowMapper = _mockery.CreateMock<IRowMapper<T>>();
-            _rowMapperDelegate = _mockery.CreateMock<RowMapperDelegate<T>>();
-            _dataReader = _mockery.CreateMock<IDataReader>();
+            _rowMapper = _mockery.StrictMock<IRowMapper<T>>();
+            _rowMapperDelegate = _mockery.StrictMock<RowMapperDelegate<T>>();
+            _dataReader = _mockery.StrictMock<IDataReader>();
         }
 
         [Test] public void ChokesOnConstructingWithNullRowMapper()

@@ -92,6 +92,7 @@
     <Compile Include="Data\Core\DataRecordOrdinalCacheTest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Data\DelegateCommandSetterTest.cs" />
     <Compile Include="Data\Generic\AdoOperationsExtensionTest.cs">
       <SubType>Code</SubType>
     </Compile>

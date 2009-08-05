@@ -42,7 +42,7 @@ namespace Spring.Data.Core
         [SetUp] public void SetUp()
         {
             _mockery = new MockRepository();
-            _dataReader = _mockery.CreateMock<IDataReader>();
+            _dataReader = _mockery.StrictMock<IDataReader>();
         }
 
         #region GetBoolean

@@ -78,6 +78,7 @@
     <Compile Include="Data\Generic\AdoOperationsExtension.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Data\DelegateCommandSetter.cs" />
     <Compile Include="Data\Generic\ExtendedRowMapperResultSetExtractor.cs">
       <SubType>Code</SubType>
     </Compile>

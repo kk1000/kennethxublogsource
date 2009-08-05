@@ -40,8 +40,8 @@ namespace Spring.Data.Support
         {
             _mockery = new MockRepository();
             _testee = new ExtendedDataReaderWrapper();
-            _wrapped = _mockery.CreateMock<IDataReader>();
-            _cache = _mockery.CreateMock<IDataRecordOrdinalCache>();
+            _wrapped = _mockery.StrictMock<IDataReader>();
+            _cache = _mockery.StrictMock<IDataRecordOrdinalCache>();
         }
 
         [Test] public void GetOrdinalCallsWrapperWithoutCache()
@@ -119,7 +119,7 @@ namespace Spring.Data.Support
         [Test] public void RowsExpectedSetsWrappedWhenItIsAlsoExtended()
         {
             const int rowsExptected = 213;
-            var wrapped = _mockery.CreateMock<ExtendedDataReaderWrapper>();
+            var wrapped = _mockery.StrictMock<ExtendedDataReaderWrapper>();
             wrapped.RowsExpected = 0;
             wrapped.RowsExpected = rowsExptected;
             _mockery.ReplayAll();
@@ -132,7 +132,7 @@ namespace Spring.Data.Support
         [Test] public void PropagateRowsExpectedWhenSetWrappedToExtendedWrapper()
         {
             const int rowsExptected = 324;
-            var wrapped = _mockery.CreateMock<ExtendedDataReaderWrapper>();
+            var wrapped = _mockery.StrictMock<ExtendedDataReaderWrapper>();
             wrapped.RowsExpected = rowsExptected;
             _mockery.ReplayAll();
             _testee.RowsExpected = rowsExptected;

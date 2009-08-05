@@ -42,7 +42,7 @@ namespace Spring.Data.Core
         {
             _mockery = new MockRepository();
             _testee = new DataRecordOrdinalCache();
-            _dataReader = _mockery.CreateMock<IDataReader>();
+            _dataReader = _mockery.StrictMock<IDataReader>();
 
             Expect.Call(_dataReader.FieldCount).Return(_fieldNames.Length);
             for (int i = 0; i < _fieldNames.Length; i++)
