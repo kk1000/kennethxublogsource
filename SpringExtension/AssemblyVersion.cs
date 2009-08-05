@@ -13,6 +13,4 @@ using System.Reflection;
 [assembly: AssemblyTrademarkAttribute("")]
 [assembly: AssemblyCultureAttribute("")]
 [assembly: AssemblyVersionAttribute("1.1.0.*")]
-[assembly: AssemblyCompanyAttribute("")]
-[assembly: AssemblyCopyrightAttribute("Copyright (c) 2009")]
 

@@ -32,8 +32,8 @@ namespace Spring.Data.Support
     /// We don't use it for navigating since this could lead to unpredictable consequences.
     /// </remarks>
     /// <author>Mark Pollack for RowCallbackResultSetExtractor</author>
-    /// <author>Kenneth xu</author>
-    public class ExtendedRowCallbackResultSetExtractor : DataReaderExtender, IResultSetExtractor
+    /// <author>Kenneth Xu</author>
+    public class ExtendedRowCallbackResultSetExtractor : DataReaderExtender, IResultSetExtractor, Spring.Data.Generic.IResultSetExtractor<object>
     {
         /// <summary>
         /// An <see cref="IRowCallback"/> to be called for each row.
