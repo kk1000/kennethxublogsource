@@ -15,7 +15,11 @@
 * limitations under the License.
 */
 #endregion
+
+using System;
+using System.Runtime.InteropServices;
 using Microsoft.VisualBasic.ApplicationServices;
+using System.Diagnostics;
 
 namespace DonkeyInput
 {
@@ -25,6 +29,9 @@ namespace DonkeyInput
     /// <author>Kenneth Xu</author>
     class App : WindowsFormsApplicationBase
     {
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
         private InputForm _inputForm;
 
         public App()
@@ -33,12 +40,29 @@ namespace DonkeyInput
             EnableVisualStyles = true;
             ShutdownStyle = ShutdownMode.AfterMainFormCloses;
             StartupNextInstance += HandlerAppStartupNextInstance;
+            Startup += HandlerAppStartup;
         }
 
         protected override void OnCreateMainForm()
         {
             _inputForm = new InputForm(CommandLineArgs);
             MainForm = _inputForm;
+        }
+
+        private static void HandlerAppStartup(object sender, StartupEventArgs e)
+        {
+            Process[] myProcesses =
+                Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
+            if (myProcesses.Length > 1)
+            {
+                foreach (Process process in myProcesses)
+                {
+                    if (process != Process.GetCurrentProcess())
+                    {
+                        SetForegroundWindow(process.MainWindowHandle);
+                    }
+                }
+            }
         }
 
         private void HandlerAppStartupNextInstance(object sender, StartupNextInstanceEventArgs eventArgs)
