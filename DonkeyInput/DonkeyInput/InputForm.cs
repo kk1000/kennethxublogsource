@@ -18,6 +18,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using System.Web;
 using System.Windows.Forms;
 using System;
 
@@ -154,7 +155,7 @@ namespace DonkeyInput
                 }
                 sb.Append(Environment.NewLine);
             }
-            return sb.ToString();
+            return HttpUtility.UrlDecode(sb.ToString());
         }
 
         private void HandleCheckBoxIEFixCheckedChanged(object sender, EventArgs e)
