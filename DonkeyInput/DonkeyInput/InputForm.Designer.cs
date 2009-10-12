@@ -46,6 +46,10 @@
             this.panelPort = new System.Windows.Forms.Panel();
             this.labelPort = new System.Windows.Forms.Label();
             this.panelMiddle = new System.Windows.Forms.Panel();
+            this.checkBoxFixIE = new System.Windows.Forms.CheckBox();
+            this.panelIEFix = new System.Windows.Forms.Panel();
+            this.panelSavePassword = new System.Windows.Forms.Panel();
+            this.checkBoxSavePassword = new System.Windows.Forms.CheckBox();
             this.panelAuthentication.SuspendLayout();
             this.panelServer.SuspendLayout();
             this.tableLayoutPanelBottom.SuspendLayout();
@@ -53,6 +57,8 @@
             this.tableLayoutPanelTop.SuspendLayout();
             this.panelPort.SuspendLayout();
             this.panelMiddle.SuspendLayout();
+            this.panelIEFix.SuspendLayout();
+            this.panelSavePassword.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelServer
@@ -71,7 +77,6 @@
             this.textBoxServer.Name = "textBoxServer";
             this.textBoxServer.Size = new System.Drawing.Size(287, 20);
             this.textBoxServer.TabIndex = 0;
-            this.textBoxServer.Text = "127.0.0.1";
             // 
             // textBoxPort
             // 
@@ -79,7 +84,6 @@
             this.textBoxPort.Name = "textBoxPort";
             this.textBoxPort.Size = new System.Drawing.Size(44, 20);
             this.textBoxPort.TabIndex = 1;
-            this.textBoxPort.Text = "4080";
             // 
             // textBoxPassword
             // 
@@ -104,7 +108,6 @@
             this.textBoxUserName.Name = "textBoxUserName";
             this.textBoxUserName.Size = new System.Drawing.Size(70, 20);
             this.textBoxUserName.TabIndex = 0;
-            this.textBoxUserName.Text = "admin";
             // 
             // labelUserName
             // 
@@ -123,7 +126,7 @@
             this.textBoxLinks.Multiline = true;
             this.textBoxLinks.Name = "textBoxLinks";
             this.textBoxLinks.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxLinks.Size = new System.Drawing.Size(446, 78);
+            this.textBoxLinks.Size = new System.Drawing.Size(446, 72);
             this.textBoxLinks.TabIndex = 0;
             this.textBoxLinks.WordWrap = false;
             // 
@@ -154,15 +157,18 @@
             this.tableLayoutPanelBottom.ColumnCount = 2;
             this.tableLayoutPanelBottom.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanelBottom.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanelBottom.Controls.Add(this.panelAction, 1, 0);
+            this.tableLayoutPanelBottom.Controls.Add(this.panelAction, 1, 1);
             this.tableLayoutPanelBottom.Controls.Add(this.panelAuthentication, 0, 0);
+            this.tableLayoutPanelBottom.Controls.Add(this.panelIEFix, 0, 1);
+            this.tableLayoutPanelBottom.Controls.Add(this.panelSavePassword, 1, 0);
             this.tableLayoutPanelBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tableLayoutPanelBottom.Location = new System.Drawing.Point(0, 110);
+            this.tableLayoutPanelBottom.Location = new System.Drawing.Point(0, 104);
             this.tableLayoutPanelBottom.Name = "tableLayoutPanelBottom";
             this.tableLayoutPanelBottom.Padding = new System.Windows.Forms.Padding(6, 3, 6, 3);
-            this.tableLayoutPanelBottom.RowCount = 1;
+            this.tableLayoutPanelBottom.RowCount = 2;
+            this.tableLayoutPanelBottom.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanelBottom.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanelBottom.Size = new System.Drawing.Size(446, 39);
+            this.tableLayoutPanelBottom.Size = new System.Drawing.Size(446, 71);
             this.tableLayoutPanelBottom.TabIndex = 3;
             // 
             // panelAction
@@ -170,10 +176,10 @@
             this.panelAction.AutoSize = true;
             this.panelAction.Controls.Add(this.buttonCancel);
             this.panelAction.Controls.Add(this.buttonOK);
-            this.panelAction.Location = new System.Drawing.Point(279, 6);
+            this.panelAction.Location = new System.Drawing.Point(279, 38);
             this.panelAction.Name = "panelAction";
             this.panelAction.Size = new System.Drawing.Size(158, 27);
-            this.panelAction.TabIndex = 1;
+            this.panelAction.TabIndex = 3;
             // 
             // buttonCancel
             // 
@@ -241,8 +247,49 @@
             this.panelMiddle.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelMiddle.Location = new System.Drawing.Point(0, 32);
             this.panelMiddle.Name = "panelMiddle";
-            this.panelMiddle.Size = new System.Drawing.Size(446, 78);
+            this.panelMiddle.Size = new System.Drawing.Size(446, 72);
             this.panelMiddle.TabIndex = 2;
+            // 
+            // checkBoxFixIE
+            // 
+            this.checkBoxFixIE.AutoSize = true;
+            this.checkBoxFixIE.Checked = true;
+            this.checkBoxFixIE.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxFixIE.Location = new System.Drawing.Point(3, 5);
+            this.checkBoxFixIE.Name = "checkBoxFixIE";
+            this.checkBoxFixIE.Size = new System.Drawing.Size(245, 17);
+            this.checkBoxFixIE.TabIndex = 2;
+            this.checkBoxFixIE.Text = "Fix the broken Internet Explorer URL encoding";
+            this.checkBoxFixIE.UseVisualStyleBackColor = true;
+            this.checkBoxFixIE.CheckedChanged += new System.EventHandler(this.HandleCheckBoxIEFixCheckedChanged);
+            // 
+            // panelIEFix
+            // 
+            this.panelIEFix.AutoSize = true;
+            this.panelIEFix.Controls.Add(this.checkBoxFixIE);
+            this.panelIEFix.Location = new System.Drawing.Point(9, 38);
+            this.panelIEFix.Name = "panelIEFix";
+            this.panelIEFix.Size = new System.Drawing.Size(251, 25);
+            this.panelIEFix.TabIndex = 2;
+            // 
+            // panelSavePassword
+            // 
+            this.panelSavePassword.AutoSize = true;
+            this.panelSavePassword.Controls.Add(this.checkBoxSavePassword);
+            this.panelSavePassword.Location = new System.Drawing.Point(279, 6);
+            this.panelSavePassword.Name = "panelSavePassword";
+            this.panelSavePassword.Size = new System.Drawing.Size(147, 25);
+            this.panelSavePassword.TabIndex = 1;
+            // 
+            // checkBoxSavePassword
+            // 
+            this.checkBoxSavePassword.AutoSize = true;
+            this.checkBoxSavePassword.Location = new System.Drawing.Point(3, 5);
+            this.checkBoxSavePassword.Name = "checkBoxSavePassword";
+            this.checkBoxSavePassword.Size = new System.Drawing.Size(141, 17);
+            this.checkBoxSavePassword.TabIndex = 0;
+            this.checkBoxSavePassword.Text = "Remember my password";
+            this.checkBoxSavePassword.UseVisualStyleBackColor = true;
             // 
             // InputForm
             // 
@@ -250,11 +297,11 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(446, 149);
+            this.ClientSize = new System.Drawing.Size(446, 175);
             this.Controls.Add(this.panelMiddle);
             this.Controls.Add(this.tableLayoutPanelTop);
             this.Controls.Add(this.tableLayoutPanelBottom);
-            this.MinimumSize = new System.Drawing.Size(462, 153);
+            this.MinimumSize = new System.Drawing.Size(462, 187);
             this.Name = "InputForm";
             this.Text = "MLDonkey Download Input";
             this.Load += new System.EventHandler(this.HandleInputFormLoad);
@@ -272,6 +319,10 @@
             this.panelPort.PerformLayout();
             this.panelMiddle.ResumeLayout(false);
             this.panelMiddle.PerformLayout();
+            this.panelIEFix.ResumeLayout(false);
+            this.panelIEFix.PerformLayout();
+            this.panelSavePassword.ResumeLayout(false);
+            this.panelSavePassword.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -297,6 +348,10 @@
         private System.Windows.Forms.Label labelPort;
         private System.Windows.Forms.Panel panelPort;
         private System.Windows.Forms.Panel panelMiddle;
+        private System.Windows.Forms.Panel panelIEFix;
+        private System.Windows.Forms.CheckBox checkBoxFixIE;
+        private System.Windows.Forms.Panel panelSavePassword;
+        private System.Windows.Forms.CheckBox checkBoxSavePassword;
     }
 }
 

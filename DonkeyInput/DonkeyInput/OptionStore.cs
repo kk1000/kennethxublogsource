@@ -20,7 +20,7 @@ using Microsoft.Win32;
 namespace DonkeyInput
 {
     /// <summary>
-    /// Operations to save <see cref="ServerOption"/> to and retrieve it from
+    /// Operations to save <see cref="ConfigOption"/> to and retrieve it from
     /// persistent store.
     /// </summary>
     /// <author>Kenneth Xu</author>
@@ -33,32 +33,48 @@ namespace DonkeyInput
         private const string _valueNameUserName = "UserName";
         private const string _valueNamePassword = "Password";
         private const string _valueNameServer = "Server";
+        private const string _valueNameSavePassword = "SavePassword";
+        private const string _valueNameFixIE = "FixIE";
 
-        public ServerOption Value
+        public ConfigOption Value
         {
             get
             {
-                return new ServerOption
+                return new ConfigOption
                            {
-                               Server = GetValue(_valueNameServer, ServerOption.DefaultServer),
-                               Port = GetValue(_valueNamePort, ServerOption.DefaultPort),
-                               UserName = GetValue(_valueNameUserName, ServerOption.DefaultUserName),
-                               Password = GetValue(_valueNamePassword, ServerOption.DefaultPassword)
+                               Server = GetValue(_valueNameServer, ConfigOption.DefaultServer),
+                               Port = GetValue(_valueNamePort, ConfigOption.DefaultPort),
+                               FixIE = GetValue(_valueNameFixIE, ConfigOption.DefaultFixIE),
+                               SavePassword = GetValue(_valueNameSavePassword, ConfigOption.DefaultSavePassword),
+                               UserName = GetValue(_valueNameUserName, ConfigOption.DefaultUserName),
+                               Password = GetValue(_valueNamePassword, ConfigOption.DefaultPassword)
                            };
             }
             set
             {
                 SetValue(_valueNameServer, value.Server);
                 SetValue(_valueNamePort, value.Port);
+                SetValue(_valueNameFixIE, value.FixIE);
+                SetValue(_valueNameSavePassword, value.SavePassword);
                 SetValue(_valueNameUserName, value.UserName);
-                SetValue(_valueNamePassword, value.Password);
+                SetValue(_valueNamePassword, value.SavePassword ? value.Password : string.Empty);
             }
+        }
+
+        private static bool GetValue(string name, bool defaultValue)
+        {
+            return GetValue(name, defaultValue ? 1 : 0) > 0;
         }
 
         private static T GetValue<T>(string name, T defaultValue)
         {
             object value = Registry.GetValue(_donkeyInputKey, name, defaultValue);
             return value == null ? defaultValue : (T)value;
+        }
+
+        private static void SetValue(string name, bool value)
+        {
+            SetValue(name, value ? 1 : 0);
         }
 
         private static void SetValue<T>(string name, T value)

@@ -19,34 +19,44 @@
 namespace DonkeyInput
 {
     /// <summary>
-    /// Class represent mldonkey core server options.
+    /// Class represent options.
     /// </summary>
     /// <author>Kenneth Xu</author>
-    internal class ServerOption
+    internal class ConfigOption
     {
         public const string DefaultServer = "127.0.0.1";
         public const int DefaultPort = 4080;
         public const string DefaultUserName = "admin";
         public const string DefaultPassword = "";
+        public const bool DefaultSavePassword = false;
+        public const bool DefaultFixIE = true;
 
         public string UserName { get; set; }
         public string Password { get; set; }
         public string Server { get; set; }
         public int Port { get; set; }
+        public bool SavePassword { get; set; }
+        public bool FixIE { get; set; }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (ServerOption)) return false;
-            return Equals((ServerOption) obj);
+            if (obj.GetType() != typeof (ConfigOption)) return false;
+            return Equals((ConfigOption) obj);
         }
 
-        public bool Equals(ServerOption other)
+        public bool Equals(ConfigOption other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(other.UserName, UserName) && Equals(other.Password, Password) && Equals(other.Server, Server) && other.Port == Port;
+            return 
+                Equals(other.UserName, UserName) && 
+                Equals(other.Password, Password) && 
+                Equals(other.Server, Server) && 
+                other.Port == Port && 
+                other.SavePassword.Equals(SavePassword) && 
+                other.FixIE.Equals(FixIE);
         }
 
         public override int GetHashCode()
@@ -57,6 +67,8 @@ namespace DonkeyInput
                 result = (result*397) ^ (Password != null ? Password.GetHashCode() : 0);
                 result = (result*397) ^ (Server != null ? Server.GetHashCode() : 0);
                 result = (result*397) ^ Port;
+                result = (result*397) ^ SavePassword.GetHashCode();
+                result = (result*397) ^ FixIE.GetHashCode();
                 return result;
             }
         }

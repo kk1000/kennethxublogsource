@@ -58,7 +58,7 @@
       <DependentUpon>InputForm.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="OptionStore.cs" />
-    <Compile Include="ServerOption.cs" />
+    <Compile Include="ConfigOption.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

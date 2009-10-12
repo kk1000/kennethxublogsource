@@ -29,18 +29,18 @@ namespace DonkeyInput
     /// <author>Kenneth Xu</author>
     public partial class InputForm : Form
     {
-        private ServerOption _option;
+        private ConfigOption _option;
         private OptionStore _registrStore;
-        private ICollection<string> _links;
+        private readonly List<string> _links = new List<string>();
 
         public InputForm()
         {
             InitializeComponent();
         }
 
-        public InputForm(ICollection<string> links) : this()
+        public InputForm(IEnumerable<string> links) : this()
         {
-            _links = links;
+            _links.AddRange(links);
         }
 
         private void HandleButtonCancelClick(object sender, EventArgs e)
@@ -52,11 +52,11 @@ namespace DonkeyInput
         {
             if (!ValidateForm()) return;
             var req = ViewToModel();
-            ServerOption serverOption = req.Option;
-            if (!serverOption.Equals(_option))
+            ConfigOption configOption = req.Option;
+            if (!configOption.Equals(_option))
             {
-                _registrStore.Value = serverOption;
-                _option = serverOption;
+                _registrStore.Value = configOption;
+                _option = configOption;
             }
             try
             {
@@ -75,7 +75,7 @@ namespace DonkeyInput
             int port;
             if (!int.TryParse(textBoxPort.Text, out port))
             {
-                textBoxPort.Text = ServerOption.DefaultPort.ToString();
+                textBoxPort.Text = ConfigOption.DefaultPort.ToString();
             }
             return true;
         }
@@ -94,18 +94,22 @@ namespace DonkeyInput
             textBoxPort.Text = _option.Port.ToString();
             textBoxUserName.Text = _option.UserName;
             textBoxPassword.Text = _option.Password;
-            textBoxLinks.Text = JoinLinksToString(_links, string.Empty);
+            checkBoxFixIE.Checked = _option.FixIE;
+            checkBoxSavePassword.Checked = _option.SavePassword;
+            ComputeTextForLinks();
         }
 
         private DownloadRequest ViewToModel()
         {
-            var option = new ServerOption
+            var option = new ConfigOption
             {
 
                 UserName = textBoxUserName.Text,
                 Password = textBoxPassword.Text,
                 Server = textBoxServer.Text,
                 Port = int.Parse(textBoxPort.Text),
+                SavePassword = checkBoxSavePassword.Checked,
+                FixIE = checkBoxFixIE.Checked,
             };
             var req = new DownloadRequest
             {
@@ -125,20 +129,43 @@ namespace DonkeyInput
 
         public void AddLink(ICollection<string> links)
         {
-            textBoxLinks.Text = JoinLinksToString(links, textBoxLinks.Text);
+            _links.AddRange(links);
+            ComputeTextForLinks();
         }
 
-        private static string JoinLinksToString(ICollection<string> links, string initialString)
+        private static string JoinLinksToString(ICollection<string> links, bool fixIE)
         {
-            if (links == null || links.Count == 0) return initialString;
-            StringBuilder sb = new StringBuilder(initialString ?? string.Empty);
-            if (!string.IsNullOrEmpty(initialString) &&
-                !initialString.EndsWith(Environment.NewLine)) sb.Append(Environment.NewLine);
+            if (links == null || links.Count == 0) return string.Empty;
+            StringBuilder sb = new StringBuilder();
             foreach (var link in links)
             {
-                sb.Append(link).Append(Environment.NewLine);
+                if(fixIE)
+                {
+                    foreach (char c in link)
+                    {
+                        int i = c & 0xFF;
+                        if (i < 128) sb.Append(c);
+                        else sb.Append('%').Append(String.Format("{0:X2}", i));
+                    }
+                }
+                else
+                {
+                    sb.Append(link);
+                }
+                sb.Append(Environment.NewLine);
             }
             return sb.ToString();
+        }
+
+        private void HandleCheckBoxIEFixCheckedChanged(object sender, EventArgs e)
+        {
+            _option.FixIE = checkBoxFixIE.Checked;
+            ComputeTextForLinks();
+        }
+
+        private void ComputeTextForLinks()
+        {
+            textBoxLinks.Text = JoinLinksToString(_links, _option.FixIE);
         }
     }
 }

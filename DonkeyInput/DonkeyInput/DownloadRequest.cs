@@ -27,7 +27,7 @@ namespace DonkeyInput
     /// <author>Kenneth Xu</author>
     class DownloadRequest
     {
-        public ServerOption Option { get; set; }
+        public ConfigOption Option { get; set; }
 
         public string[] Links { get; set; }
 
