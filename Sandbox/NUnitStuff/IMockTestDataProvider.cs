@@ -8,7 +8,8 @@ namespace NUnitStuff
     /// <see cref="ValueObjectTestFixture{T}.TestData"/>.
     /// </summary>
     /// <seealso cref="ValueObjectTestFixture{T}.MockProvider"/>
-    public interface IMockProvider
+    /// <author>Kenneth Xu</author>
+    public interface IMockTestDataProvider
     {
         /// <summary>
         /// Generates mock objects of a given type and return them in an

@@ -5,67 +5,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace NUnitStuff
 {
-
-    [TestFixture]
-    public class FooTest : ValueObjectTestFixture<Foo>
-    {
-        protected override Foo NewValueObject()
-        {
-            return new Foo();
-        }
-    }
-
-    public class Foo : ICloneable
-    {
-        private int _id = -1;
-
-        [DefaultValue(-1)]
-        public int Id
-        {
-            get { return _id; }
-            set { _id = value; }
-        }
-
-        public bool IsGood { get; set; }
-
-        public long LongProperty { get; set; }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof(Foo)) return false;
-            return Equals((Foo)obj);
-        }
-
-        public bool Equals(Foo other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return other._id == _id && other.LongProperty == LongProperty;
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (_id * 397) ^ LongProperty.GetHashCode();
-            }
-        }
-
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
-
-        public Foo Clone()
-        {
-            return (Foo) MemberwiseClone();
-        }
-    }
 
     /// <summary>
     /// Base test cases for value objects.
@@ -95,11 +38,11 @@ namespace NUnitStuff
         }
 
         /// <summary>
-        /// Sets an instance of <see cref="IMockProvider"/> that is used by 
-        /// <see cref="TestData"/> to generate data points for non build-in
-        /// data types.
+        /// Sets an instance of <see cref="IMockTestDataProvider"/> that is 
+        /// used by <see cref="TestData"/> to generate data points for non 
+        /// build-in data types.
         /// </summary>
-        public IMockProvider MockProvider { private get; set; }
+        public IMockTestDataProvider MockProvider { private get; set; }
 
         /// <summary>
         /// Properties that will be used in the test of
@@ -225,8 +168,17 @@ namespace NUnitStuff
                             "Unable to set property " + property.Name +
                             " to value " + value + ": " + e.Message, e);
                     }
-                    Assert.That(property.GetValue(sut, null), Is.EqualTo(value),
-                        property.Name + ": value read back doesn't equals to what was set.");
+                    const string message = "{0}: value read back doesn't equals to what was set.";
+                    if (property.PropertyType.IsValueType)
+                    {
+                        Assert.That(property.GetValue(sut, null), Is.EqualTo(value),
+                                    message, property.Name);
+                    }
+                    else
+                    {
+                        Assert.That(property.GetValue(sut, null), Is.SameAs(value),
+                                    message, property.Name);
+                    }
                 }
         }
 
@@ -303,16 +255,18 @@ namespace NUnitStuff
             var clone2 = ((ICloneable)sut2).Clone();
             foreach (var property in ClonedProperties())
             {
+                const string message = "Value of property {0} is different in cloned object.";
+                var isValueType = property.PropertyType.IsValueType;
+                var expected = property.GetValue(sut, null);
                 Assert.That(
-                    property.GetValue(clone, null), 
-                    Is.EqualTo(property.GetValue(sut, null)), 
-                    "Value of property {0} is different in cloned object.",
-                    property.Name);
+                    property.GetValue(clone, null),
+                    isValueType ? (IResolveConstraint)Is.EqualTo(expected) : Is.SameAs(expected), 
+                    message, property.Name);
+                var expected2 = property.GetValue(sut2, null);
                 Assert.That(
                     property.GetValue(clone2, null),
-                    Is.EqualTo(property.GetValue(sut2, null)),
-                    "Value of property {0} is different in cloned object.",
-                    property.Name);
+                    isValueType ? (IResolveConstraint)Is.EqualTo(expected2) : Is.SameAs(expected2),
+                    message, property.Name);
             }
         }
 
@@ -442,7 +396,7 @@ namespace NUnitStuff
             #region bool related
             if (type == typeof(bool))
             {
-                return new bool[] { true, false, false };
+                return new[] { true, false, false };
             }
             if (type == typeof(bool?))
             {
@@ -491,7 +445,7 @@ namespace NUnitStuff
             #region char related
             if (type == typeof(char))
             {
-                return new char[] { '0', '\0', 'a', '华', char.MaxValue, char.MinValue };
+                return new[] { '0', '\0', 'a', '华', char.MaxValue, char.MinValue };
             }
             if (type == typeof(char?))
             {
@@ -502,7 +456,7 @@ namespace NUnitStuff
             #region int related
             if (type == typeof(int))
             {
-                return new int[] { -1, 0, 1, int.MaxValue, int.MinValue };
+                return new[] { -1, 0, 1, int.MaxValue, int.MinValue };
             }
             if (type == typeof(int?))
             {
@@ -521,7 +475,7 @@ namespace NUnitStuff
             #region long related
             if (type == typeof(long))
             {
-                return new long[] { -1, 0, 1, long.MaxValue, long.MinValue };
+                return new[] { -1, 0, 1, long.MaxValue, long.MinValue };
             }
             if (type == typeof(long?))
             {
@@ -531,7 +485,7 @@ namespace NUnitStuff
             {
                 return new ulong[] { 0xffee, 0, 1, ulong.MaxValue, ulong.MinValue };
             }
-            if (type == typeof(long?))
+            if (type == typeof(ulong?))
             {
                 return new ulong?[] { 0xffee, null, 1, ulong.MaxValue, ulong.MinValue };
             }
@@ -540,7 +494,7 @@ namespace NUnitStuff
             #region float related
             if (type == typeof(float))
             {
-                return new float[]
+                return new[]
                            {
                                -0.1f, 0, 0.1f, float.NaN, 
                                float.PositiveInfinity, float.NegativeInfinity, 
@@ -561,7 +515,7 @@ namespace NUnitStuff
             #region double related
             if (type == typeof(double))
             {
-                return new double[]
+                return new[]
                            {
                                -0.1, 0, 0.1, double.NaN, 
                                double.PositiveInfinity, double.NegativeInfinity,
@@ -582,7 +536,7 @@ namespace NUnitStuff
             #region decimal related
             if (type == typeof(decimal))
             {
-                return new decimal[]
+                return new[]
                            {
                                decimal.Negate(decimal.One), decimal.Zero, decimal.One, 
                                decimal.MaxValue, decimal.MinValue
@@ -601,7 +555,7 @@ namespace NUnitStuff
             #region TimeSpan related
             if (type == typeof(TimeSpan))
             {
-                return new TimeSpan[]
+                return new[]
                            {
                                TimeSpan.FromSeconds(-1), 
                                TimeSpan.Zero,
@@ -628,7 +582,7 @@ namespace NUnitStuff
             {
                 var oneHour = TimeSpan.FromHours(1);
                 var now = DateTime.UtcNow;
-                return new DateTime[]
+                return new[]
                            {
                                now - oneHour,
                                new DateTime(),
@@ -666,9 +620,14 @@ string"};
 
             if (type == typeof(object))
             {
-                return new object[] { new object(), null, new object()};
+                return new[] { new object(), null, new object()};
             }
 
+            if(MockProvider != null)
+            {
+                var data = MockProvider.MockDataPoints(property.PropertyType);
+                if (data != null) return data;
+            }
             return new object[0];
         }
 
