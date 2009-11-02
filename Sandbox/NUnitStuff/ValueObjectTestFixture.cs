@@ -28,13 +28,17 @@ namespace NUnitStuff
         static ValueObjectTestFixture()
         {
             _allProperties = typeof(T).GetProperties();
-            var typedEquals = typeof(T).GetMethod("Equals", new[] {typeof (T)});
-            if (typedEquals != null && typedEquals.GetParameters()[0].ParameterType == typeof(T))
-            {
-                _typedEquals = (Func<T, T, bool>) Delegate.CreateDelegate(typeof(Func<T, T, bool>), typedEquals);
-            }
 
             _isCloneable = (typeof (ICloneable).IsAssignableFrom(typeof (T)));
+
+            if (!typeof(T).IsValueType)
+            {
+                var typedEquals = typeof(T).GetMethod("Equals", new[] { typeof(T) });
+                if (typedEquals != null && typedEquals.GetParameters()[0].ParameterType == typeof(T))
+                {
+                    _typedEquals = (Func<T, T, bool>)Delegate.CreateDelegate(typeof(Func<T, T, bool>), typedEquals);
+                }
+            }
         }
 
         /// <summary>
@@ -153,7 +157,8 @@ namespace NUnitStuff
         public virtual void CanSetPropertyValueAndReadBackSameValue(
             [ValueSource("ReadWriteTestCandidates")] PropertyInfo property)
         {
-                var sut = NewValueObject();
+            // Important to use object when T is value type.
+                object sut = NewValueObject();
                 var testValues = TestData(property);
 
                 foreach (object value in testValues)
@@ -187,7 +192,7 @@ namespace NUnitStuff
         /// </summary>
         [Test] public virtual void NotEquasNull()
         {
-            var sut = NewValueObject();
+            object sut = NewValueObject();
             Assert.IsFalse(sut.Equals(null));
         }
 
@@ -209,7 +214,7 @@ namespace NUnitStuff
         /// </summary>
         [Test] public virtual void NotEquasNewObject()
         {
-            var sut = NewValueObject();
+            object sut = NewValueObject();
             Assert.IsFalse(sut.Equals(new object()));
         }
 
@@ -218,7 +223,7 @@ namespace NUnitStuff
         /// </summary>
         [Test] public virtual void EqualsToSelf()
         {
-            var sut = NewValueObject();
+            object sut = NewValueObject();
             Assert.IsTrue(sut.Equals(sut));
         }
 
@@ -242,8 +247,8 @@ namespace NUnitStuff
         [Test]
         public virtual void ClonesAllProperties([ValueSource("IsCloneable")] string dummy)
         {
-            var sut = NewValueObject();
-            var sut2 = NewValueObject();
+            object sut = NewValueObject();
+            object sut2 = NewValueObject();
             foreach (var property in ClonedProperties())
             {
                 var testValues = TestData(property).GetEnumerator();
@@ -279,7 +284,7 @@ namespace NUnitStuff
         public virtual void NotEqualsWhenPropertyIsDifferent(
             [ValueSource("EqualsTestCandidates")] PropertyInfo property)
         {
-            var sut = NewValueObject();
+            object sut = NewValueObject();
             var testValues = TestData(property).GetEnumerator();
 
             var sutValue = GetDataPoint(property, testValues);
@@ -291,9 +296,9 @@ namespace NUnitStuff
             AssertNotEquals(property, testValues, sut, sutValue);
         }
 
-        private void AssertNotEquals(PropertyInfo property, IEnumerator testValues, T sut, object sutValue)
+        private void AssertNotEquals(PropertyInfo property, IEnumerator testValues, object sut, object sutValue)
         {
-            var sut2 = NewValueObject();
+            object sut2 = NewValueObject();
             var sut2Value = GetDataPoint(property, testValues);
             property.SetValue(sut2, sut2Value, null);
 
@@ -312,8 +317,8 @@ namespace NUnitStuff
         public void GetHashCodeReturnsSameHashWhenEquals(
             [ValueSource("EqualsTestCandidates")] PropertyInfo property)
         {
-            var sut = NewValueObject();
-            var another = NewValueObject();
+            object sut = NewValueObject();
+            object another = NewValueObject();
 
             var testValues = TestData(property).GetEnumerator();
 
@@ -322,7 +327,7 @@ namespace NUnitStuff
             AssertGetHashCode(property, sut, another, GetDataPoint(property, testValues));
         }
 
-        private static void AssertGetHashCode(PropertyInfo property, T sut, T another, object value)
+        private static void AssertGetHashCode(PropertyInfo property, object sut, object another, object value)
         {
             property.SetValue(sut, value, null);
             property.SetValue(another, value, null);

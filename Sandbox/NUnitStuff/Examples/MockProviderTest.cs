@@ -28,7 +28,7 @@ namespace NUnitStuff.Examples
 
             public Dictionary<int, DateTime> IntDataTimeDictionary { get; set; }
 
-            public Compnent Compnent { get; set; }
+            public Component Component { get; set; }
 
             public override bool Equals(object obj)
             {
@@ -47,7 +47,7 @@ namespace NUnitStuff.Examples
                     Equals(other.IntICollection, IntICollection) &&
                     Equals(other.StringObjectIDictrionary, StringObjectIDictrionary) &&
                     Equals(other.IntDataTimeDictionary, IntDataTimeDictionary) &&
-                    Equals(other.Compnent, Compnent);
+                    Equals(other.Component, Component);
             }
 
             public override int GetHashCode()
@@ -59,13 +59,13 @@ namespace NUnitStuff.Examples
                     result = (result * 397) ^ (IntICollection != null ? IntICollection.GetHashCode() : 0);
                     result = (result * 397) ^ (StringObjectIDictrionary != null ? StringObjectIDictrionary.GetHashCode() : 0);
                     result = (result * 397) ^ (IntDataTimeDictionary != null ? IntDataTimeDictionary.GetHashCode() : 0);
-                    result = (result * 397) ^ (Compnent != null ? Compnent.GetHashCode() : 0);
+                    result = (result * 397) ^ (Component != null ? Component.GetHashCode() : 0);
                     return result;
                 }
             }
         }
 
-        public class Compnent
+        public class Component
         {
             public string Id { get; set; }
 
@@ -74,7 +74,7 @@ namespace NUnitStuff.Examples
                 return base.Equals(obj);
             }
 
-            public bool Equals(Compnent other)
+            public bool Equals(Component other)
             {
                 if (ReferenceEquals(null, other)) return false;
                 if (ReferenceEquals(this, other)) return true;

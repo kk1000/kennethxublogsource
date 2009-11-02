@@ -57,6 +57,7 @@
     <Compile Include="Examples\CustomTest.cs" />
     <Compile Include="Examples\SimpleTest.cs" />
     <Compile Include="Examples\MockProviderTest.cs" />
+    <Compile Include="Examples\ValueTypeTest.cs" />
     <Compile Include="IMockTestDataProvider.cs" />
     <Compile Include="NewableValueObjectTestFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
