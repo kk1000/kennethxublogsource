@@ -6,13 +6,13 @@ namespace CodeSharp
     public interface IInvokable
     {
         /// <summary>
-        /// Get the <see cref="IMethodCode"/> associated with this method
+        /// Get the <see cref="ICode"/> associated with this method
         /// definition.
         /// </summary>
         /// <returns>
-        /// An instance of <see cref="IMethodCode"/>.
+        /// An instance of <see cref="ICode"/>.
         /// </returns>
-        IMethodCode Code();
+        ICode Code();
 
         /// <summary>
         /// Parameter list of the method.

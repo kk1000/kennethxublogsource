@@ -34,7 +34,7 @@ namespace CodeSharp.Emit
             get { return _parameters;}
         }
 
-        IMethodCode IInvokable.Code()
+        ICode IInvokable.Code()
         {
             return Code();
         }
@@ -68,7 +68,9 @@ namespace CodeSharp.Emit
         /// </summary>
         public virtual void EmitCode()
         {
-            Code().Emit(GetILGenerator());
+            var il = GetILGenerator();
+            Code().Emit(il);
+            if (_returnType == typeof(void)) il.Emit(OpCodes.Ret);
         }
 
         protected abstract ILGenerator GetILGenerator();
@@ -85,7 +87,7 @@ namespace CodeSharp.Emit
         }
 
         /// <summary>
-        /// Set method as public.
+        /// Mark the member public.
         /// </summary>
         public T Public
         {

@@ -14,6 +14,7 @@ namespace CodeSharp.Emit
         readonly List<Method> _methods = new List<Method>();
         readonly List<Field> _fields = new List<Field>();
         readonly List<Constructor> _constuctors = new List<Constructor>();
+        readonly List<Property> _properties = new List<Property>();
 
         private TypeAttributes _typeAttributes;
 
@@ -168,6 +169,25 @@ namespace CodeSharp.Emit
         }
 
         /// <summary>
+        /// Define a new property in class
+        /// </summary>
+        /// <param name="type">
+        /// Type of the property.
+        /// </param>
+        /// <param name="name">
+        /// Name of the property.
+        /// </param>
+        /// <returns>
+        /// The property definition.
+        /// </returns>
+        public IProperty Property(Type type, string name)
+        {
+            var property = new Property(type, name);
+            _properties.Add(property);
+            return property;
+        }
+
+        /// <summary>
         /// Set the namespace of current class.
         /// </summary>
         /// <param name="namespace">
@@ -210,6 +230,16 @@ namespace CodeSharp.Emit
                 field.Emit(tb);
             }
 
+            foreach (var constructor in _constuctors)
+            {
+                constructor.EmitDefinition(tb);
+            }
+
+            foreach (var property in _properties)
+            {
+                property.EmitDefinition(tb);
+            }
+
             foreach (var method in _methods)
             {
                 method.EmitDefinition(tb);
@@ -217,17 +247,17 @@ namespace CodeSharp.Emit
 
             foreach (var constructor in _constuctors)
             {
-                constructor.EmitDefinition(tb);
+                constructor.EmitCode();
+            }
+
+            foreach (var property in _properties)
+            {
+                property.EmitCode(tb);
             }
 
             foreach (var method in _methods)
             {
                 method.EmitCode();
-            }
-
-            foreach (var constructor in _constuctors)
-            {
-                constructor.EmitCode();
             }
 
             return tb.CreateType();

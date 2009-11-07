@@ -18,6 +18,17 @@ namespace CodeSharp
         IOperand Invoke(string methodName, params IOperand[] args);
 
         /// <summary>
+        /// Access a property of current operand.
+        /// </summary>
+        /// <param name="name">
+        /// The name of property.
+        /// </param>
+        /// <returns>
+        /// The operent representing the property.
+        /// </returns>
+        IOperand Property(string name);
+
+        /// <summary>
         /// The type of the operand.
         /// </summary>
         Type Type { get; }

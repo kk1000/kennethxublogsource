@@ -42,6 +42,11 @@ namespace CodeSharp.Emit
             _methodAttributes = MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Final;
         }
 
+        internal Method(string name, params IParameter[] parameters)
+            : this (typeof(void), name, parameters)
+        {
+        }
+
         /// <summary>
         /// Emit the IL code to define this method.
         /// </summary>

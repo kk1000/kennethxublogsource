@@ -21,6 +21,11 @@ namespace CodeSharp.Emit
             return new Invocation(this, methodName, args);
         }
 
+        public IOperand Property(string name)
+        {
+            return new PropertyAccess(this, name);
+        }
+
         /// <summary>
         /// The type of the operand.
         /// </summary>

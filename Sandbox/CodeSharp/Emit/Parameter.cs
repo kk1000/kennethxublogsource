@@ -14,20 +14,6 @@ namespace CodeSharp.Emit
         private readonly ParameterDirection _direction;
         private ParameterBuilder _parameterBuilder;
 
-        //TODO_Future
-        ///// <summary>
-        ///// Create an out parameter.
-        ///// </summary>
-        ///// <typeparam name="T">Type of the parameter.</typeparam>
-        ///// <param name="name">name of the parameter</param>
-        ///// <returns>
-        ///// An out parameter definition.
-        ///// </returns>
-        //public static IParameter Out<T>(string name)
-        //{
-        //    return new Parameter(typeof(T), name, ParameterDirection.Out);
-        //}
-
         /// <summary>
         /// Gets the type of parameter.
         /// </summary>

@@ -51,12 +51,16 @@
   <ItemGroup>
     <Compile Include="Emit\Constructor.cs" />
     <Compile Include="Emit\Emitter.cs" />
+    <Compile Include="Emit\Getter.cs" />
     <Compile Include="Emit\Invocation.cs" />
     <Compile Include="Emit\Invokable.cs" />
     <Compile Include="Emit\Parameter.cs" />
     <Compile Include="Emit\ParameterList.cs" />
     <Compile Include="Emit\Class.cs" />
     <Compile Include="Emit\Field.cs" />
+    <Compile Include="Emit\Property.cs" />
+    <Compile Include="Emit\PropertyAccess.cs" />
+    <Compile Include="Emit\Setter.cs" />
     <Compile Include="IConstructor.cs" />
     <Compile Include="IGenerator.cs" />
     <Compile Include="IInvokable.cs" />
@@ -64,12 +68,14 @@
     <Compile Include="IClass.cs" />
     <Compile Include="IField.cs" />
     <Compile Include="IMethod.cs" />
-    <Compile Include="IMethodCode.cs" />
+    <Compile Include="ICode.cs" />
     <Compile Include="IOperand.cs" />
     <Compile Include="IParameterList.cs" />
     <Compile Include="Emit\Method.cs" />
     <Compile Include="Emit\MethodCode.cs" />
     <Compile Include="Emit\Operand.cs" />
+    <Compile Include="IProperty.cs" />
+    <Compile Include="ISetter.cs" />
     <Compile Include="ParameterDirection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

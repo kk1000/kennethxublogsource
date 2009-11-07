@@ -72,6 +72,23 @@ namespace CodeSharp.Emit
         }
 
         /// <summary>
+        /// Define a new out parameter.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the parameter.
+        /// </typeparam>
+        /// <param name="parameterName">
+        /// The name of the parameter.
+        /// </param>
+        /// <returns>
+        /// A parameter definition.
+        /// </returns>
+        public IParameter ArgOut<T>(string parameterName)
+        {
+            return new Parameter(typeof(T), parameterName, ParameterDirection.Out);
+        }
+
+        /// <summary>
         /// Generate the concrete type of given <paramref name="class"/>
         /// </summary>
         /// <param name="class">

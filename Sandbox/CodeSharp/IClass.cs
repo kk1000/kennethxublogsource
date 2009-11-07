@@ -75,6 +75,20 @@ namespace CodeSharp
         IConstructor Constructor(params IParameter[] parameters);
 
         /// <summary>
+        /// Define a new property in class
+        /// </summary>
+        /// <param name="type">
+        /// Type of the property.
+        /// </param>
+        /// <param name="name">
+        /// Name of the property.
+        /// </param>
+        /// <returns>
+        /// The property definition.
+        /// </returns>
+        IProperty Property(Type type, string name);
+
+        /// <summary>
         /// Set the namespace of current class.
         /// </summary>
         /// <param name="namespace">
@@ -86,7 +100,7 @@ namespace CodeSharp
         IClass In(string @namespace);
 
         /// <summary>
-        /// Set class to be public.
+        /// Mark the class public.
         /// </summary>
         IClass Public { get;}
     }

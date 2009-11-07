@@ -5,15 +5,6 @@ using System.Text;
 
 namespace CodeSharp
 {
-    public interface IReadOnlyProperty
-    {
-        int ReadOnlyProperty { get; }
-    }
-
-    public interface IWriteOnlyProperty
-    {
-        int WriteOnlyProperty { set; }
-    }
 
     public interface IProperty
     {

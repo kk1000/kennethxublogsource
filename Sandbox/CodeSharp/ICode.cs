@@ -3,9 +3,9 @@ using System;
 namespace CodeSharp
 {
     /// <summary>
-    /// Represents the code of a method.
+    /// Represents the code of a method, constructor or property.
     /// </summary>
-    public interface IMethodCode : IDisposable
+    public interface ICode : IDisposable
     {
         /// <summary>
         /// Complete the code of the method and prevent further modification.

@@ -39,7 +39,7 @@
     </Reference>
     <Reference Include="Rhino.Mocks, Version=3.5.0.1337, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\RhinoMocks\net\3.5\Rhino.Mocks.dll</HintPath>
+      <HintPath>..\lib\RhinoMocks\net\2.0\Rhino.Mocks.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -55,10 +55,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OutParameterMethodWrapperTest.cs" />
+    <Compile Include="WriteOnlyPropertyWrapperTest.cs" />
     <Compile Include="SimpleMethodWrapperTest.cs" />
     <Compile Include="EmitUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RefParameterMethodWrapperTest.cs" />
+    <Compile Include="ReadOnlyPropertyWrapperTest.cs" />
     <Compile Include="VOs.cs" />
   </ItemGroup>
   <ItemGroup>

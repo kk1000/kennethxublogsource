@@ -1,0 +1,71 @@
+using System;
+using System.Reflection;
+using System.Reflection.Emit;
+
+namespace CodeSharp.Emit
+{
+    internal class Property : IProperty {
+        private readonly Type _type;
+        private readonly string _name;
+        private MethodAttributes _propertyAttributes;
+        private Getter _getter;
+        private Setter _setter;
+        private PropertyBuilder _propertyBuilder;
+
+
+        public Property(Type type, string name)
+        {
+            if (type == null) throw new ArgumentNullException("type");
+            if (name == null) throw new ArgumentNullException("name");
+            if (type == typeof(void) || type.IsByRef)
+            {
+                throw new ArgumentException("Not a valid property type: " + type, "type");
+            }
+            _type = type;
+            _name = name;
+        }
+
+        public void EmitDefinition(TypeBuilder typeBuilder)
+        {
+            _propertyBuilder = typeBuilder.DefineProperty(
+                _name, PropertyAttributes.None, CallingConventions.HasThis, _type, null, null, null, null, null);
+            if (_getter != null)
+            {
+                _getter.EmitDefinition(typeBuilder);
+                _propertyBuilder.SetGetMethod(_getter.MethodBuilder);
+            }
+            if (_setter != null)
+            {
+                _setter.EmitDefinition(typeBuilder);
+                _propertyBuilder.SetSetMethod(_setter.MethodBuilder);
+            }
+        }
+
+        public void EmitCode(TypeBuilder builder)
+        {
+            if (_getter != null) _getter.EmitCode();
+            if (_setter != null) _setter.EmitCode();
+        }
+
+        public IProperty Public
+        {
+            get
+            {
+                _propertyAttributes |= MethodAttributes.Public;
+                return this;
+            }
+        }
+
+        public IInvokable Getter()
+        {
+            _getter = new Getter(_type, "get_" + _name, _propertyAttributes);
+            return _getter;
+        }
+
+        public ISetter Setter()
+        {
+            _setter = new Setter(_type, "set_" + _name, _propertyAttributes);
+            return _setter;
+        }
+    }
+}

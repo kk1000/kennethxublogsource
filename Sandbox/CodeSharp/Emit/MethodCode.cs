@@ -7,7 +7,7 @@ namespace CodeSharp.Emit
     /// <summary>
     /// To define the code in a method.
     /// </summary>
-    class MethodCode : IMethodCode
+    class MethodCode : ICode
     {
         List<Code> _codes = new List<Code>();
         /// <summary>
