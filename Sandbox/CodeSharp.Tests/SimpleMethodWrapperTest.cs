@@ -8,6 +8,11 @@ using Rhino.Mocks;
 
 namespace CodeSharp
 {
+    public interface ISimpleMethod
+    {
+        string SimpleMethod(int i);
+    }
+
     [TestFixture]
     public class SimpleMethodWrapperTest
     {

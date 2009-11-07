@@ -5,12 +5,6 @@ using System.Text;
 
 namespace CodeSharp
 {
-
-    public interface IProperty
-    {
-        int Property { get; set; }
-    }
-
     public interface IMinimalMethod
     {
         void MinimalMethod();
@@ -19,21 +13,6 @@ namespace CodeSharp
     public interface IParameterlessMethod
     {
         string ParameterlessMethod();
-    }
-
-    public interface ISimpleMethod
-    {
-        string SimpleMethod(int i);
-    }
-
-    public interface IRefParamMethod
-    {
-        void RefParamMethod(ref long y);
-    }
-
-    public interface IOutParamMethod
-    {
-        void OutParamMethod(out int i);
     }
 
     public interface IFoo

@@ -8,6 +8,11 @@ using Rhino.Mocks;
 
 namespace CodeSharp
 {
+    public interface IRefParamMethod
+    {
+        void RefParamMethod(ref long y);
+    }
+
     [TestFixture]
     public class RefParameterMethodWrapperTest
     {

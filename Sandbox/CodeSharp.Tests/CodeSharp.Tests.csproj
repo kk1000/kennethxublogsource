@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OutParameterMethodWrapperTest.cs" />
+    <Compile Include="ReadWritePropertyWrapperTest.cs" />
     <Compile Include="WriteOnlyPropertyWrapperTest.cs" />
     <Compile Include="SimpleMethodWrapperTest.cs" />
     <Compile Include="EmitUtils.cs" />

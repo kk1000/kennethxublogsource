@@ -8,6 +8,11 @@ using Rhino.Mocks;
 
 namespace CodeSharp
 {
+    public interface IOutParamMethod
+    {
+        void OutParamMethod(out int i);
+    }
+
     [TestFixture]
     public class OutParameterMethodWrapperTest
     {
