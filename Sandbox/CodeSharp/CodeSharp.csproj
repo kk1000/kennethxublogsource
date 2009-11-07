@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{62245073-1F85-4107-8F2B-961984DF871F}</ProjectGuid>
+    <ProjectGuid>{F2197ACC-22EF-409B-A1E7-DBE29E06A1B9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NUnitStuff</RootNamespace>
-    <AssemblyName>NUnitStuff</AssemblyName>
+    <RootNamespace>CodeSharp</RootNamespace>
+    <AssemblyName>CodeSharp</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -22,7 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Debug\NUnitStuff.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\CodeSharp.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,17 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Release\NUnitStuff.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\CodeSharp.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=2.5.1.9189, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\NUnit\net\2.0\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Rhino.Mocks, Version=3.5.0.1337, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\RhinoMocks\net\3.5\Rhino.Mocks.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -57,11 +49,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IMockTestDataProvider.cs" />
-    <Compile Include="NewableValueObjectTestFixture.cs" />
+    <Compile Include="Emit\Constructor.cs" />
+    <Compile Include="Emit\Emitter.cs" />
+    <Compile Include="Emit\Invocation.cs" />
+    <Compile Include="Emit\Invokable.cs" />
+    <Compile Include="Emit\Parameter.cs" />
+    <Compile Include="Emit\ParameterList.cs" />
+    <Compile Include="Emit\Class.cs" />
+    <Compile Include="Emit\Field.cs" />
+    <Compile Include="IConstructor.cs" />
+    <Compile Include="IGenerator.cs" />
+    <Compile Include="IInvokable.cs" />
+    <Compile Include="IParameter.cs" />
+    <Compile Include="IClass.cs" />
+    <Compile Include="IField.cs" />
+    <Compile Include="IMethod.cs" />
+    <Compile Include="IMethodCode.cs" />
+    <Compile Include="IOperand.cs" />
+    <Compile Include="IParameterList.cs" />
+    <Compile Include="Emit\Method.cs" />
+    <Compile Include="Emit\MethodCode.cs" />
+    <Compile Include="Emit\Operand.cs" />
+    <Compile Include="ParameterDirection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RhinoMockTestDataProvider.cs" />
-    <Compile Include="ValueObjectTestFixture.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

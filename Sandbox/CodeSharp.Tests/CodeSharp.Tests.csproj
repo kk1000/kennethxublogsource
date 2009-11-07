@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{62245073-1F85-4107-8F2B-961984DF871F}</ProjectGuid>
+    <ProjectGuid>{D1669B3B-24BA-4DB2-8B92-9F48A946EA60}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NUnitStuff</RootNamespace>
-    <AssemblyName>NUnitStuff</AssemblyName>
+    <RootNamespace>CodeSharp</RootNamespace>
+    <AssemblyName>CodeSharp.Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -22,7 +22,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Debug\NUnitStuff.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,7 +31,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Release\NUnitStuff.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework, Version=2.5.1.9189, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
@@ -57,11 +55,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IMockTestDataProvider.cs" />
-    <Compile Include="NewableValueObjectTestFixture.cs" />
+    <Compile Include="SimpleMethodWrapperTest.cs" />
+    <Compile Include="EmitUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RhinoMockTestDataProvider.cs" />
-    <Compile Include="ValueObjectTestFixture.cs" />
+    <Compile Include="VOs.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CodeSharp\CodeSharp.csproj">
+      <Project>{F2197ACC-22EF-409B-A1E7-DBE29E06A1B9}</Project>
+      <Name>CodeSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NUnitStuff\NUnitStuff.csproj">
+      <Project>{62245073-1F85-4107-8F2B-961984DF871F}</Project>
+      <Name>NUnitStuff</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

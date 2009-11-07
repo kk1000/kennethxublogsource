@@ -1,0 +1,219 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
+
+namespace CodeSharp.Emit
+{
+    /// <summary>
+    /// Definition of a class.
+    /// </summary>
+    class Class : IClass
+    {
+        readonly List<Type> _interfaces = new List<Type>();
+        readonly List<Method> _methods = new List<Method>();
+        readonly List<Field> _fields = new List<Field>();
+        readonly List<Constructor> _constuctors = new List<Constructor>();
+
+        private TypeAttributes _typeAttributes;
+
+        /// <summary>
+        /// Get all fields defined in this class.
+        /// </summary>
+        public ICollection<Field> Fields
+        {
+            get { return _fields; }
+        }
+
+        /// <summary>
+        /// Gets the interfaces that this class should implement.
+        /// </summary>
+        public Type[] Interfaces 
+        { 
+            get { return _interfaces.ToArray(); }
+        }
+
+        /// <summary>
+        /// The base type of this class.
+        /// </summary>
+        public Type BaseType { get; private set;}
+
+
+        /// <summary>
+        /// Gets the full name of the class.
+        /// </summary>
+        public string FullName
+        {
+            get { return Namespace + "." + Name; }
+        }
+
+        /// <summary>
+        /// The namespace of current class.
+        /// </summary>
+        public string Namespace { get; private set; }
+
+        /// <summary>
+        /// Gets the name of the class.
+        /// </summary>
+        public string Name { get; private set; }
+
+        private Class()
+        {
+            _typeAttributes = TypeAttributes.Class | TypeAttributes.BeforeFieldInit;
+            BaseType = typeof (object);
+        }
+
+        /// <summary>
+        /// Construct a new instance of <see cref="Class"/>
+        /// </summary>
+        /// <param name="name">
+        /// The name of the class.
+        /// </param>
+        public Class(string name) : this()
+        {
+            if (name == null) throw new ArgumentNullException("name");
+            Name = name;
+        }
+
+        /// <summary>
+        /// Implements the interface.
+        /// </summary>
+        /// <param name="interface">
+        /// The interface to be implemented.
+        /// </param>
+        /// <returns>
+        /// This object itself.
+        /// </returns>
+        public IClass Implements(Type @interface)
+        {
+            if (@interface == null) throw new ArgumentNullException("interface");
+            if (!@interface.IsInterface)
+            {
+                throw new ArgumentException(@interface.Name + " is not an interfaces.", "interface");
+            }
+            _interfaces.Add(@interface);
+            return this;
+        }
+
+        /// <summary>
+        /// Define a new method in the class.
+        /// </summary>
+        /// <param name="returnType">
+        /// The return type of the defined method.
+        /// </param>
+        /// <param name="name">
+        /// The name of the new method.
+        /// </param>
+        /// <param name="parameters">
+        /// Parameters of the method.
+        /// </param>
+        /// <returns></returns>
+        public IMethod Method(Type returnType, string name, params IParameter[] parameters)
+        {
+            var method = new Method(returnType, name, parameters);
+            _methods.Add(method);
+            return method;
+        }
+
+        /// <summary>
+        /// Define a new field in class.
+        /// </summary>
+        /// <param name="type">
+        /// The type of the field
+        /// </param>
+        /// <param name="name">
+        /// The name of the field
+        /// </param>
+        /// <returns>
+        /// A new field definition object
+        /// </returns>
+        public IField Field(Type type, string name)
+        {
+            var field = new Field(type, name);
+            _fields.Add(field);
+            return field;
+        }
+
+        /// <summary>
+        /// Define a new constructor in class.
+        /// </summary>
+        /// <param name="parameters">
+        /// Parameters of the constructor.
+        /// </param>
+        /// <returns>
+        /// A constructor definition object.
+        /// </returns>
+        public IConstructor Constructor(params IParameter[] parameters)
+        {
+            var constructor = new Constructor(parameters);
+            _constuctors.Add(constructor);
+            return constructor;
+        }
+
+        /// <summary>
+        /// Set the namespace of current class.
+        /// </summary>
+        /// <param name="namespace">
+        /// The namespace name to set.
+        /// </param>
+        /// <returns>
+        /// The current class.
+        /// </returns>
+        public IClass In(string @namespace)
+        {
+            if(@namespace==null) throw new ArgumentNullException("namespace");
+            Namespace = @namespace;
+            return this;
+        }
+
+        /// <summary>
+        /// Set class to be public.
+        /// </summary>
+        public IClass Public
+        {
+            get
+            {
+                _typeAttributes |= TypeAttributes.Public;
+                return this;
+            }
+        }
+
+        /// <summary>
+        /// Generate the class.
+        /// </summary>
+        /// <returns>
+        /// The type object corresponding to the generated class.
+        /// </returns>
+        public Type Generate(ModuleBuilder moduleBuilder)
+        {
+            if (moduleBuilder == null) throw new ArgumentNullException("moduleBuilder");
+            TypeBuilder tb = moduleBuilder.DefineType(FullName, _typeAttributes, BaseType, Interfaces);
+            foreach (var field in Fields)
+            {
+                field.Emit(tb);
+            }
+
+            foreach (var method in _methods)
+            {
+                method.EmitDefinition(tb);
+            }
+
+            foreach (var constructor in _constuctors)
+            {
+                constructor.EmitDefinition(tb);
+            }
+
+            foreach (var method in _methods)
+            {
+                method.EmitCode();
+            }
+
+            foreach (var constructor in _constuctors)
+            {
+                constructor.EmitCode();
+            }
+
+            return tb.CreateType();
+        }
+    }
+}

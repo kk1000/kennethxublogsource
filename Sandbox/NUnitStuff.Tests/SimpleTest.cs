@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using NUnit.Framework;
 
-namespace NUnitStuff.Examples
+namespace NUnitStuff
 {
     /// <summary>
     /// A Simple use case of <see cref="NewableValueObjectTestFixture{T}"/>.

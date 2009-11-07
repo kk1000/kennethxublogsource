@@ -8,6 +8,10 @@
     public abstract class NewableValueObjectTestFixture<T> : ValueObjectTestFixture<T>
         where T : new()
     {
+        /// <summary>
+        /// Create a new value object of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <returns>A new instance of <typeparamref name="T"/></returns>
         protected override T NewValueObject()
         {
             return new T();

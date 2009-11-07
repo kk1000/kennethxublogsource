@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace NUnitStuff.Examples
+namespace NUnitStuff
 {
     /// <summary>
     /// Test the <see cref="RhinoMockTestDataProvider"/>.

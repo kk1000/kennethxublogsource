@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace NUnitStuff.Examples
+namespace NUnitStuff
 {
     /// <summary>
     /// Test the functionality of <see cref="NewableValueObjectTestFixture{T}"/>

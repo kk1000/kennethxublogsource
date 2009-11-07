@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 
-namespace NUnitStuff.Examples
+namespace NUnitStuff
 {
     /// <summary>
     /// Serve both an exmaple of how to use <see cref="ValueObjectTestFixture{T}"/>

@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace NUnitStuff.Examples
+namespace NUnitStuff
 {
     /// <summary>
     /// Test case of using <see cref="ValueObjectTestFixture{T}"/> on value
