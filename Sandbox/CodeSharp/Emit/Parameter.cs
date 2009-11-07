@@ -13,6 +13,7 @@ namespace CodeSharp.Emit
         private readonly string _name;
         private readonly ParameterDirection _direction;
         private ParameterBuilder _parameterBuilder;
+        public static readonly IParameter[] EmptyParameters = new IParameter[0];
 
         /// <summary>
         /// Gets the type of parameter.

@@ -22,6 +22,11 @@ namespace CodeSharp.Emit
             _parameters = parameters;
         }
 
+        public ParameterList(IList<IParameter> parameters)
+        {
+            _parameters = parameters;
+        }
+
         /// <summary>
         /// Gets the <see cref="Parameter">parameter</see> at given position.
         /// </summary>
@@ -36,22 +41,10 @@ namespace CodeSharp.Emit
             get { return _parameters[position]; }
         }
 
-        ///// <summary>
-        ///// Returns an enumerator that iterates through the collection.
-        ///// </summary>
-        ///// <returns>
-        ///// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
-        ///// </returns>
-        ///// <filterpriority>1</filterpriority>
-        //public IEnumerator<IParameter> GetEnumerator()
-        //{
-        //    return _parameters.GetEnumerator();
-        //}
-
-        //IEnumerator IEnumerable.GetEnumerator()
-        //{
-        //    return GetEnumerator();
-        //}
+        public int Count
+        {
+            get { return _parameters.Count; }
+        }
 
         /// <summary>
         /// Gets an array of parameter types.
@@ -59,14 +52,9 @@ namespace CodeSharp.Emit
         /// <returns>
         /// An array of parameter types.
         /// </returns>
-        public Type[] GetTypes()
+        public Type[] ToTypes()
         {
-            var paramTypes = new Type[_parameters.Count];
-            for (int i = 0; i < _parameters.Count; i++)
-            {
-                paramTypes[i] = _parameters[i].Type;
-            }
-            return paramTypes;
+            return ToTypes(_parameters);
         }
 
         /// <summary>
@@ -82,6 +70,18 @@ namespace CodeSharp.Emit
                 var parameter = (Parameter) _parameters[i];
                 parameter.Emit(i+1, invokable);
             }
+        }
+
+        internal static Type[] ToTypes(ICollection<IParameter> parameters)
+        {
+            var paramTypes = new Type[parameters.Count];
+            int i = 0;
+            foreach (var parameter in parameters)
+            {
+                paramTypes[i++] = parameter.Type;
+                
+            }
+            return paramTypes;
         }
     }
 }

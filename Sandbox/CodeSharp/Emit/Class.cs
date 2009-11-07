@@ -187,6 +187,13 @@ namespace CodeSharp.Emit
             return property;
         }
 
+        public IProperty Indexer(Type type, params IParameter[] parameters)
+        {
+            var property = new Property(type, parameters);
+            _properties.Add(property);
+            return property;
+        }
+
         /// <summary>
         /// Set the namespace of current class.
         /// </summary>

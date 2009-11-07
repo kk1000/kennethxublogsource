@@ -53,7 +53,8 @@ namespace CodeSharp
                 var m = c.Method(typeof(string), _methodName, _emmiter.Arg<int>("i")).Public;
                 using (var code = m.Code())
                 {
-                    Assert.Throws<ArgumentException>(()=> f.Invoke("NonExistentMethod", m.Arg[0]));
+                    var e = Assert.Throws<ArgumentException>(()=> f.Invoke("NonExistentMethod", m.Arg[0]));
+                    System.Diagnostics.Debug.WriteLine(e.Message);
                 }
             }
         }

@@ -57,7 +57,8 @@ namespace CodeSharp
                 var m = p.Getter();
                 using (m.Code())
                 {
-                    Assert.Throws<ArgumentException>(() => f.Property("NonExistentProperty"));
+                    var e = Assert.Throws<ArgumentException>(() => f.Property("NonExistentProperty"));
+                    System.Diagnostics.Debug.WriteLine(e.Message);
                 }
             }
         }

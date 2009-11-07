@@ -89,6 +89,20 @@ namespace CodeSharp
         IProperty Property(Type type, string name);
 
         /// <summary>
+        /// Define a new indexer in class
+        /// </summary>
+        /// <param name="type">
+        /// The type of indexer.
+        /// </param>
+        /// <param name="parameters">
+        /// Parameter list of indexer.
+        /// </param>
+        /// <returns>
+        /// The indexer definition.
+        /// </returns>
+        IProperty Indexer(Type type, params IParameter[] parameters);
+
+        /// <summary>
         /// Set the namespace of current class.
         /// </summary>
         /// <param name="namespace">

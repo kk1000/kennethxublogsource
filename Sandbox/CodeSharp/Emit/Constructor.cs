@@ -17,7 +17,7 @@ namespace CodeSharp.Emit
         public override void EmitDefinition(TypeBuilder typeBuilder)
         {
             if (typeBuilder == null) throw new ArgumentNullException("typeBuilder");
-            var mb = typeBuilder.DefineConstructor(_methodAttributes, CallingConventions.HasThis, _parameters.GetTypes());
+            var mb = typeBuilder.DefineConstructor(_methodAttributes, CallingConventions.HasThis, _parameters.ToTypes());
             _constructorBuilder = mb;
             _parameters.Emit(this);
         }

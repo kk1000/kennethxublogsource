@@ -15,5 +15,10 @@ namespace CodeSharp
         /// The parameter at given position.
         /// </returns>
         IParameter this[int position] { get; }
+
+        /// <summary>
+        /// Gets the number of parameters in this list.
+        /// </summary>
+        int Count { get;  }
     }
 }

@@ -7,13 +7,23 @@ namespace CodeSharp.Emit
     internal class Property : IProperty {
         private readonly Type _type;
         private readonly string _name;
+        private readonly IParameter[] _parameters;
         private MethodAttributes _propertyAttributes;
         private Getter _getter;
         private Setter _setter;
         private PropertyBuilder _propertyBuilder;
 
+        public Property(Type type, params IParameter[] parameters)
+            : this(type, "Item", parameters)
+        {
+        }
 
         public Property(Type type, string name)
+            : this(type, name, Parameter.EmptyParameters)
+        {
+        }
+
+        private Property(Type type, string name, params IParameter[] parameters)
         {
             if (type == null) throw new ArgumentNullException("type");
             if (name == null) throw new ArgumentNullException("name");
@@ -23,12 +33,16 @@ namespace CodeSharp.Emit
             }
             _type = type;
             _name = name;
+            _parameters = parameters;
         }
 
         public void EmitDefinition(TypeBuilder typeBuilder)
         {
             _propertyBuilder = typeBuilder.DefineProperty(
-                _name, PropertyAttributes.None, CallingConventions.HasThis, _type, null, null, null, null, null);
+                _name, PropertyAttributes.None, CallingConventions.HasThis, 
+                _type, null, null, 
+                ParameterList.ToTypes(_parameters), null, null);
+
             if (_getter != null)
             {
                 _getter.EmitDefinition(typeBuilder);
@@ -58,13 +72,13 @@ namespace CodeSharp.Emit
 
         public IInvokable Getter()
         {
-            _getter = new Getter(_type, "get_" + _name, _propertyAttributes);
+            _getter = new Getter(_type, "get_" + _name, _propertyAttributes, _parameters);
             return _getter;
         }
 
         public ISetter Setter()
         {
-            _setter = new Setter(_type, "set_" + _name, _propertyAttributes);
+            _setter = new Setter(_type, "set_" + _name, _propertyAttributes, _parameters);
             return _setter;
         }
     }

@@ -23,27 +23,24 @@ namespace CodeSharp.Emit
             }
         }
 
-        /// <summary>
-        /// Construct a new <see cref="Method"/> of given
-        /// <paramref name="name"/>.
-        /// </summary>
-        /// <param name="returnType">
-        /// The return type of the method.
-        /// </param>
-        /// <param name="name">
-        /// The name of the method.
-        /// </param>
-        /// <param name="parameters">
-        /// The parameters of the method.
-        /// </param>
         internal Method(Type returnType, string name, params IParameter[] parameters)
-            : base(returnType, name, new ParameterList(parameters))
+            : this(returnType, name, new ParameterList(parameters))
+        {
+        }
+
+        internal Method(Type returnType, string name, ParameterList parameters)
+            : base(returnType, name, parameters)
         {
             _methodAttributes = MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Final;
         }
 
         internal Method(string name, params IParameter[] parameters)
             : this (typeof(void), name, parameters)
+        {
+        }
+
+        internal Method(string name, ParameterList parameters)
+            : this(typeof(void), name, parameters)
         {
         }
 
@@ -56,7 +53,7 @@ namespace CodeSharp.Emit
         public override void EmitDefinition(TypeBuilder typeBuilder)
         {
             if (typeBuilder == null) throw new ArgumentNullException("typeBuilder");
-            var mb = typeBuilder.DefineMethod(_name, _methodAttributes, _returnType, _parameters.GetTypes());
+            var mb = typeBuilder.DefineMethod(_name, _methodAttributes, _returnType, _parameters.ToTypes());
             _methodBuilder = mb;
             _parameters.Emit(this);
         }

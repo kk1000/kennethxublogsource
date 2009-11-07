@@ -24,7 +24,7 @@ namespace CodeSharp
         /// The name of property.
         /// </param>
         /// <returns>
-        /// The operent representing the property.
+        /// The operant representing the property.
         /// </returns>
         IOperand Property(string name);
 
@@ -32,5 +32,16 @@ namespace CodeSharp
         /// The type of the operand.
         /// </summary>
         Type Type { get; }
+
+        /// <summary>
+        /// Access an indexer of current operand.
+        /// </summary>
+        /// <param name="args">
+        /// Index parameters.
+        /// </param>
+        /// <returns>
+        /// The operand representing the indexer.
+        /// </returns>
+        IOperand Indexer(params IOperand[] args);
     }
 }
