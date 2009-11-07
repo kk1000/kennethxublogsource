@@ -116,6 +116,23 @@ namespace CodeSharp.Emit
         }
 
         /// <summary>
+        /// Define a new method in the class with void return type.
+        /// </summary>
+        /// <param name="name">
+        /// The name of the new method.
+        /// </param>
+        /// <param name="parameters">
+        /// Parameters of the method.
+        /// </param>
+        /// <returns>
+        /// A new method definition.
+        /// </returns>
+        public IMethod Method(string name, params IParameter[] parameters)
+        {
+            return Method(typeof (void), name, parameters);
+        }
+
+        /// <summary>
         /// Define a new field in class.
         /// </summary>
         /// <param name="type">

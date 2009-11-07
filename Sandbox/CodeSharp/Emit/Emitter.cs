@@ -43,15 +43,32 @@ namespace CodeSharp.Emit
         /// <typeparam name="T">
         /// The type of the parameter.
         /// </typeparam>
-        /// <param name="name">
+        /// <param name="parameterName">
         /// The name of the parameter.
         /// </param>
         /// <returns>
         /// A parameter definition.
         /// </returns>
-        public IParameter Arg<T>(string name)
+        public IParameter Arg<T>(string parameterName)
         {
-            return new Parameter(typeof(T), name, ParameterDirection.In);
+            return new Parameter(typeof(T), parameterName, ParameterDirection.In);
+        }
+
+        /// <summary>
+        /// Define a new ref parameter.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the parameter.
+        /// </typeparam>
+        /// <param name="parameterName">
+        /// The name of the parameter.
+        /// </param>
+        /// <returns>
+        /// A parameter definition.
+        /// </returns>
+        public IParameter ArgRef<T>(string parameterName)
+        {
+            return new Parameter(typeof(T), parameterName, ParameterDirection.Ref);
         }
 
         /// <summary>

@@ -19,21 +19,6 @@ namespace CodeSharp
         IClass Implements(Type @interface);
 
         /// <summary>
-        /// Define a new method in the class.
-        /// </summary>
-        /// <param name="returnType">
-        /// The return type of the defined method.
-        /// </param>
-        /// <param name="name">
-        /// The name of the new method.
-        /// </param>
-        /// <param name="parameters">
-        /// Parameters of the method.
-        /// </param>
-        /// <returns></returns>
-        IMethod Method(Type returnType, string name, params IParameter[] parameters);
-
-        /// <summary>
         /// Define a new field in class.
         /// </summary>
         /// <param name="type">
@@ -46,6 +31,37 @@ namespace CodeSharp
         /// A new field definition object
         /// </returns>
         IField Field(Type type, string name);
+
+        /// <summary>
+        /// Define a new method in the class.
+        /// </summary>
+        /// <param name="returnType">
+        /// The return type of the defined method.
+        /// </param>
+        /// <param name="name">
+        /// The name of the new method.
+        /// </param>
+        /// <param name="parameters">
+        /// Parameters of the method.
+        /// </param>
+        /// <returns>
+        /// A new method definition.
+        /// </returns>
+        IMethod Method(Type returnType, string name, params IParameter[] parameters);
+
+        /// <summary>
+        /// Define a new method in the class with void return type.
+        /// </summary>
+        /// <param name="name">
+        /// The name of the new method.
+        /// </param>
+        /// <param name="parameters">
+        /// Parameters of the method.
+        /// </param>
+        /// <returns>
+        /// A new method definition.
+        /// </returns>
+        IMethod Method(string name, params IParameter[] parameters);
 
         /// <summary>
         /// Define a new constructor in class.

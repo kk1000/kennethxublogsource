@@ -22,14 +22,26 @@
         /// <typeparam name="T">
         /// The type of the parameter.
         /// </typeparam>
-        /// <param name="name">
+        /// <param name="parameterName">
         /// The name of the parameter.
         /// </param>
         /// <returns>
         /// A parameter definition.
         /// </returns>
-        IParameter Arg<T>(string name);
+        IParameter Arg<T>(string parameterName);
 
-
+        /// <summary>
+        /// Define a new ref parameter.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the parameter.
+        /// </typeparam>
+        /// <param name="parameterName">
+        /// The name of the parameter.
+        /// </param>
+        /// <returns>
+        /// A parameter definition.
+        /// </returns>
+        IParameter ArgRef<T>(string parameterName);
     }
 }

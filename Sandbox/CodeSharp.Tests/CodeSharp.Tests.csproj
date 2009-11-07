@@ -58,6 +58,7 @@
     <Compile Include="SimpleMethodWrapperTest.cs" />
     <Compile Include="EmitUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RefParameterMethodWrapperTest.cs" />
     <Compile Include="VOs.cs" />
   </ItemGroup>
   <ItemGroup>

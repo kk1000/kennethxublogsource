@@ -28,19 +28,6 @@ namespace CodeSharp.Emit
         //    return new Parameter(typeof(T), name, ParameterDirection.Out);
         //}
 
-        ///// <summary>
-        ///// Create a ref parameter.
-        ///// </summary>
-        ///// <typeparam name="T">Type of the parameter.</typeparam>
-        ///// <param name="name">name of the parameter</param>
-        ///// <returns>
-        ///// A ref parameter definition.
-        ///// </returns>
-        //public static IParameter Ref<T>(string name)
-        //{
-        //    return new Parameter(typeof(T), name, ParameterDirection.Ref);
-        //}
-
         /// <summary>
         /// Gets the type of parameter.
         /// </summary>

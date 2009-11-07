@@ -21,7 +21,7 @@ namespace CodeSharp
             AssemblyName an = new AssemblyName { Name = name };
             AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(an, AssemblyBuilderAccess.RunAndSave);
             _lastBuilder = ab;
-            return ab.DefineDynamicModule(name, name + ".dll");
+            return ab.DefineDynamicModule(name, name);
         }
 
         internal static void SaveAssembly(string name)
