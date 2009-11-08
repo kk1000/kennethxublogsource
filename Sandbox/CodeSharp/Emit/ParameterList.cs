@@ -27,6 +27,11 @@ namespace CodeSharp.Emit
             _parameters = parameters;
         }
 
+        public IEnumerable<IParameter> All
+        {
+            get { return _parameters; }
+        }
+
         /// <summary>
         /// Gets the <see cref="Parameter">parameter</see> at given position.
         /// </summary>

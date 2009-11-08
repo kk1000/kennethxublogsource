@@ -7,9 +7,12 @@ namespace CodeSharp.Emit
 {
     internal class Setter : Method, ISetter
     {
+        private readonly ParameterList _origParameters;
+
         public Setter(Type type, string name, MethodAttributes methodAttributes, params IParameter[] parameters)
             : base(name, MakeSetterParameterList(type, parameters))
         {
+            _origParameters = new ParameterList(parameters);
             _methodAttributes |= methodAttributes | MethodAttributes.SpecialName;
         }
 
@@ -26,9 +29,14 @@ namespace CodeSharp.Emit
             get { return _methodBuilder; }
         }
 
+        IParameterList IInvokable.Args
+        {
+            get { return _origParameters; }
+        }
+
         public IParameter Value
         {
-            get { return Arg[Arg.Count-1]; }
+            get { return Args[_origParameters.Count]; }
         }
     }
 }

@@ -86,13 +86,13 @@ namespace CodeSharp
             var ctor = c.Constructor(_g.Arg<IOutParamMethod>("wrapped")).Public;
             using (var code = ctor.Code())
             {
-                code.Assign(wrapped, ctor.Arg[0]);
+                code.Assign(wrapped, ctor.Args[0]);
             }
 
             var simpleMethod = c.Method(_methodName, _g.ArgOut<int>("i")).Public;
             using (var code = simpleMethod.Code())
             {
-                var result = wrapped.Invoke(_methodName, simpleMethod.Arg[0]);
+                var result = wrapped.Invoke(_methodName, simpleMethod.Args[0]);
                 code.Return(result);
             }
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
@@ -8,55 +9,51 @@ namespace CodeSharp.Emit
     internal class PropertyAccess : Operand
     {
         private readonly Operand _operand;
-        private readonly string _propertyName;
-        private readonly IOperand[] _args;
-        private PropertyInfo _propertyInfo;
+        private readonly IEnumerable<IOperand> _args;
+        private readonly PropertyInfo _propertyInfo;
 
-        public PropertyAccess(Operand operand, string name)
-            : this(operand, name, null)
-        {
-            //_operand = operand;
-            //_propertyName = name;
-            //_propertyInfo = operand.Type.GetProperty(name, 
-            //    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            //if (_propertyInfo == null)
-            //{
-            //    throw new ArgumentException(string.Format("Not such property found: {0}.{1}", operand.Type, name));
-            //}
-        }
-
-        public PropertyAccess(Operand operand, params IOperand[] args)
-            : this(operand, "Item", args)
-        {
-        }
-
-        private PropertyAccess(Operand operand, string name, params IOperand[] args)
+        public PropertyAccess(Operand operand, PropertyInfo propertyInfo, IEnumerable<IOperand> indexes)
         {
             _operand = operand;
-            _propertyName = name;
-            _args = args?? EmptyOperands;
-            _propertyInfo = operand.Type.GetProperty(
+            _args = indexes ?? EmptyOperands;
+            _propertyInfo = propertyInfo;
+        }
+
+        public PropertyAccess(Operand operand, string name)
+            : this(operand, GetPropertyInfo(operand.Type, name, null), null)
+        {
+        }
+
+        public PropertyAccess(Operand operand, params IOperand[] indexes)
+            : this(operand, GetPropertyInfo(operand.Type, "Item", indexes), indexes)
+        {
+        }
+
+        private static PropertyInfo GetPropertyInfo(Type t, string name, IList<IOperand> indexes)
+        {
+            var pi = t.GetProperty(
                 name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
-                null, null, ToTypes(args)??Type.EmptyTypes, null);
-            if (_propertyInfo == null)
+                null, null, ToTypes(indexes)??Type.EmptyTypes, null);
+            if (pi == null)
             {
-                if(args == null || args.Length == 0)
+                if(indexes == null || indexes.Count == 0)
                 {
-                    throw new ArgumentException(string.Format("Not such property found: {0}.{1}", operand.Type, name));
+                    throw new ArgumentException(string.Format("Not such property found: {0}.{1}", t, name));
                 }
                 StringBuilder sb = new StringBuilder("Not such indexer found: ");
-                sb.Append(operand.Type).Append('[');
-                foreach (var arg in args)
+                sb.Append(t).Append('[');
+                foreach (var arg in indexes)
                 {
                     sb.Append(arg.Type).Append(',');
                 }
-                if (args.Length > 0)
+                if (indexes.Count > 0)
                 {
                     sb.Length -= 1;
                 }
                 sb.Append(']');
                 throw new ArgumentException(sb.ToString());
             }
+            return pi;
         }
 
         public override Type Type

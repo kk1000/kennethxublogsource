@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
@@ -11,8 +12,22 @@ namespace CodeSharp.Emit
     class Invocation : Operand
     {
         private readonly Operand _operand;
-        private readonly Operand[] _args;
-        private MethodInfo _methodInfo;
+        private readonly IEnumerable<IOperand> _args;
+        private readonly MethodInfo _methodInfo;
+
+        private Invocation(IOperand operand)
+        {
+            if (operand == null) throw new ArgumentNullException("operand");
+            _operand = (Operand)operand;
+        }
+
+        public Invocation(IOperand operand, MethodInfo methodInfo, IEnumerable<IOperand> args)
+            :this(operand)
+        {
+            if (methodInfo == null) throw new ArgumentNullException("methodInfo");
+            _methodInfo = methodInfo;
+            _args = args;
+        }
 
         /// <summary>
         /// Construct a new instance of <see cref="Invocation"/> that invokes
@@ -29,15 +44,14 @@ namespace CodeSharp.Emit
         /// The paremeter used to invoke the method.
         /// </param>
         public Invocation(IOperand operand, string name, IOperand[] args)
+            :this(operand)
         {
-            if (operand == null) throw new ArgumentNullException("operand");
             if (name == null) throw new ArgumentNullException("name");
-            _operand = (Operand) operand;
-            _args = new Operand[args.Length];
+            if (args == null) args = EmptyOperands;
+            _args = args;
             var paramTypes = new Type[args.Length];
             for (int i = args.Length - 1; i >= 0; i--)
             {
-                _args[i] = (Operand) args[i];
                 paramTypes[i] = args[i].Type;
             }
             _methodInfo = operand.Type.GetMethod(
@@ -83,7 +97,7 @@ namespace CodeSharp.Emit
             if (!_methodInfo.IsStatic) _operand.EmitGet(il);
             foreach (var operand in _args)
             {
-                operand.EmitGet(il);
+                ((Operand)operand).EmitGet(il);
             }
             il.Emit(OpCodes.Callvirt, _methodInfo);
         }

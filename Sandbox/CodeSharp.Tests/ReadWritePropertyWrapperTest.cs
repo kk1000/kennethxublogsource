@@ -83,7 +83,7 @@ namespace CodeSharp
             var ctor = t.Constructor(g.Arg<IReadWriteProperty>("wrapped")).Public;
             using (var c = ctor.Code())
             {
-                c.Assign(wrapped, ctor.Arg[0]);
+                c.Assign(wrapped, ctor.Args[0]);
             }
 
             var readWriteProperty = t.Property(typeof(int), _propertyName).Public;

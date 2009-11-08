@@ -49,6 +49,14 @@ namespace CodeSharp.Emit
             _direction = direction;
         }
 
+        public Parameter(ParameterInfo parameterInfo)
+        {
+            _direction = DirectionOf(parameterInfo);
+            var type = parameterInfo.ParameterType;
+            _type = type.IsByRef ? type.GetElementType() : type;
+            _name = parameterInfo.Name;
+        }
+
         /// <summary>
         /// Defines the parameter.
         /// </summary>
@@ -90,6 +98,26 @@ namespace CodeSharp.Emit
         internal override void EmitSet(ILGenerator il, Operand value)
         {
             throw new NotImplementedException();
+        }
+
+        internal static IParameter[] From(ParameterInfo[] parameterInfos)
+        {
+            if (parameterInfos == null) return null;
+            var parameters = new IParameter[parameterInfos.Length];
+            for (int i = parameterInfos.Length - 1; i >= 0; i--)
+            {
+                parameters[i] = new Parameter(parameterInfos[i]);
+            }
+            return parameters;
+        }
+
+        internal static ParameterDirection DirectionOf(ParameterInfo parameterInfo)
+        {
+            if (parameterInfo == null) throw new ArgumentNullException("parameterInfo");
+
+            return parameterInfo.ParameterType.IsByRef
+                    ? (parameterInfo.IsOut ? ParameterDirection.Out : ParameterDirection.Ref)
+                    : ParameterDirection.In;
         }
     }
 }

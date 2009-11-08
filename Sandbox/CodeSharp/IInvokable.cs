@@ -17,6 +17,6 @@ namespace CodeSharp
         /// <summary>
         /// Parameter list of the method.
         /// </summary>
-        IParameterList Arg { get; }
+        IParameterList Args { get; }
     }
 }

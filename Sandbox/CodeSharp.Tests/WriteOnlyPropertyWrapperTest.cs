@@ -79,7 +79,7 @@ namespace CodeSharp
             var ctor = c.Constructor(_emmiter.Arg<IWriteOnlyProperty>("wrapped")).Public;
             using (var code = ctor.Code())
             {
-                code.Assign(wrapped, ctor.Arg[0]);
+                code.Assign(wrapped, ctor.Args[0]);
             }
 
             var writeOnlyProperty = c.Property(typeof(int), _propertyName).Public;

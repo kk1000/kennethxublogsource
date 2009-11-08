@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace CodeSharp
 {
     /// <summary>
@@ -20,5 +22,10 @@ namespace CodeSharp
         /// Gets the number of parameters in this list.
         /// </summary>
         int Count { get;  }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        IEnumerable<IParameter> All { get; }
     }
 }

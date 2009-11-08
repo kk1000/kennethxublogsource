@@ -53,7 +53,7 @@ namespace CodeSharp
                 var m = c.Method(typeof(string), _methodName, _emmiter.Arg<int>("i")).Public;
                 using (var code = m.Code())
                 {
-                    var e = Assert.Throws<ArgumentException>(()=> f.Invoke("NonExistentMethod", m.Arg[0]));
+                    var e = Assert.Throws<ArgumentException>(()=> f.Invoke("NonExistentMethod", m.Args[0]));
                     System.Diagnostics.Debug.WriteLine(e.Message);
                 }
             }
@@ -91,14 +91,14 @@ namespace CodeSharp
             var ctor = c.Constructor(_emmiter.Arg<ISimpleMethod>("wrapped")).Public;
             using (var code = ctor.Code())
             {
-                code.Assign(wrapped, ctor.Arg[0]);
+                code.Assign(wrapped, ctor.Args[0]);
                 code.Return();
             }
 
             var simpleMethod = c.Method(typeof(string), _methodName, _emmiter.Arg<int>("i")).Public;
             using (var code = simpleMethod.Code())
             {
-                var result = wrapped.Invoke(_methodName, simpleMethod.Arg[0]);
+                var result = wrapped.Invoke(_methodName, simpleMethod.Args[0]);
                 code.Return(result);
             }
         }

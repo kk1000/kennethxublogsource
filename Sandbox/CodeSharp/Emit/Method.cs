@@ -23,8 +23,8 @@ namespace CodeSharp.Emit
             }
         }
 
-        internal Method(Type returnType, string name, params IParameter[] parameters)
-            : this(returnType, name, new ParameterList(parameters))
+        internal Method(MethodInfo methodInfo)
+            : this(methodInfo.ReturnType, methodInfo.Name, Parameter.From(methodInfo.GetParameters()))
         {
         }
 
@@ -32,6 +32,11 @@ namespace CodeSharp.Emit
             : base(returnType, name, parameters)
         {
             _methodAttributes = MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Final;
+        }
+
+        internal Method(Type returnType, string name, params IParameter[] parameters)
+            : this(returnType, name, new ParameterList(parameters))
+        {
         }
 
         internal Method(string name, params IParameter[] parameters)

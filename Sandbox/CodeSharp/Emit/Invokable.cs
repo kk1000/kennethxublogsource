@@ -29,7 +29,7 @@ namespace CodeSharp.Emit
         /// <summary>
         /// Parameter list of the method.
         /// </summary>
-        public IParameterList Arg
+        public IParameterList Args
         {
             get { return _parameters;}
         }

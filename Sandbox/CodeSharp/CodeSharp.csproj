@@ -61,6 +61,7 @@
     <Compile Include="Emit\Property.cs" />
     <Compile Include="Emit\PropertyAccess.cs" />
     <Compile Include="Emit\Setter.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="IConstructor.cs" />
     <Compile Include="IGenerator.cs" />
     <Compile Include="IInvokable.cs" />

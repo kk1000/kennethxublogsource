@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 
 namespace CodeSharp
 {
@@ -64,6 +65,18 @@ namespace CodeSharp
         IMethod Method(string name, params IParameter[] parameters);
 
         /// <summary>
+        /// Define a new method in the class according the given
+        /// <paramref name="methodInfo"/>.
+        /// </summary>
+        /// <param name="methodInfo">
+        /// The propertyInfo to defined the new method.
+        /// </param>
+        /// <returns>
+        /// A new method definition.
+        /// </returns>
+        IMethod Method(MethodInfo methodInfo);
+
+        /// <summary>
         /// Define a new constructor in class.
         /// </summary>
         /// <param name="parameters">
@@ -101,6 +114,16 @@ namespace CodeSharp
         /// The indexer definition.
         /// </returns>
         IProperty Indexer(Type type, params IParameter[] parameters);
+
+        /// <summary>
+        /// Define a new property or indexer in class according to the given
+        /// <paramref name="propertyInfo"/>
+        /// The <see cref="PropertyInfo"/> to define the property.
+        /// </summary>
+        /// <returns>
+        /// The property definition.
+        /// </returns>
+        IProperty Property(PropertyInfo propertyInfo);
 
         /// <summary>
         /// Set the namespace of current class.

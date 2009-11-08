@@ -13,6 +13,11 @@ namespace CodeSharp.Emit
         private Setter _setter;
         private PropertyBuilder _propertyBuilder;
 
+        public Property(PropertyInfo propertyInfo)
+            : this(propertyInfo.PropertyType, propertyInfo.Name, Parameter.From(propertyInfo.GetIndexParameters()))
+        {
+        }
+
         public Property(Type type, params IParameter[] parameters)
             : this(type, "Item", parameters)
         {

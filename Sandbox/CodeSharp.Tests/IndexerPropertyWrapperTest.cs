@@ -58,7 +58,7 @@ namespace CodeSharp
                 var m = p.Getter();
                 using (m.Code())
                 {
-                    var e = Assert.Throws<ArgumentException>(() => f.Indexer(m.Arg[0]));
+                    var e = Assert.Throws<ArgumentException>(() => f.Indexer(m.Args[0]));
                     System.Diagnostics.Debug.WriteLine(e.Message);
                 }
             }
@@ -102,19 +102,19 @@ namespace CodeSharp
             var ctor = t.Constructor(g.Arg<IIndexerProperty>("wrapped")).Public;
             using (var c = ctor.Code())
             {
-                c.Assign(wrapped, ctor.Arg[0]);
+                c.Assign(wrapped, ctor.Args[0]);
             }
 
             var indexerProperty = t.Indexer(typeof(long), g.Arg<int>("i"), g.Arg<string>("s")).Public;
             var getter = indexerProperty.Getter();
             using (var c = getter.Code())
             {
-                c.Return(wrapped.Indexer(getter.Arg[0], getter.Arg[1]));
+                c.Return(wrapped.Indexer(getter.Args[0], getter.Args[1]));
             }
             var setter = indexerProperty.Setter();
             using (var c = setter.Code())
             {
-                c.Assign(wrapped.Indexer(getter.Arg[0], getter.Arg[1]), setter.Value);
+                c.Assign(wrapped.Indexer(setter.Args[0], setter.Args[1]), setter.Value);
             }
         }
     }

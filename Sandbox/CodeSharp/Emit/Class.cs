@@ -111,9 +111,7 @@ namespace CodeSharp.Emit
         /// <returns></returns>
         public IMethod Method(Type returnType, string name, params IParameter[] parameters)
         {
-            var method = new Method(returnType, name, parameters);
-            _methods.Add(method);
-            return method;
+            return AddMethod(new Method(returnType, name, parameters));
         }
 
         /// <summary>
@@ -131,6 +129,17 @@ namespace CodeSharp.Emit
         public IMethod Method(string name, params IParameter[] parameters)
         {
             return Method(typeof (void), name, parameters);
+        }
+
+        public IMethod Method(MethodInfo methodInfo)
+        {
+            return AddMethod(new Method(methodInfo));
+        }
+
+        private IMethod AddMethod(Method method)
+        {
+            _methods.Add(method);
+            return method;
         }
 
         /// <summary>
@@ -182,14 +191,21 @@ namespace CodeSharp.Emit
         /// </returns>
         public IProperty Property(Type type, string name)
         {
-            var property = new Property(type, name);
-            _properties.Add(property);
-            return property;
+            return AddProperty(new Property(type, name));
         }
 
         public IProperty Indexer(Type type, params IParameter[] parameters)
         {
-            var property = new Property(type, parameters);
+            return AddProperty(new Property(type, parameters));
+        }
+
+        public IProperty Property(PropertyInfo propertyInfo)
+        {
+            return AddProperty(new Property(propertyInfo));
+        }
+
+        private IProperty AddProperty(Property property)
+        {
             _properties.Add(property);
             return property;
         }
