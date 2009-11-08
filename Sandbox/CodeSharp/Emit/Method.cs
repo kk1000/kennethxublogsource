@@ -11,18 +11,6 @@ namespace CodeSharp.Emit
     {
         protected MethodBuilder _methodBuilder;
 
-        /// <summary>
-        /// Set method virtual.
-        /// </summary>
-        public IMethod Virtual
-        {
-            get
-            {
-                _methodAttributes |= MethodAttributes.Virtual;
-                return this;
-            }
-        }
-
         internal Method(MethodInfo methodInfo)
             : this(methodInfo.ReturnType, methodInfo.Name, Parameter.From(methodInfo.GetParameters()))
         {
@@ -36,11 +24,6 @@ namespace CodeSharp.Emit
 
         internal Method(Type returnType, string name, params IParameter[] parameters)
             : this(returnType, name, new ParameterList(parameters))
-        {
-        }
-
-        internal Method(string name, params IParameter[] parameters)
-            : this (typeof(void), name, parameters)
         {
         }
 
