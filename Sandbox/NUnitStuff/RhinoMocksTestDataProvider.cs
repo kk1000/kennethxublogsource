@@ -5,11 +5,11 @@ using Rhino.Mocks;
 namespace NUnitStuff
 {
     /// <summary>
-    /// Implementation of <see cref="IMockTestDataProvider"/> that uses
+    /// Implementation of <see cref="ITestDataProvider"/> that uses
     /// RhinoMocks to create mock objects.
     /// </summary>
     /// <author>Kenneth Xu</author>
-    public class RhinoMockTestDataProvider : IMockTestDataProvider
+    public class RhinoMocksTestDataProvider : ITestDataProvider
     {
         readonly MockRepository _repository = new MockRepository();
 
@@ -30,7 +30,7 @@ namespace NUnitStuff
         /// if it is reference type. Or return null if the given
         /// <paramref name="type"/>.
         /// </returns>
-        public IEnumerable MockDataPoints(Type type)
+        public IEnumerable MakeDataPoints(Type type)
         {
             if (!type.IsInterface && 
                 (type.IsValueType||type.IsSealed||type.GetConstructor(Type.EmptyTypes) == null)) 

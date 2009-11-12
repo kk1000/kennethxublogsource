@@ -57,10 +57,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IMockTestDataProvider.cs" />
+    <Compile Include="ITestDataProvider.cs" />
     <Compile Include="NewableValueObjectTestFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RhinoMockTestDataProvider.cs" />
+    <Compile Include="RhinoMocksTestDataProvider.cs" />
     <Compile Include="ValueObjectTestFixture.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -17,19 +17,36 @@ namespace NUnitStuff
     /// <author>Kenneth Xu</author>
     public abstract class ValueObjectTestFixture<T>
     {
-        private static readonly IEnumerable<PropertyInfo> _allProperties;
+        private readonly IEnumerable<PropertyInfo> _allProperties;
 
         private readonly List<string> _exclusions = new List<string>();
 
-        private static readonly Func<T, T, bool> _typedEquals;
+        private readonly Func<T, T, bool> _typedEquals;
 
-        private static readonly bool _isCloneable;
+        /// <summary>
+        /// Initialized to <c>true</c> if <typeparamref name="T"/> is 
+        /// <see cref="ICloneable"/>. Derived type can set this to
+        /// <c>true</c> in the constructor to force cloneable test.
+        /// </summary>
+        protected bool IsCloneable;
 
-        static ValueObjectTestFixture()
+        /// <summary>
+        /// Initialized to <c>true</c> if <typeparamref name="T"/> is 
+        /// <see cref="INotifyPropertyChanged"/>. Derived type can set this to
+        /// <c>true</c> in the constructor to force property change event test.
+        /// </summary>
+        protected bool IsNotifyPropertyChanged;
+
+        /// <summary>
+        /// Constructs a new <see cref="ValueObjectTestFixture{T}"/>
+        /// </summary>
+        protected ValueObjectTestFixture()
         {
             _allProperties = typeof(T).GetProperties();
 
-            _isCloneable = (typeof (ICloneable).IsAssignableFrom(typeof (T)));
+            IsCloneable = (typeof (ICloneable).IsAssignableFrom(typeof (T)));
+
+            IsNotifyPropertyChanged = (typeof(INotifyPropertyChanged).IsAssignableFrom(typeof(T)));
 
             if (!typeof(T).IsValueType)
             {
@@ -42,11 +59,11 @@ namespace NUnitStuff
         }
 
         /// <summary>
-        /// Sets an instance of <see cref="IMockTestDataProvider"/> that is 
+        /// Sets an instance of <see cref="ITestDataProvider"/> that is 
         /// used by <see cref="TestData"/> to generate data points for non 
         /// build-in data types.
         /// </summary>
-        public IMockTestDataProvider MockProvider { private get; set; }
+        public ITestDataProvider TestDataProvider { private get; set; }
 
         /// <summary>
         /// Properties that will be used in the test of
@@ -102,11 +119,27 @@ namespace NUnitStuff
         }
 
         /// <summary>
+        /// Properties that will be used in <see cref="RaisesCorrectPropertyChangedEvent"/>
+        /// test. By default, this returns all writable properties not excluded by
+        /// <see cref="ExcludeProperties(System.Collections.Generic.IEnumerable{string})"/>,
+        /// or empty if the value object doesn't implement <see cref="INotifyPropertyChanged"/>.
+        /// </summary>
+        /// <returns>Properties to be tested for raising propety changed event.</returns>
+        public virtual IEnumerable<PropertyInfo> NotifyChangeProperties()
+        {
+            return IsNotifyPropertyChanged
+                       ? (from pi in _allProperties
+                          where pi.CanWrite && !_exclusions.Contains(pi.Name)
+                          select pi)
+                       : new PropertyInfo[0];
+        }
+
+        /// <summary>
         /// This is used to control test framework. Do not user directly
         /// </summary>
         /// <returns></returns>
         [Obsolete("For test framework only")]
-        public IEnumerable<string> HasTypedEquals()
+        public IEnumerable<string> TestTypedEquals()
         {
             return _typedEquals == null ? new string[0] : new[] {"Typed"};
         }
@@ -116,9 +149,9 @@ namespace NUnitStuff
         /// </summary>
         /// <returns></returns>
         [Obsolete("For test framework only")]
-        public IEnumerable<string> IsCloneable()
+        public IEnumerable<string> TestCloneable()
         {
-            return _isCloneable ? new[] { "Cloneable" } : new string[0];
+            return IsCloneable ? new[] { "Cloneable" } : new string[0];
         }
 
         /// <summary>
@@ -129,8 +162,7 @@ namespace NUnitStuff
         /// value of the property type.
         /// </summary>
         /// <param name="property">The property being tested.</param>
-        [Test]
-        public virtual void PropertyInitializeAccordingToTheDefaultValueAttributeOrTypeDefault(
+        [Test] public virtual void PropertyInitializeAccordingToTheDefaultValueAttributeOrTypeDefault(
             [ValueSource("DefaultTestCandidates")] PropertyInfo property)
         {
             const string message = 
@@ -153,38 +185,28 @@ namespace NUnitStuff
         /// the same value can be later read back.
         /// </summary>
         /// <param name="property">The property being tested.</param>
-        [Test]
-        public virtual void CanSetPropertyValueAndReadBackSameValue(
+        [Test] public virtual void CanSetPropertyValueAndReadBackSameValue(
             [ValueSource("ReadWriteTestCandidates")] PropertyInfo property)
         {
             // Important to use object when T is value type.
-                object sut = NewValueObject();
-                var testValues = TestData(property);
+            object sut = NewValueObject();
+            var testValues = TestData(property);
 
-                foreach (object value in testValues)
+            foreach (object value in testValues)
+            {
+                SetPropertyOrFailTest(sut, property, value);
+                const string message = "{0}: value read back doesn't equals to what was set.";
+                if (property.PropertyType.IsValueType)
                 {
-                    try
-                    {
-                        property.SetValue(sut, value, null);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new AssertionException(
-                            "Unable to set property " + property.Name +
-                            " to value " + value + ": " + e.Message, e);
-                    }
-                    const string message = "{0}: value read back doesn't equals to what was set.";
-                    if (property.PropertyType.IsValueType)
-                    {
-                        Assert.That(property.GetValue(sut, null), Is.EqualTo(value),
-                                    message, property.Name);
-                    }
-                    else
-                    {
-                        Assert.That(property.GetValue(sut, null), Is.SameAs(value),
-                                    message, property.Name);
-                    }
+                    Assert.That(property.GetValue(sut, null), Is.EqualTo(value),
+                                message, property.Name);
                 }
+                else
+                {
+                    Assert.That(property.GetValue(sut, null), Is.SameAs(value),
+                                message, property.Name);
+                }
+            }
         }
 
         /// <summary>
@@ -202,7 +224,7 @@ namespace NUnitStuff
         /// reference type.
         /// </summary>
         /// <param name="dummy">For test framework to skip value type.</param>
-        [Test] public virtual void NotEqualsNull([ValueSource("HasTypedEquals")] string dummy)
+        [Test] public virtual void NotEqualsNull([ValueSource("TestTypedEquals")] string dummy)
         {
             if(typeof(T).IsValueType) return;
             var sut = NewValueObject();
@@ -232,7 +254,7 @@ namespace NUnitStuff
         /// object itself.
         /// </summary>
         /// <param name="dummy">For test framework to skip value type.</param>
-        [Test] public virtual void EqualsToSelf([ValueSource("HasTypedEquals")] string dummy)
+        [Test] public virtual void EqualsToSelf([ValueSource("TestTypedEquals")] string dummy)
         {
             var sut = NewValueObject();
             Assert.IsTrue(_typedEquals(sut, sut));
@@ -244,8 +266,7 @@ namespace NUnitStuff
         /// value object implements <see cref="ICloneable"/>.
         /// </summary>
         /// <param name="dummy">For test framework to skip non-cloneable.</param>
-        [Test]
-        public virtual void ClonesAllProperties([ValueSource("IsCloneable")] string dummy)
+        [Test] public virtual void ClonesAllProperties([ValueSource("TestCloneable")] string dummy)
         {
             object sut = NewValueObject();
             object sut2 = NewValueObject();
@@ -280,9 +301,13 @@ namespace NUnitStuff
         /// supplied by <see cref="EqualsTestCandidates"/> are different.
         /// </summary>
         /// <param name="property">Property being tested.</param>
-        [Test]
-        public virtual void NotEqualsWhenPropertyIsDifferent(
+        [Test] public virtual void NotEqualsWhenPropertyIsDifferent(
             [ValueSource("EqualsTestCandidates")] PropertyInfo property)
+        {
+            DoNotEqualsWhenPropertyIsDifferentTest(property);
+        }
+
+        internal virtual void DoNotEqualsWhenPropertyIsDifferentTest(PropertyInfo property)
         {
             object sut = NewValueObject();
             var testValues = TestData(property).GetEnumerator();
@@ -296,6 +321,76 @@ namespace NUnitStuff
             AssertNotEquals(property, testValues, sut, sutValue);
         }
 
+        /// <summary>
+        /// To verify that, if two value objects has same property value and 
+        /// <see cref="object.Equals(object)"/> returns true, then
+        /// <see cref="object.GetHashCode"/> must be same. Participating
+        /// properties are from <see cref="EqualsTestCandidates"/>.
+        /// </summary>
+        /// <param name="property">The property being tested</param>
+        [Test] public void GetHashCodeReturnsSameHashWhenEquals(
+            [ValueSource("EqualsTestCandidates")] PropertyInfo property)
+        {
+            DoGetHashCodeReturnsSameHashWhenEqualsTest(property);
+        }
+
+        internal virtual void DoGetHashCodeReturnsSameHashWhenEqualsTest(PropertyInfo property)
+        {
+            object sut = NewValueObject();
+            object another = NewValueObject();
+
+            var testValues = TestData(property).GetEnumerator();
+
+            AssertGetHashCode(property, sut, another, GetDataPoint(property, testValues));
+            // 2nd data point
+            AssertGetHashCode(property, sut, another, GetDataPoint(property, testValues));
+        }
+
+        /// <summary>
+        /// To verify that, the <see cref="INotifyPropertyChanged.PropertyChanged"/>
+        /// is raised with correct <see cref="PropertyChangedEventArgs.PropertyName"/>.
+        /// Participating properties are from <see cref="NotifyChangeProperties"/>.
+        /// </summary>
+        /// <param name="property">The property being tested.</param>
+        [Test] public void RaisesCorrectPropertyChangedEvent(
+            [ValueSource("NotifyChangeProperties")] PropertyInfo property)
+        {
+            DoRaisesCorrectPropertyChangedEventTest(property);
+        }
+
+        internal virtual void DoRaisesCorrectPropertyChangedEventTest(PropertyInfo property)
+        {
+            var sut = (INotifyPropertyChanged) NewValueObject();
+
+            bool eventRaised = false;
+            string propertyName = null;
+            sut.PropertyChanged +=
+                (s, e) =>
+                    {
+                        propertyName = e.PropertyName;
+                        if (propertyName == property.Name)
+                            eventRaised = true;
+                    };
+
+            var testValues = TestData(property);
+
+            int count = 0;
+            object last = null;
+            foreach (object value in testValues)
+            {
+                if(count++ == 0 || !Equals(last, value))
+                {
+                    SetPropertyOrFailTest(sut, property, value);
+                    if(!eventRaised) Assert.Fail(string.Format(
+                        propertyName == null
+                        ? "PropertyChanged event not raised when setting '{0}' to value {1}."
+                        : "PropertyChanged event raised with wrong property name '{2}' when setting '{0}' to value {1}.", 
+                        property.Name, value, propertyName));
+                }
+                last = value;
+            }
+        }
+
         private void AssertNotEquals(PropertyInfo property, IEnumerator testValues, object sut, object sutValue)
         {
             object sut2 = NewValueObject();
@@ -306,25 +401,18 @@ namespace NUnitStuff
             Assert.IsFalse(sut.Equals(sut2), message, property.Name, sutValue, sut2Value);
         }
 
-        /// <summary>
-        /// To verify that, if two value objects has same property value and 
-        /// <see cref="object.Equals(object)"/> returns true, then
-        /// <see cref="object.GetHashCode"/> must be same. Participating
-        /// properties are from <see cref="EqualsTestCandidates"/>.
-        /// </summary>
-        /// <param name="property">The property being tested</param>
-        [Test]
-        public void GetHashCodeReturnsSameHashWhenEquals(
-            [ValueSource("EqualsTestCandidates")] PropertyInfo property)
+        private static void SetPropertyOrFailTest(object target, PropertyInfo property, object value)
         {
-            object sut = NewValueObject();
-            object another = NewValueObject();
-
-            var testValues = TestData(property).GetEnumerator();
-
-            AssertGetHashCode(property, sut, another, GetDataPoint(property, testValues));
-            // 2nd data point
-            AssertGetHashCode(property, sut, another, GetDataPoint(property, testValues));
+            try
+            {
+                property.SetValue(target, value, null);
+            }
+            catch (Exception e)
+            {
+                throw new AssertionException(
+                    "Unable to set property " + property.Name +
+                    " to value " + value + ": " + e.Message, e);
+            }
         }
 
         private static void AssertGetHashCode(PropertyInfo property, object sut, object another, object value)
@@ -360,7 +448,7 @@ namespace NUnitStuff
         /// <param name="properties">Properties to exclude.</param>
         protected void ExcludeProperties(params string[] properties)
         {
-            _exclusions.AddRange(properties);
+            ExcludeProperties((IEnumerable<string>)properties);
         }
 
         /// <summary>
@@ -377,7 +465,7 @@ namespace NUnitStuff
         /// </para>
         /// <para>
         /// If derived class has property returns types that are not supported, 
-        /// it must set the <see cref="MockProvider"/> property and/or override 
+        /// it must set the <see cref="TestDataProvider"/> property and/or override 
         /// this method to provide data points for those properties.
         /// </para>
         /// <para>
@@ -628,9 +716,9 @@ string"};
                 return new[] { new object(), null, new object()};
             }
 
-            if(MockProvider != null)
+            if(TestDataProvider != null)
             {
-                var data = MockProvider.MockDataPoints(property.PropertyType);
+                var data = TestDataProvider.MakeDataPoints(property.PropertyType);
                 if (data != null) return data;
             }
             return new object[0];

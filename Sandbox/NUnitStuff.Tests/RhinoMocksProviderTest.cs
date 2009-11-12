@@ -5,15 +5,15 @@ using NUnit.Framework;
 namespace NUnitStuff
 {
     /// <summary>
-    /// Test the <see cref="RhinoMockTestDataProvider"/>.
+    /// Test the <see cref="RhinoMocksTestDataProvider"/>.
     /// </summary>
     /// <autorh>Kenneth Xu</autorh>
     [TestFixture]
-    public class MockProviderTest : NewableValueObjectTestFixture<MockProviderTest.ValueObject>
+    public class RhinoMocksProviderTest : NewableValueObjectTestFixture<RhinoMocksProviderTest.ValueObject>
     {
-        public MockProviderTest()
+        public RhinoMocksProviderTest()
         {
-            MockProvider = new RhinoMockTestDataProvider();
+            TestDataProvider = new RhinoMocksTestDataProvider();
         }
 
         public class ValueObject

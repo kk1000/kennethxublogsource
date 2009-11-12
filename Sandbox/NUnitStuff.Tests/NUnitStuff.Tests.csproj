@@ -50,8 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AllBuildInTest.cs" />
+    <Compile Include="BadNotifyPropertyChangedTest.cs" />
     <Compile Include="CustomTest.cs" />
-    <Compile Include="MockProviderTest.cs" />
+    <Compile Include="RhinoMocksProviderTest.cs" />
+    <Compile Include="NotifyPropertyChangedTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleTest.cs" />
     <Compile Include="ValueTypeTest.cs" />
