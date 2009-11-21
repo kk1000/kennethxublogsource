@@ -35,6 +35,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\NUnit\net\2.0\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Rhino.Mocks, Version=3.5.0.1337, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -51,7 +52,9 @@
   <ItemGroup>
     <Compile Include="AllBuildInTest.cs" />
     <Compile Include="BadNotifyPropertyChangedTest.cs" />
+    <Compile Include="AbstractFixture.cs" />
     <Compile Include="CustomTest.cs" />
+    <Compile Include="DerivedFixture.cs" />
     <Compile Include="RhinoMocksProviderTest.cs" />
     <Compile Include="NotifyPropertyChangedTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
