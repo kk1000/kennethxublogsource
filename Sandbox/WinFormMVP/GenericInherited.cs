@@ -12,7 +12,6 @@ namespace GenericInherited
     public interface IPresenter<TV>
     {
         TV View { get; set; }
-        void Init();
     }
 
     public interface IMainPresenter : IPresenter<IMainView>
