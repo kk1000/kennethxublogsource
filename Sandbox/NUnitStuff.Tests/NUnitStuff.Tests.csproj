@@ -55,6 +55,8 @@
     <Compile Include="AbstractFixture.cs" />
     <Compile Include="CustomTest.cs" />
     <Compile Include="DerivedFixture.cs" />
+    <Compile Include="GenericTestFixture.cs" />
+    <Compile Include="ParameterizedFixture.cs" />
     <Compile Include="RhinoMocksProviderTest.cs" />
     <Compile Include="NotifyPropertyChangedTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

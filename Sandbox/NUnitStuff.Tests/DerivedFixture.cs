@@ -4,7 +4,7 @@ namespace NUnitStuff
 {
     public class DerivedFixture : AbstractFixture
     {
-        [Test] public void TestOnDerivedFixture() { }
+        [Test] public void TestOnDerivedFixture(int i) { }
         public override void OverrideableTestOnAbstractFixture() { }
     }
 }
