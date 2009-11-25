@@ -11,6 +11,17 @@ namespace CodeSharp
     public interface IOperand
     {
         /// <summary>
+        /// Access a field of current operand.
+        /// </summary>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// An <see cref="IOperand"/> representing the field.
+        /// </returns>
+        IOperand Field(string name);
+
+        /// <summary>
         /// Invoke a method on current operand.
         /// </summary>
         /// <param name="methodName">Name of the method to invoke.</param>
@@ -34,6 +45,21 @@ namespace CodeSharp
         /// The operand representing the result.
         /// </returns>
         IOperand Invoke(MethodInfo methodInfo, IEnumerable<IOperand> args);
+
+        /// <summary>
+        /// Invoke a method specified by <paramref name="methodInfo"/> on
+        /// current operand.
+        /// </summary>
+        /// <param name="methodInfo">
+        /// The method to invoke.
+        /// </param>
+        /// <param name="args">
+        /// Parameters passed to the method.
+        /// </param>
+        /// <returns>
+        /// The operand representing the result.
+        /// </returns>
+        IOperand Invoke(MethodInfo methodInfo, params IOperand[] args);
 
         /// <summary>
         /// Access a property of current operand.

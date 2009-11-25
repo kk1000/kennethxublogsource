@@ -2,9 +2,8 @@
 using System.Reflection.Emit;
 using NUnit.Framework;
 using Rhino.Mocks;
-using CodeSharp.Emit;
 
-namespace CodeSharp
+namespace CodeSharp.Emit
 {
     public interface IIndexerProperty
     {

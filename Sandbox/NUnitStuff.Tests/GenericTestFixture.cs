@@ -2,8 +2,8 @@
 
 namespace NUnitStuff
 {
-    [TestFixture(typeof(int))]
-    [TestFixture(typeof(string))]
+    //forgot [TestFixture(typeof(int))]
+    //forgot [TestFixture(typeof(string))]
     public class GenericTestFixture<T> : ThirdPartyFixture
     {
         [Test] public void TestOnGenericFixture()

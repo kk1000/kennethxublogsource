@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -9,8 +8,13 @@ namespace CodeSharp.Emit
     /// <summary>
     /// Operand definition
     /// </summary>
-    abstract class Operand : IOperand
+    internal abstract class Operand : IOperand
     {
+        public IOperand Field(string name)
+        {
+            return new FieldAccess(this, name);
+        }
+
         public readonly static Operand[] EmptyOperands = new Operand[0];
 
         /// <summary>
@@ -29,6 +33,11 @@ namespace CodeSharp.Emit
         public IOperand Invoke(MethodInfo methodInfo, IEnumerable<IOperand> args)
         {
             return new Invocation(this, methodInfo, args);
+        }
+
+        public IOperand Invoke(MethodInfo methodInfo, params IOperand[] args)
+        {
+            return Invoke(methodInfo, (IEnumerable<IOperand>) args);
         }
 
         public IOperand Property(string name)

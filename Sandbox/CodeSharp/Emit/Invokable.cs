@@ -13,7 +13,7 @@ namespace CodeSharp.Emit
         protected string _name;
 
         protected ParameterList _parameters;
-        private MethodCode _methodCode;
+        private Code _code;
         protected MethodAttributes _methodAttributes;
 
         protected Invokable(Type returnType, string name, ParameterList parameters)
@@ -40,19 +40,19 @@ namespace CodeSharp.Emit
         }
 
         /// <summary>
-        /// Get the <see cref="MethodCode"/> associated with this method
+        /// Get the <see cref="Emit.Code"/> associated with this method
         /// definition.
         /// </summary>
         /// <returns>
-        /// An instance of <see cref="MethodCode"/>.
+        /// An instance of <see cref="Emit.Code"/>.
         /// </returns>
-        public MethodCode Code()
+        public Code Code()
         {
-            if (_methodCode == null)
+            if (_code == null)
             {
-                _methodCode = new MethodCode();
+                _code = new Code();
             }
-            return _methodCode;
+            return _code;
         }
 
         /// <summary>

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection.Emit;
-using System.Text;
-using CodeSharp.Emit;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace CodeSharp
+namespace CodeSharp.Emit
 {
     public interface IReadOnlyProperty
     {

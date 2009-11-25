@@ -49,9 +49,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Emit\AssignmentCode.cs" />
+    <Compile Include="Emit\CallCode.cs" />
+    <Compile Include="Emit\CodeBlock.cs" />
+    <Compile Include="Emit\CodeSnip.cs" />
+    <Compile Include="Emit\Conditions\Condition.cs" />
+    <Compile Include="Emit\Conditions\ConditionNot.cs" />
+    <Compile Include="Emit\Construction.cs" />
     <Compile Include="Emit\Constructor.cs" />
     <Compile Include="Emit\Emitter.cs" />
+    <Compile Include="Emit\FieldAccess.cs" />
+    <Compile Include="Emit\IfBlock.cs" />
+    <Compile Include="Emit\Conditions\IsNull.cs" />
+    <Compile Include="Emit\Conditions\Equals.cs" />
     <Compile Include="Emit\Getter.cs" />
+    <Compile Include="Emit\Conditions\ReferenceEquals.cs" />
+    <Compile Include="Emit\NullLiteral.cs" />
+    <Compile Include="Emit\Conditions\ConditionOr.cs" />
+    <Compile Include="Emit\Variable.cs" />
+    <Compile Include="ICondition.cs" />
     <Compile Include="Emit\Invocation.cs" />
     <Compile Include="Emit\Invokable.cs" />
     <Compile Include="Emit\Parameter.cs" />
@@ -60,7 +76,9 @@
     <Compile Include="Emit\Field.cs" />
     <Compile Include="Emit\Property.cs" />
     <Compile Include="Emit\PropertyAccess.cs" />
+    <Compile Include="Emit\ReturnCode.cs" />
     <Compile Include="Emit\Setter.cs" />
+    <Compile Include="Emit\StringLiteral.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="IConstructor.cs" />
     <Compile Include="IGenerator.cs" />
@@ -73,7 +91,7 @@
     <Compile Include="IOperand.cs" />
     <Compile Include="IParameterList.cs" />
     <Compile Include="Emit\Method.cs" />
-    <Compile Include="Emit\MethodCode.cs" />
+    <Compile Include="Emit\Code.cs" />
     <Compile Include="Emit\Operand.cs" />
     <Compile Include="IProperty.cs" />
     <Compile Include="ISetter.cs" />

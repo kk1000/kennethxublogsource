@@ -33,6 +33,10 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NUnit.CommonFixtures, Version=2.5.2.12, Culture=neutral, PublicKeyToken=f26aaedcfccca009, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\NUnit.CommonFixtures\net\3.5\Debug\NUnit.CommonFixtures.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.5.1.9189, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\NUnit\net\2.0\nunit.framework.dll</HintPath>
@@ -55,25 +59,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HodgepodgeWrapperTest.cs" />
-    <Compile Include="OutParameterMethodWrapperTest.cs" />
-    <Compile Include="ReadWritePropertyWrapperTest.cs" />
-    <Compile Include="IndexerPropertyWrapperTest.cs" />
-    <Compile Include="WriteOnlyPropertyWrapperTest.cs" />
-    <Compile Include="SimpleMethodWrapperTest.cs" />
-    <Compile Include="EmitUtils.cs" />
+    <Compile Include="ChangeTrackerBase.cs" />
+    <Compile Include="Emit\ChangeCheckerTest.cs" />
+    <Compile Include="Emit\ChangeTrackerProxyFactory.cs" />
+    <Compile Include="Emit\HodgepodgeWrapperTest.cs" />
+    <Compile Include="Emit\OutParameterMethodWrapperTest.cs" />
+    <Compile Include="Emit\ReadWritePropertyWrapperTest.cs" />
+    <Compile Include="Emit\IndexerPropertyWrapperTest.cs" />
+    <Compile Include="Emit\WriteOnlyPropertyWrapperTest.cs" />
+    <Compile Include="Emit\SimpleMethodWrapperTest.cs" />
+    <Compile Include="Emit\EmitUtils.cs" />
+    <Compile Include="IChangeTrackerBase.cs" />
+    <Compile Include="IObjectChangeTracker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RefParameterMethodWrapperTest.cs" />
-    <Compile Include="ReadOnlyPropertyWrapperTest.cs" />
+    <Compile Include="Emit\RefParameterMethodWrapperTest.cs" />
+    <Compile Include="Emit\ReadOnlyPropertyWrapperTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CodeSharp\CodeSharp.csproj">
       <Project>{F2197ACC-22EF-409B-A1E7-DBE29E06A1B9}</Project>
       <Name>CodeSharp</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NUnitStuff\NUnitStuff.csproj">
-      <Project>{62245073-1F85-4107-8F2B-961984DF871F}</Project>
-      <Name>NUnitStuff</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

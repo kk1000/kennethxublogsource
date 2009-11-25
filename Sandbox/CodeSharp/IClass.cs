@@ -9,6 +9,17 @@ namespace CodeSharp
     public interface IClass
     {
         /// <summary>
+        /// Inherits from <typeparamref name="T"/>
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type to inherit from.
+        /// </typeparam>
+        /// <returns>
+        /// This <see cref="IClass"/> instance.
+        /// </returns>
+        IClass Inherits<T>() where T : class;
+
+        /// <summary>
         /// Implements the interface.
         /// </summary>
         /// <param name="interface">
@@ -140,5 +151,10 @@ namespace CodeSharp
         /// Mark the class public.
         /// </summary>
         IClass Public { get;}
+
+        /// <summary>
+        /// Represents the current instance of class.
+        /// </summary>
+        IOperand This { get; }
     }
 }

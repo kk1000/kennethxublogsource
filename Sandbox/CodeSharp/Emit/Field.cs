@@ -64,5 +64,23 @@ namespace CodeSharp.Emit
             value.EmitGet(il);
             il.Emit(OpCodes.Stfld, FieldBuilder);
         }
+
+        public IField ReadOnly
+        {
+            get
+            {
+                _fieldAttributes |= FieldAttributes.InitOnly;
+                return this;
+            }
+        }
+
+        public IField Internal
+        {
+            get
+            {
+                _fieldAttributes |= FieldAttributes.Assembly;
+                return this;
+            }
+        }
     }
 }

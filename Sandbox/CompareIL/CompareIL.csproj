@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChangeTrackerImpl.cs" />
     <Compile Include="ReadOnlyPropertyImpl.cs" />
     <Compile Include="WriteOnlyPropertyImpl.cs" />
     <Compile Include="SimpleMethodImpl.cs" />

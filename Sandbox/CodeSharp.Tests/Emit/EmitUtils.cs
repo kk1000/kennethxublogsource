@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
 
-namespace CodeSharp
+namespace CodeSharp.Emit
 {
     public interface IEmittedDelegate
     {

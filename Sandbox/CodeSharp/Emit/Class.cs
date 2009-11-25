@@ -17,6 +17,7 @@ namespace CodeSharp.Emit
         readonly List<Property> _properties = new List<Property>();
 
         private TypeAttributes _typeAttributes;
+        internal TypeBuilder TypeBuilder { get; private set; }
 
         /// <summary>
         /// Get all fields defined in this class.
@@ -93,6 +94,13 @@ namespace CodeSharp.Emit
                 throw new ArgumentException(@interface.Name + " is not an interfaces.", "interface");
             }
             _interfaces.Add(@interface);
+            return this;
+        }
+
+        public IClass Inherits<T>()
+            where T : class 
+        {
+            BaseType = typeof (T);
             return this;
         }
 
@@ -238,6 +246,11 @@ namespace CodeSharp.Emit
             }
         }
 
+        public IOperand This
+        {
+            get { return new ThisOperand(this); }
+        }
+
         /// <summary>
         /// Generate the class.
         /// </summary>
@@ -248,6 +261,7 @@ namespace CodeSharp.Emit
         {
             if (moduleBuilder == null) throw new ArgumentNullException("moduleBuilder");
             TypeBuilder tb = moduleBuilder.DefineType(FullName, _typeAttributes, BaseType, Interfaces);
+            TypeBuilder = tb;
             foreach (var field in Fields)
             {
                 field.Emit(tb);
@@ -284,6 +298,30 @@ namespace CodeSharp.Emit
             }
 
             return tb.CreateType();
+        }
+    }
+
+    internal class ThisOperand : Operand
+    {
+        private readonly Class _class;
+
+        public ThisOperand(Class @class)
+        {
+            _class = @class;
+        }
+
+        public override Type Type {
+            get { return _class.TypeBuilder; }
+        }
+
+        internal override void EmitGet(ILGenerator il)
+        {
+            il.Emit(OpCodes.Ldarg_0);
+        }
+
+        internal override void EmitSet(ILGenerator il, Operand value)
+        {
+            throw new InvalidOperationException("Cannot assign to this.");
         }
     }
 }

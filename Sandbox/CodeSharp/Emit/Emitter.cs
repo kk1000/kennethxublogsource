@@ -40,6 +40,23 @@ namespace CodeSharp.Emit
         /// <summary>
         /// Define a new parameter.
         /// </summary>
+        /// <param name="type">
+        /// The type of the parameter.
+        /// </param>
+        /// <param name="parameterName">
+        /// The name of the parameter.
+        /// </param>
+        /// <returns>
+        /// A parameter definition.
+        /// </returns>
+        public IParameter Arg(Type type, string parameterName)
+        {
+            return new Parameter(type, parameterName, ParameterDirection.In);
+        }
+
+        /// <summary>
+        /// Define a new parameter.
+        /// </summary>
         /// <typeparam name="T">
         /// The type of the parameter.
         /// </typeparam>
@@ -51,7 +68,7 @@ namespace CodeSharp.Emit
         /// </returns>
         public IParameter Arg<T>(string parameterName)
         {
-            return new Parameter(typeof(T), parameterName, ParameterDirection.In);
+            return Arg(typeof (T), parameterName);
         }
 
         /// <summary>
@@ -86,6 +103,33 @@ namespace CodeSharp.Emit
         public IParameter ArgOut<T>(string parameterName)
         {
             return new Parameter(typeof(T), parameterName, ParameterDirection.Out);
+        }
+
+        /// <summary>
+        /// Create an <see cref="IOperand"/> from a
+        /// string.
+        /// </summary>
+        /// <param name="value">
+        /// The string value.
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IOperand"/>.
+        /// </returns>
+        public IOperand Const(string value)
+        {
+            return new StringLiteral(value);
+        }
+
+        /// <summary>
+        /// Create an <see cref="IOperand"/> representing a <c>null</c> value.
+        /// </summary>
+        /// <param name="type">Type of the operand.</param>
+        /// <returns>
+        /// The operand representing a <c>null</c>.
+        /// </returns>
+        public IOperand Null(Type type)
+        {
+            return new NullLiteral(type);
         }
 
         /// <summary>
