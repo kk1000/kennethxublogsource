@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CodeSharp
+namespace CodeSharp.Proxy
 {
     // Compares objects of the given type or WeakKeyReferences to them
     // for equality based on the given comparer. Note that we can only

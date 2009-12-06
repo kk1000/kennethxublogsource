@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CodeSharp
+namespace CodeSharp.Proxy
 {
     // Provides a weak reference to a null target object, which, unlike
     // other weak references, is always considered to be alive. This

@@ -4,9 +4,14 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
+using CodeSharp.Emit;
 
-namespace CodeSharp.Emit
+namespace CodeSharp.Proxy
 {
+    /// <summary>
+    /// Factory class to create composite based proxy that implements
+    /// <see cref="INotifyPropertyChanged"/>.
+    /// </summary>
     public static class NotifyPropertyChangedProxyFactory
     {
         const string _moduleName = "NotifyPropertyChangedProxyFactory.dll";
@@ -35,21 +40,78 @@ namespace CodeSharp.Emit
             SetBaseClass<NotifyPropertyChangedBase>();
         }
 
-        public static void SetBaseClass<TBase>()
+        /// <summary>
+        /// Set the base class for all the generated proxies.
+        /// </summary>
+        /// <remarks>
+        /// <typeparamref name="TBase"/> must be a class that is not sealed and
+        /// implements <see cref="INotifyPropertyChanged"/>. It also must has a
+        /// non-abstract method with signature: <c>OnPropertyChanged(string)</c>
+        /// that is accessable by the derived class.
+        /// </remarks>
+        /// <typeparam name="TBase">
+        /// Type of the base class.
+        /// </typeparam>
+        public static void SetBaseClass<TBase>() where TBase : class, INotifyPropertyChanged
         {
             SetBaseClass<TBase>(_defaultOnPropertyChangedMethod);
         }
 
+        /// <summary>
+        /// Set the base class for all the generated proxies.
+        /// </summary>
+        /// <remarks>
+        /// <paramref name="baseClassType"/> must be a class that is not sealed and
+        /// implements <see cref="INotifyPropertyChanged"/>. It also must has a
+        /// non-abstract method with signature: <c>OnPropertyChanged(string)</c>
+        /// that is accessable by the derived class.
+        /// </remarks>
+        /// <param name="baseClassType">
+        /// Type of the base class.
+        /// </param>
         public static void SetBaseClass(Type baseClassType)
         {
             SetBaseClass(baseClassType, _defaultOnPropertyChangedMethod);
         }
 
+        /// <summary>
+        /// Set the base class for all the generated proxies.
+        /// </summary>
+        /// <remarks>
+        /// <typeparamref name="TBase"/> must be a class that is not sealed and
+        /// implements <see cref="INotifyPropertyChanged"/>. It also must has a
+        /// non-abstract method that take one string parameter. The name of the
+        /// method is specified by <paramref name="onPropertyChangeMethod"/>.
+        /// </remarks>
+        /// <typeparam name="TBase">
+        /// Type of the base class.
+        /// </typeparam>
+        /// <param name="onPropertyChangeMethod">
+        /// The name of the method to raise the 
+        /// <see cref="INotifyPropertyChanged.PropertyChanged"/> event.
+        /// </param>
         public static void SetBaseClass<TBase>(string onPropertyChangeMethod)
+            where TBase : INotifyPropertyChanged
         {
             SetBaseClass(typeof(TBase), onPropertyChangeMethod);
         }
 
+        /// <summary>
+        /// Set the base class for all the generated proxies.
+        /// </summary>
+        /// <remarks>
+        /// <paramref name="baseClassType"/> must be a class that is not sealed and
+        /// implements <see cref="INotifyPropertyChanged"/>. It also must has a
+        /// non-abstract method that take one string parameter. The name of the
+        /// method is specified by <paramref name="onPropertyChangeMethod"/>.
+        /// </remarks>
+        /// <param name="baseClassType">
+        /// Type of the base class.
+        /// </param>
+        /// <param name="onPropertyChangeMethod">
+        /// The name of the method to raise the 
+        /// <see cref="INotifyPropertyChanged.PropertyChanged"/> event.
+        /// </param>
         public static void SetBaseClass(Type baseClassType, string onPropertyChangeMethod)
         {
             if (baseClassType == null) throw new ArgumentNullException("baseClassType");
@@ -80,11 +142,23 @@ namespace CodeSharp.Emit
             }
         }
 
-        internal static void SaveAssembly()
+        /// <summary>
+        /// Save all generated proxy types in an assembly.
+        /// </summary>
+        public static void SaveAssembly()
         {
             _assemblyBuilder.Save(_moduleName);
         }
 
+        /// <summary>
+        /// The filter to indicate if ghe factory should generate proxy for
+        /// types that are used as parameter or return value of type of which
+        /// a proxy is being generated.
+        /// </summary>
+        /// <remarks>
+        /// This property can only be set before any proxy is generated.
+        /// Otherwise <see cref="InvalidOperationException"/> is thrown.
+        /// </remarks>
         public static Predicate<Type> DeepProxyFilter
         {
             set
@@ -97,17 +171,51 @@ namespace CodeSharp.Emit
             }
         }
 
+        /// <summary>
+        /// Indicates the given attribute type <typeparamref name="TA"/>
+        /// makes types that should be wrapped by its proxy.
+        /// </summary>
+        /// <typeparam name="TA">Type of the attribute.</typeparam>
+        /// <seealso cref="DeepProxyFilter"/>
         public static void SetDeepProxyAttribute<TA>()
             where TA : Attribute
         {
             DeepProxyFilter = t => t.GetCustomAttributes(typeof (TA), true).Length != 0;
         }
 
+        /// <summary>
+        /// Create a new instance of proxy for given <paramref name="target"/>.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the proxy to generated. It must be an interface.
+        /// </typeparam>
+        /// <param name="target">
+        /// The target of proxy.
+        /// </param>
+        /// <returns>
+        /// A newly created proxy instance.
+        /// </returns>
         public static T NewProxy<T>(T target) where T : class 
         {
             return Generator<T>.NewProxy(target);
         }
 
+        /// <summary>
+        /// Get an instance of proxy for given <paramref name="target"/>.
+        /// </summary>
+        /// <remarks>
+        /// The method try to find the proxy in cache. If one doesn't exist,
+        /// create it and cache it.
+        /// </remarks>
+        /// <typeparam name="T">
+        /// Type of the proxy to generated. It must be an interface.
+        /// </typeparam>
+        /// <param name="target">
+        /// The target of proxy.
+        /// </param>
+        /// <returns>
+        /// The proxy for given instance.
+        /// </returns>
         public static T GetProxy<T>(T target) where T : class 
         {
             return Generator<T>.GetProxy(target);
@@ -356,7 +464,7 @@ namespace CodeSharp.Emit
         
     }
 
-    public interface ICompositeProxy<T>
+    internal interface ICompositeProxy<T>
     {
         T Target { get; }
     }

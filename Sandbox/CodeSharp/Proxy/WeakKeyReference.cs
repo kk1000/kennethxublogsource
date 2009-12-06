@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CodeSharp
+namespace CodeSharp.Proxy
 {
     // Provides a weak reference to an object of the given type to be used in
     // a WeakDictionary along with the given comparer.

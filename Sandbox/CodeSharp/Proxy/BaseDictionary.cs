@@ -4,16 +4,15 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace CodeSharp
+namespace CodeSharp.Proxy
 {
     ///  <summary>
     /// Represents a dictionary mapping keys to values.
     /// </summary>
-    ///
     /// <remarks>
-    /// Provides the plumbing for the portions of IDictionary<TKey,
-    /// TValue> which can reasonably be implemented without any
-    /// dependency on the underlying representation of the dictionary.
+    /// Provides the plumbing for the portions of <see cref="IDictionary{TKey,TValue}"/>
+    /// which can reasonably be implemented without any dependency on the 
+    /// underlying representation of the dictionary.
     /// </remarks>
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(PREFIX + "DictionaryDebugView`2" + SUFFIX)]

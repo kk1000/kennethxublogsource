@@ -4,7 +4,7 @@ using CodeSharp.Emit;
 
 namespace CompareIL
 {
-    internal class ChangeTrackerForIValueObject : ChangeTrackerBase, IValueObject, ICompositeProxy<IValueObject>
+    internal class ChangeTrackerForIValueObject : ChangeTrackerBase, IValueObject
     {
         private IValueObject _wrapped;
         private ChangeTrackerForIValueComponent _ComponentProperty;

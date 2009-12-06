@@ -1,4 +1,5 @@
 ﻿using System;
+using CodeSharp.Proxy;
 using NUnit.CommonFixtures;
 using NUnit.Framework;
 using Rhino.Mocks;

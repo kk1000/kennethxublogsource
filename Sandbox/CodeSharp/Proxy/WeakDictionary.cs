@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CodeSharp
+namespace CodeSharp.Proxy
 {
     ///  <summary>
     /// A generic dictionary, which allows both its keys and values

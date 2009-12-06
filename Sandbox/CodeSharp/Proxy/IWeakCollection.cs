@@ -1,4 +1,4 @@
-namespace CodeSharp
+namespace CodeSharp.Proxy
 {
     internal interface IWeakCollection
     {
