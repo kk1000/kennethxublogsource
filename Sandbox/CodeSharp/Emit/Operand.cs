@@ -55,6 +55,11 @@ namespace CodeSharp.Emit
             return new PropertyAccess(this, propertyInfo, indexes);
         }
 
+        public IOperand As(Type type)
+        {
+            return new SafeCast(this, type);
+        }
+
         /// <summary>
         /// The type of the operand.
         /// </summary>
@@ -73,6 +78,34 @@ namespace CodeSharp.Emit
                 types[i++] = operand.Type;
             }
             return types;
+        }
+    }
+
+    internal class SafeCast : Operand
+    {
+        private readonly Operand _operand;
+        private readonly Type _type;
+
+        public SafeCast(Operand operand, Type type)
+        {
+            _operand = operand;
+            _type = type;
+        }
+
+        public override Type Type
+        {
+            get { return _type; }
+        }
+
+        internal override void EmitGet(ILGenerator il)
+        {
+            _operand.EmitGet(il);
+            il.Emit(OpCodes.Isinst, _type);
+        }
+
+        internal override void EmitSet(ILGenerator il, Operand value)
+        {
+            throw new NotImplementedException();
         }
     }
 }

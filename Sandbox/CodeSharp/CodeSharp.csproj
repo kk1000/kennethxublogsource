@@ -97,6 +97,14 @@
     <Compile Include="ISetter.cs" />
     <Compile Include="ParameterDirection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Proxy\BaseDictionary.cs" />
+    <Compile Include="Proxy\IWeakCollection.cs" />
+    <Compile Include="Proxy\NotifyPropertyChangedProxyFactory.cs" />
+    <Compile Include="Proxy\WeakDictionary.cs" />
+    <Compile Include="Proxy\WeakKeyComparer.cs" />
+    <Compile Include="Proxy\WeakKeyReference.cs" />
+    <Compile Include="Proxy\WeakNullReference.cs" />
+    <Compile Include="Proxy\WeakReference.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -79,6 +79,11 @@ namespace CodeSharp.Emit
             return new IsNull((Operand) operand);
         }
 
+        public ICondition ReferenceEquals(IOperand operand1, IOperand operand2)
+        {
+            return new ReferenceEquals((Operand) operand1, (Operand) operand2);
+        }
+
         public ICondition NotReferenceEquals(IOperand operand1, IOperand operand2)
         {
             return new ConditionNot(new ReferenceEquals((Operand) operand1, (Operand) operand2));
@@ -92,6 +97,12 @@ namespace CodeSharp.Emit
         public void If(ICondition condition)
         {
             StartBlock(new IfBlock((Condition)condition));
+        }
+
+        public void Else()
+        {
+            var ifBlock = (IfBlock) _nestedblock;
+            ifBlock.StartElse();
         }
 
         public void End()

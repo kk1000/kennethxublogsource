@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using CodeSharp.Emit;
 
 namespace CodeSharp
 {
@@ -96,6 +95,15 @@ namespace CodeSharp
         /// The operant representing the property.
         /// </returns>
         IOperand Property(PropertyInfo propertyInfo, IEnumerable<IOperand> indexes);
+
+        /// <summary>
+        /// Safe cast to <paramref name="type"/>.
+        /// </summary>
+        /// <param name="type">Type to cast current operand value.</param>
+        /// <returns>
+        /// Operand represents the result of save cast.
+        /// </returns>
+        IOperand As(Type type);
 
         /// <summary>
         /// The type of the operand.

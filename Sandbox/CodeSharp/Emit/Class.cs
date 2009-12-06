@@ -104,6 +104,12 @@ namespace CodeSharp.Emit
             return this;
         }
 
+        public IClass Inherits(Type baseType)
+        {
+            BaseType = baseType;
+            return this;
+        }
+
         /// <summary>
         /// Define a new method in the class.
         /// </summary>

@@ -20,6 +20,14 @@ namespace CodeSharp
         IClass Inherits<T>() where T : class;
 
         /// <summary>
+        /// Inherits from <paramref name="baseType"/>.
+        /// </summary>
+        /// <returns>
+        /// This <see cref="IClass"/> instance.
+        /// </returns>
+        IClass Inherits(Type baseType);
+
+        /// <summary>
         /// Implements the interface.
         /// </summary>
         /// <param name="interface">

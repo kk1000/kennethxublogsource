@@ -61,7 +61,6 @@
   <ItemGroup>
     <Compile Include="ChangeTrackerBase.cs" />
     <Compile Include="Emit\ChangeCheckerTest.cs" />
-    <Compile Include="Emit\ChangeTrackerProxyFactory.cs" />
     <Compile Include="Emit\HodgepodgeWrapperTest.cs" />
     <Compile Include="Emit\OutParameterMethodWrapperTest.cs" />
     <Compile Include="Emit\ReadWritePropertyWrapperTest.cs" />

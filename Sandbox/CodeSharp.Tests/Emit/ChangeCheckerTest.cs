@@ -5,7 +5,28 @@ using Rhino.Mocks;
 
 namespace CodeSharp.Emit
 {
-    public class BvoAttribute : Attribute{}
+    public class BvoAttribute : Attribute
+    {
+        private readonly Type _baseType;
+
+        public BvoAttribute()
+        {
+        }
+
+        public BvoAttribute(Type baseType)
+        {
+            if (baseType != null && !typeof(ChangeTrackerBase).IsAssignableFrom(baseType))
+            {
+                throw new ArgumentException("Must be sub class of " + typeof(ChangeTrackerBase), "baseType");
+            }
+            _baseType = baseType;
+        }
+
+        public Type BaseType
+        {
+            get { return _baseType; }
+        }
+    }
 
     [BvoAttribute]
     public interface IValueObject
@@ -33,12 +54,13 @@ namespace CodeSharp.Emit
         }
         [TestFixtureSetUp] public void TestFixtureSetUp()
         {
-            ChangeTrackerProxyFactory.SetDeepProxyAttribute<BvoAttribute>();
+            NotifyPropertyChangedProxyFactory.SetDeepProxyAttribute<BvoAttribute>();
+            NotifyPropertyChangedProxyFactory.SetBaseClass<ChangeTrackerBase>("FirePropertyChanged");
         }
 
         [TestFixtureTearDown] public void TestFixtureTearDown()
         {
-            ChangeTrackerProxyFactory.SaveAssembly();
+            NotifyPropertyChangedProxyFactory.SaveAssembly();
         }
 
         [Test] public void CanCreateProxy()
@@ -49,7 +71,7 @@ namespace CodeSharp.Emit
         protected override IValueObject NewValueObject()
         {
             var mock = MockRepository.GenerateStub<IValueObject>();
-            return ChangeTrackerProxyFactory.NewProxy(mock);
+            return NotifyPropertyChangedProxyFactory.NewProxy(mock);
         }
 
         protected override System.Collections.IEnumerable TestData(System.Reflection.PropertyInfo property)

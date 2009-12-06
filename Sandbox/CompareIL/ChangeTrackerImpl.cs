@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using CodeSharp;
 using CodeSharp.Emit;
 
 namespace CompareIL
 {
-    internal class ChangeTrackerForIValueObject : ChangeTrackerBase, IValueObject
+    internal class ChangeTrackerForIValueObject : ChangeTrackerBase, IValueObject, ICompositeProxy<IValueObject>
     {
         private IValueObject _wrapped;
         private ChangeTrackerForIValueComponent _ComponentProperty;
@@ -89,7 +86,18 @@ namespace CompareIL
             }
             set 
             {
-                _wrapped.ComponentProperty = value;
+                if(ReferenceEquals(value, _ComponentProperty)) return;
+                if(ReferenceEquals(value, _ComponentProperty._wrapped)) return;
+                var proxy = value as ChangeTrackerForIValueComponent;
+                if (proxy == null)
+                {
+                    _wrapped.ComponentProperty = value;
+                }
+                else
+                {
+                    _wrapped.ComponentProperty = proxy._wrapped;
+                    _ComponentProperty = proxy;
+                }
                 FirePropertyChanged("ComponentProperty");
             }
         }
@@ -97,6 +105,11 @@ namespace CompareIL
         public bool AllGood()
         {
             return !IsReadonly && _wrapped.IntProperty == 123 || _wrapped.SimpleProperty == "any";
+        }
+
+        public IValueObject Target
+        {
+            get { return _wrapped; }
         }
     }
 

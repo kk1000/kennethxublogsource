@@ -67,6 +67,16 @@ namespace CodeSharp
         ICondition AreNotEqual(IOperand left, IOperand right);
 
         /// <summary>
+        /// ReferenceEquals(operand1, operand2)
+        /// </summary>
+        /// <param name="operand1">First operand to compare.</param>
+        /// <param name="operand2">Second operand to compare.</param>
+        /// <returns>
+        /// Condition of: ReferenceEquals(operand1, operand2)
+        /// </returns>
+        ICondition ReferenceEquals(IOperand operand1, IOperand operand2);
+
+        /// <summary>
         /// !ReferenceEquals(operand1, operand2)
         /// </summary>
         /// <param name="operand1">First operand to compare.</param>
@@ -98,19 +108,6 @@ namespace CodeSharp
         ICondition IsNull(IOperand operand);
 
         /// <summary>
-        /// start of if statement block
-        /// </summary>
-        /// <param name="condition">
-        /// condition of if statement.
-        /// </param>
-        void If(ICondition condition);
-
-        /// <summary>
-        /// End of code block
-        /// </summary>
-        void End();
-
-        /// <summary>
         /// Define a local variable.
         /// </summary>
         /// <param name="type">Type of the variable.</param>
@@ -119,5 +116,23 @@ namespace CodeSharp
         /// An <see cref="IOperand"/> representing the variable.
         /// </returns>
         IOperand Variable(Type type, string name);
+
+        /// <summary>
+        /// Start of if statement block.
+        /// </summary>
+        /// <param name="condition">
+        /// condition of if statement.
+        /// </param>
+        void If(ICondition condition);
+
+        /// <summary>
+        /// Else block of if statement.
+        /// </summary>
+        void Else();
+
+        /// <summary>
+        /// End of code block.
+        /// </summary>
+        void End();
     }
 }
