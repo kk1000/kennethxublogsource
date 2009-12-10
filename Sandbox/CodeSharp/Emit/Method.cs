@@ -53,6 +53,7 @@ namespace CodeSharp.Emit
 
         public override ParameterBuilder DefineParameter(int i, ParameterAttributes attributes, string name)
         {
+            if ((_methodAttributes & MethodAttributes.Static) == MethodAttributes.Static) i--;
             return _methodBuilder.DefineParameter(i, attributes, name);
         }
 

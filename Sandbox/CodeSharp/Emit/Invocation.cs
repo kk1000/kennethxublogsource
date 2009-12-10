@@ -15,18 +15,17 @@ namespace CodeSharp.Emit
         private readonly IEnumerable<IOperand> _args;
         private readonly MethodInfo _methodInfo;
 
-        private Invocation(IOperand operand)
-        {
-            if (operand == null) throw new ArgumentNullException("operand");
-            _operand = (Operand)operand;
-        }
-
         public Invocation(IOperand operand, MethodInfo methodInfo, IEnumerable<IOperand> args)
-            :this(operand)
+            :this(operand, args)
         {
             if (methodInfo == null) throw new ArgumentNullException("methodInfo");
             _methodInfo = methodInfo;
-            _args = args;
+            if (!methodInfo.IsStatic) GetOperandType(operand);
+        }
+
+        public Invocation(MethodInfo methodInfo, IEnumerable<IOperand> args)
+            : this(null, methodInfo, args)
+        {
         }
 
         /// <summary>
@@ -44,26 +43,57 @@ namespace CodeSharp.Emit
         /// The paremeter used to invoke the method.
         /// </param>
         public Invocation(IOperand operand, string name, IOperand[] args)
-            :this(operand)
+            :this(operand, GetOperandType(operand), name, args)
         {
+        }
+
+        public Invocation(Type type, string name, IOperand[] args)
+            : this(null, type, name, args)
+        {
+        }
+
+        private Invocation(IOperand operand, IEnumerable<IOperand> args)
+        {
+            _operand = (Operand)operand;
+            _args = args ?? EmptyOperands;
+        }
+
+        private Invocation(IOperand operand, Type type, string name, IOperand[] args)
+            : this(operand, args)
+        {
+            var flag = (operand == null ? BindingFlags.Static : BindingFlags.Instance);
+            _methodInfo = GetMethodInfo(type, name, args, flag);
+        }
+
+        private static Type GetOperandType(IOperand operand)
+        {
+            if (operand == null)
+            {
+                throw new ArgumentNullException("operand", "operand is required to invoke instance method.");
+            }
+            return operand.Type;
+        }
+
+        private static MethodInfo GetMethodInfo(Type type, string name, IOperand[] args, BindingFlags flag)
+        {
+            if (type == null) throw new ArgumentNullException("type");
             if (name == null) throw new ArgumentNullException("name");
             if (args == null) args = EmptyOperands;
-            _args = args;
             var paramTypes = new Type[args.Length];
             for (int i = args.Length - 1; i >= 0; i--)
             {
                 paramTypes[i] = args[i].Type;
             }
-            _methodInfo = operand.Type.GetMethod(
-                name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+            var methodInfo = type.GetMethod(
+                name, BindingFlags.Public | BindingFlags.NonPublic | flag,
                 null, paramTypes, null);
-            if (_methodInfo == null)
+            if (methodInfo == null)
             {
                 StringBuilder sb = new StringBuilder("Not such method found: ");
-                sb.Append(operand.Type).Append('.').Append(name).Append('(');
-                foreach (var type in paramTypes)
+                sb.Append(type).Append('.').Append(name).Append('(');
+                foreach (var paramType in paramTypes)
                 {
-                    sb.Append(type).Append(',');
+                    sb.Append(paramType).Append(',');
                 }
                 if (paramTypes.Length > 0)
                 {
@@ -72,6 +102,7 @@ namespace CodeSharp.Emit
                 sb.Append(')');
                 throw new ArgumentException(sb.ToString());
             }
+            return methodInfo;
         }
 
         /// <summary>
@@ -94,12 +125,14 @@ namespace CodeSharp.Emit
 
         internal void Emit(ILGenerator il)
         {
-            if (!_methodInfo.IsStatic) _operand.EmitGet(il);
+            var isInstance = !_methodInfo.IsStatic;
+            if (isInstance) _operand.EmitGet(il);
             foreach (var operand in _args)
             {
                 ((Operand)operand).EmitGet(il);
             }
-            il.Emit(OpCodes.Callvirt, _methodInfo);
+            if(isInstance)il.Emit(OpCodes.Callvirt, _methodInfo);
+            else il.Emit(OpCodes.Call, _methodInfo);
         }
     }
 }

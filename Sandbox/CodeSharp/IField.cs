@@ -6,6 +6,11 @@ namespace CodeSharp
     public interface IField : IOperand
     {
         /// <summary>
+        /// Name of the field.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
         /// Mark field readonly.
         /// </summary>
         IField ReadOnly { get; }

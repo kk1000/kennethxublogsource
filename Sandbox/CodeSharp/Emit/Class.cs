@@ -97,6 +97,15 @@ namespace CodeSharp.Emit
             return this;
         }
 
+        public IClass Implements(params Type[] interfaces)
+        {
+            foreach (var type in interfaces)
+            {
+                Implements(type);
+            }
+            return this;
+        }
+
         public IClass Inherits<T>()
             where T : class 
         {

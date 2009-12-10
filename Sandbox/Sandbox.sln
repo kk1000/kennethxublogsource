@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSharp.Tests", "CodeShar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompareIL", "CompareIL\CompareIL.csproj", "{83B409F6-9FA2-4EEB-A2A2-16C5B0BD3236}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Collection", "Common.Collections\Common.Collection.csproj", "{6C5CDE9C-BC96-4EEC-95EA-E08DBF4E0C87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Extension", "System.Extension\System.Extension.csproj", "{6D5D932C-4B00-44E2-8080-F097A3E1C5C3}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -41,6 +45,14 @@ Global
 		{83B409F6-9FA2-4EEB-A2A2-16C5B0BD3236}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83B409F6-9FA2-4EEB-A2A2-16C5B0BD3236}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83B409F6-9FA2-4EEB-A2A2-16C5B0BD3236}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C5CDE9C-BC96-4EEC-95EA-E08DBF4E0C87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C5CDE9C-BC96-4EEC-95EA-E08DBF4E0C87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C5CDE9C-BC96-4EEC-95EA-E08DBF4E0C87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C5CDE9C-BC96-4EEC-95EA-E08DBF4E0C87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D5D932C-4B00-44E2-8080-F097A3E1C5C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D5D932C-4B00-44E2-8080-F097A3E1C5C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D5D932C-4B00-44E2-8080-F097A3E1C5C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D5D932C-4B00-44E2-8080-F097A3E1C5C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

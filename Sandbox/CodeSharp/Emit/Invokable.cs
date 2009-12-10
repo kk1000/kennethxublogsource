@@ -98,6 +98,16 @@ namespace CodeSharp.Emit
             }
         }
 
+        public T Static
+        {
+            get
+            {
+                _methodAttributes |= MethodAttributes.Static;
+                _methodAttributes &= ~ (MethodAttributes.Virtual | MethodAttributes.Final | MethodAttributes.NewSlot);
+                return Self;
+            }
+        }
+
         protected abstract T Self { get; }
     }
 }

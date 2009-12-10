@@ -118,6 +118,28 @@ namespace CodeSharp
         IOperand Variable(Type type, string name);
 
         /// <summary>
+        /// Define and initialize a local variable.
+        /// </summary>
+        /// <param name="type">Type of the variable.</param>
+        /// <param name="name">Name of the variable.</param>
+        /// <param name="initOperand">Initial value.</param>
+        /// <returns>
+        /// An <see cref="IOperand"/> representing the variable.
+        /// </returns>
+        IOperand Variable(Type type, string name, IOperand initOperand);
+
+        /// <summary>
+        /// Define and initialize a local variable.
+        /// </summary>
+        /// <param name="class">Type of the variable.</param>
+        /// <param name="name">Name of the variable.</param>
+        /// <param name="initOperand">Initial value.</param>
+        /// <returns>
+        /// An <see cref="IOperand"/> representing the variable.
+        /// </returns>
+        IOperand Variable(IClass @class, string name, IOperand initOperand);
+
+        /// <summary>
         /// Start of if statement block.
         /// </summary>
         /// <param name="condition">
@@ -134,5 +156,17 @@ namespace CodeSharp
         /// End of code block.
         /// </summary>
         void End();
+
+        /// <summary>
+        /// Invoke a static method.
+        /// </summary>
+        /// <param name="staticMethod">
+        /// A <see cref="MethodInfo"/> of static method.
+        /// </param>
+        /// <param name="operands">
+        /// Parameters to be passed to the method.
+        /// </param>
+        /// <returns></returns>
+        IOperand Invoke(MethodInfo staticMethod, params IOperand[] operands);
     }
 }

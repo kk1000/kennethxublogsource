@@ -65,6 +65,11 @@ namespace CodeSharp.Emit
             il.Emit(OpCodes.Stfld, FieldBuilder);
         }
 
+        public string Name
+        {
+            get { return _name; }
+        }
+
         public IField ReadOnly
         {
             get

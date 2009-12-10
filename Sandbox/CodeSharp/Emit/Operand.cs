@@ -15,6 +15,11 @@ namespace CodeSharp.Emit
             return new FieldAccess(this, name);
         }
 
+        public IOperand Field(IField field)
+        {
+            return new FieldAccess(this, field);
+        }
+
         public readonly static Operand[] EmptyOperands = new Operand[0];
 
         /// <summary>
@@ -55,9 +60,19 @@ namespace CodeSharp.Emit
             return new PropertyAccess(this, propertyInfo, indexes);
         }
 
+        public IOperand Property(PropertyInfo propertyInfo, params IOperand[] indexes)
+        {
+            return new PropertyAccess(this, propertyInfo, indexes);
+        }
+
         public IOperand As(Type type)
         {
             return new SafeCast(this, type);
+        }
+
+        public IOperand As(IClass @class)
+        {
+            return new SafeCast(this, @class);
         }
 
         /// <summary>
@@ -85,6 +100,7 @@ namespace CodeSharp.Emit
     {
         private readonly Operand _operand;
         private readonly Type _type;
+        private readonly Class _class;
 
         public SafeCast(Operand operand, Type type)
         {
@@ -92,15 +108,21 @@ namespace CodeSharp.Emit
             _type = type;
         }
 
+        public SafeCast(Operand operand, IClass @class)
+        {
+            _operand = operand;
+            _class = (Class)@class;
+        }
+
         public override Type Type
         {
-            get { return _type; }
+            get { return _type??_class.TypeBuilder; }
         }
 
         internal override void EmitGet(ILGenerator il)
         {
             _operand.EmitGet(il);
-            il.Emit(OpCodes.Isinst, _type);
+            il.Emit(OpCodes.Isinst, Type);
         }
 
         internal override void EmitSet(ILGenerator il, Operand value)

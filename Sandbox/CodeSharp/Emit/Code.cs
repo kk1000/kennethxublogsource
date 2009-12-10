@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using CodeSharp.Emit.Conditions;
 
@@ -23,6 +24,27 @@ namespace CodeSharp.Emit
         {
             Variable variable = new Variable(type, name);
             _variables.Add(variable);
+            return variable;
+        }
+
+        public IOperand Variable(IClass @class, string name)
+        {
+            Variable variable = new Variable(@class, name);
+            _variables.Add(variable);
+            return variable;
+        }
+
+        public IOperand Variable(Type type, string name, IOperand initOperand)
+        {
+            var variable = Variable(type, name);
+            Assign(variable, initOperand);
+            return variable;
+        }
+
+        public IOperand Variable(IClass @class, string name, IOperand initOperand)
+        {
+            var variable = Variable(@class, name);
+            Assign(variable, initOperand);
             return variable;
         }
 
@@ -108,6 +130,11 @@ namespace CodeSharp.Emit
         public void End()
         {
             EndBlock();
+        }
+
+        public IOperand Invoke(MethodInfo staticMethod, params IOperand[] operands)
+        {
+            return new Invocation(staticMethod, operands);
         }
 
         /// <summary>

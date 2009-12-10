@@ -1,27 +1,43 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using CodeSharp;
 using CodeSharp.Emit;
+using CodeSharp.Proxy;
 
 namespace CompareIL
 {
-    internal class ChangeTrackerForIValueObject : ChangeTrackerBase, IValueObject
+    internal class ProxyIValueObject : ChangeTrackerBase, IValueObject
     {
-        private IValueObject _wrapped;
-        private ChangeTrackerForIValueComponent _ComponentProperty;
+        private readonly IValueObject _target;
+        // ReSharper disable InconsistentNaming
+        private IValueComponent _ComponentProperty;
+        private IList<IValueComponent> _ComponentList;
+        private IDictionary<int, IValueComponent> _ComponentDictionary;
+        // ReSharper restore InconsistentNaming
 
-        public ChangeTrackerForIValueObject(IValueObject wrapped)
+        private ProxyIValueObject(IValueObject target)
         {
-            _wrapped = wrapped;
+            _target = target;
+        }
+
+        public static IValueObject NewProxy(IValueObject target)
+        {
+            return target == null ? null : new ProxyIValueObject(target);
+        }
+
+        public static IValueObject GetTarget(IValueObject proxy)
+        {
+            var confirmProxy = proxy as ProxyIValueObject;
+            return confirmProxy != null ? confirmProxy._target : proxy;
         }
 
         public string SimpleProperty
         {
-            get { return _wrapped.SimpleProperty; }
+            get { return _target.SimpleProperty; }
             set
             {
-                if (_wrapped.SimpleProperty != value)
+                if (_target.SimpleProperty != value)
                 {
-                    _wrapped.SimpleProperty = value;
+                    _target.SimpleProperty = value;
                     FirePropertyChanged("SimpleProperty");
                 }
             }
@@ -31,12 +47,12 @@ namespace CompareIL
 
         public int IntProperty
         {
-            get { return _wrapped.IntProperty; }
+            get { return _target.IntProperty; }
             set
             {
-                if (_wrapped.IntProperty != value)
+                if (_target.IntProperty != value)
                 {
-                    _wrapped.IntProperty = value;
+                    _target.IntProperty = value;
                     FirePropertyChanged("IntProperty");
                 }
             }
@@ -44,12 +60,12 @@ namespace CompareIL
 
         public int LongProperty
         {
-            get { return _wrapped.LongProperty; }
+            get { return _target.LongProperty; }
             set
             {
-                if(_wrapped.LongProperty != value)
+                if(_target.LongProperty != value)
                 {
-                    _wrapped.LongProperty = value;
+                    _target.LongProperty = value;
                     FirePropertyChanged("LongProperty");
                 }
             }
@@ -57,12 +73,12 @@ namespace CompareIL
 
         public object ObjectProperty
         {
-            get { return _wrapped.ObjectProperty; }
+            get { return _target.ObjectProperty; }
             set
             {
-                if (_wrapped.ObjectProperty != value)
+                if (_target.ObjectProperty != value)
                 {
-                    _wrapped.ObjectProperty = value;
+                    _target.ObjectProperty = value;
                     FirePropertyChanged("ObjectProperty");
                 }
             }
@@ -72,64 +88,112 @@ namespace CompareIL
         {
             get
             {
-                IValueComponent p = _wrapped.ComponentProperty;
-                if (p==null)
+                IValueComponent component = _target.ComponentProperty;
+                if (component==null)
                 {
                     _ComponentProperty = null;
                     return null;
                 }
-                if (_ComponentProperty == null || !ReferenceEquals(_ComponentProperty._wrapped, p))
+                if (_ComponentProperty == null || !ReferenceEquals(NotifyPropertyChangedFactory.GetTarget(_ComponentProperty), component))
                 {
-                    _ComponentProperty = new ChangeTrackerForIValueComponent(p);
+                    _ComponentProperty = NotifyPropertyChangedFactory.GetProxy(component);
                 }
                 return _ComponentProperty;
             }
             set 
             {
-                if(ReferenceEquals(value, _ComponentProperty)) return;
-                if(ReferenceEquals(value, _ComponentProperty._wrapped)) return;
-                var proxy = value as ChangeTrackerForIValueComponent;
-                if (proxy == null)
-                {
-                    _wrapped.ComponentProperty = value;
-                }
-                else
-                {
-                    _wrapped.ComponentProperty = proxy._wrapped;
-                    _ComponentProperty = proxy;
-                }
+                IValueComponent newTarget = NotifyPropertyChangedFactory.GetTarget(value);
+                if (ReferenceEquals(_target.ComponentProperty, newTarget)) return;
+
+                _target.ComponentProperty = newTarget;
+                _ComponentProperty = NotifyPropertyChangedFactory.GetProxy(value);
                 FirePropertyChanged("ComponentProperty");
             }
         }
 
+        public IList<IValueComponent> ComponentList
+        {
+            get
+            {
+                IList<IValueComponent> component = _target.ComponentList;
+                if (component == null)
+                {
+                    _ComponentList = null;
+                    return null;
+                }
+                if (_ComponentList == null || !ReferenceEquals(NotifyPropertyChangedFactory.GetTarget(_ComponentList), component))
+                {
+                    _ComponentList = NotifyPropertyChangedFactory.GetProxy(component);
+                }
+                return _ComponentList;
+            }
+            set
+            {
+                IList<IValueComponent> newTarget = NotifyPropertyChangedFactory.GetTarget(value);
+                if (ReferenceEquals(_target.ComponentList, newTarget)) return;
+
+                _target.ComponentList = newTarget;
+                _ComponentList = NotifyPropertyChangedFactory.GetProxy(value);
+                FirePropertyChanged("ComponentList");
+            }
+        }
+
+        public IDictionary<int, IValueComponent> ComponentDictionary
+        {
+            get
+            {
+                IDictionary<int, IValueComponent> component = _target.ComponentDictionary;
+                if (component == null)
+                {
+                    _ComponentDictionary = null;
+                    return null;
+                }
+                if (_ComponentDictionary == null || !ReferenceEquals(NotifyPropertyChangedFactory.GetTarget(_ComponentDictionary), component))
+                {
+                    _ComponentDictionary = NotifyPropertyChangedFactory.GetProxy(component);
+                }
+                return _ComponentDictionary;
+            }
+            set
+            {
+                IDictionary<int, IValueComponent> newTarget = NotifyPropertyChangedFactory.GetTarget(value);
+                if (ReferenceEquals(_target.ComponentDictionary, newTarget)) return;
+
+                _target.ComponentDictionary = newTarget;
+                _ComponentDictionary = NotifyPropertyChangedFactory.GetProxy(value);
+                FirePropertyChanged("ComponentDictionary");
+            }
+
+        }
+
         public bool AllGood()
         {
-            return !IsReadonly && _wrapped.IntProperty == 123 || _wrapped.SimpleProperty == "any";
+            return !IsReadonly && _target.IntProperty == 123 || _target.SimpleProperty == "any";
         }
 
         public IValueObject Target
         {
-            get { return _wrapped; }
+            get { return _target; }
         }
     }
 
-    internal class ChangeTrackerForIValueComponent : ChangeTrackerBase, IValueComponent
+    internal class ProxyIValueComponent : ChangeTrackerBase, IValueComponent
     {
-        internal readonly IValueComponent _wrapped;
+        internal readonly IValueComponent _target;
 
-        public ChangeTrackerForIValueComponent(IValueComponent wrapped)
+        public ProxyIValueComponent(IValueComponent target)
         {
-            _wrapped = wrapped;
+            _target = target;
         }
 
         public string StringProperty
         {
-            get { return _wrapped.StringProperty; }
+            get { return _target.StringProperty; }
             set
             {
-                if(_wrapped.StringProperty != value)
+                if(_target.StringProperty != value)
                 {
-                    _wrapped.StringProperty = value;
+                    _target.StringProperty = value;
                     FirePropertyChanged("StringProperty");
                 }
             }
@@ -137,12 +201,12 @@ namespace CompareIL
 
         public object ObjectProperty
         {
-            get { return _wrapped.ObjectProperty; }
+            get { return _target.ObjectProperty; }
             set
             {
-                if (_wrapped.ObjectProperty != value)
+                if (_target.ObjectProperty != value)
                 {
-                    _wrapped.ObjectProperty = value;
+                    _target.ObjectProperty = value;
                     FirePropertyChanged("ObjectProperty");
                 }
             }

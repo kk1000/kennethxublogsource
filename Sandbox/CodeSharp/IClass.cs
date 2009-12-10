@@ -34,9 +34,20 @@ namespace CodeSharp
         /// The interface to be implemented.
         /// </param>
         /// <returns>
-        /// This object itself.
+        /// This <see cref="IClass"/> itself.
         /// </returns>
         IClass Implements(Type @interface);
+
+        /// <summary>
+        /// Implements the interfaces.
+        /// </summary>
+        /// <param name="interfaces">
+        /// The interfaces to be implemented.
+        /// </param>
+        /// <returns>
+        /// This <see cref="IClass"/> itself.
+        /// </returns>
+        IClass Implements(params Type[] interfaces);
 
         /// <summary>
         /// Define a new field in class.

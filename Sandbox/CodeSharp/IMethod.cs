@@ -9,5 +9,10 @@ namespace CodeSharp
         /// Allow public access to current method.
         /// </summary>
         IMethod Public { get; }
+
+        /// <summary>
+        /// Define current method as static.
+        /// </summary>
+        IMethod Static { get; }
     }
 }

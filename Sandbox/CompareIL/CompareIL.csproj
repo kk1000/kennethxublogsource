@@ -56,6 +56,10 @@
       <Project>{D1669B3B-24BA-4DB2-8B92-9F48A946EA60}</Project>
       <Name>CodeSharp.Tests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CodeSharp\CodeSharp.csproj">
+      <Project>{F2197ACC-22EF-409B-A1E7-DBE29E06A1B9}</Project>
+      <Name>CodeSharp</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
