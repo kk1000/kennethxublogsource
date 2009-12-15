@@ -46,7 +46,7 @@ namespace CompareIL
 
         public bool IsReadonly { get; set; }
 
-        public int IntProperty
+        public override int IntProperty
         {
             get { return _target.IntProperty; }
             set

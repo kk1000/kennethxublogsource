@@ -295,11 +295,16 @@ namespace CodeSharp.Proxy.NPC
                     throw new InvalidOperationException(@interface + " is not an interface type.");
                 Emitter e = new Emitter(_moduleBuilder);
                 _proxyType = e.Generate(new Generator<T>{g=e}.DefineProxy());
-                //var factoryMethod = _type.GetMethod("CreateProxy", new[] {@interface});
-                //_newProxy = (Converter<T, T>) Delegate.CreateDelegate(typeof(Converter<T, T>), factoryMethod);
 
                 var constructor = _proxyType.GetConstructor(new[] { @interface });
-                _newProxy = x => (T)constructor.Invoke(new object[] { x });
+                var dynamicConstructor = new DynamicMethod(
+                    "NewProxyDynamic", @interface, new[] { @interface }, _proxyType);
+                var il = dynamicConstructor.GetILGenerator();
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Newobj, constructor);
+                il.Emit(OpCodes.Ret);
+                _newProxy = (Converter<T, T>)dynamicConstructor.CreateDelegate(typeof(Converter<T, T>));
+
                 _getTarget = (Converter<T, T>)Delegate.CreateDelegate(typeof(Converter<T, T>), _proxyType.GetMethod("GetTarget"));
             }
 
