@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace CodeSharp
 {
     /// <summary>
@@ -14,5 +16,16 @@ namespace CodeSharp
         /// Define current method as static.
         /// </summary>
         IMethod Static { get; }
+
+        /// <summary>
+        /// Current method overrides <paramref name="method"/>
+        /// </summary>
+        /// <param name="method">
+        /// The method to be overidden.
+        /// </param>
+        /// <returns>
+        /// Current Method.
+        /// </returns>
+        IMethod Override(MethodInfo method);
     }
 }

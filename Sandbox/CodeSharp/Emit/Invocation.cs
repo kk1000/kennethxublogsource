@@ -127,9 +127,21 @@ namespace CodeSharp.Emit
         {
             var isInstance = !_methodInfo.IsStatic;
             if (isInstance) _operand.EmitGet(il);
+            int i = 0;
+            var parameters = _methodInfo.GetParameters();
             foreach (var operand in _args)
             {
+                var type = parameters[i++].ParameterType;
+                if (type.IsByRef && !operand.Type.IsByRef)
+                {
+                    ((Operand)operand).EmitByRef(il);
+                    continue;
+                }
                 ((Operand)operand).EmitGet(il);
+                if (!type.IsByRef && operand.Type.IsByRef)
+                {
+                    il.Emit(OpCodes.Ldind_Ref);
+                }
             }
             if(isInstance)il.Emit(OpCodes.Callvirt, _methodInfo);
             else il.Emit(OpCodes.Call, _methodInfo);

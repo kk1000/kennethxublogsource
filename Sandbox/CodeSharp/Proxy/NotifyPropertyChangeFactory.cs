@@ -9,7 +9,7 @@ namespace CodeSharp.Proxy
     /// Factory class to create composite based proxy that implements
     /// <see cref="INotifyPropertyChanged"/>.
     /// </summary>
-    public static class NotifyPropertyChangedFactory
+    public static class NotifyPropertyChangeFactory
     {
         ///<summary>
         /// The default method name used to trigger the 
@@ -17,6 +17,8 @@ namespace CodeSharp.Proxy
         ///</summary>
         public const string DefaultOnPropertyChangedMethodName = "OnPropertyChanged";
 
+        #region SetBastType Methods
+
         /// <summary>
         /// Set the base class for all the generated proxies.
         /// </summary>
@@ -29,9 +31,9 @@ namespace CodeSharp.Proxy
         /// <typeparam name="TBase">
         /// Type of the base class.
         /// </typeparam>
-        public static void SetBaseClass<TBase>() where TBase : class, INotifyPropertyChanged
+        public static void SetBaseType<TBase>() where TBase : class, INotifyPropertyChanged
         {
-            SetBaseClass<TBase>(DefaultOnPropertyChangedMethodName);
+            SetBaseType<TBase>(DefaultOnPropertyChangedMethodName);
         }
 
         /// <summary>
@@ -46,9 +48,9 @@ namespace CodeSharp.Proxy
         /// <param name="baseClassType">
         /// Type of the base class.
         /// </param>
-        public static void SetBaseClass(Type baseClassType)
+        public static void SetBaseType(Type baseClassType)
         {
-            Factory.SetBaseClass(baseClassType, DefaultOnPropertyChangedMethodName);
+            Factory.SetBastType(baseClassType, DefaultOnPropertyChangedMethodName);
         }
 
         /// <summary>
@@ -67,10 +69,10 @@ namespace CodeSharp.Proxy
         /// The name of the method to raise the 
         /// <see cref="INotifyPropertyChanged.PropertyChanged"/> event.
         /// </param>
-        public static void SetBaseClass<TBase>(string onPropertyChangeMethod)
+        public static void SetBaseType<TBase>(string onPropertyChangeMethod)
             where TBase : INotifyPropertyChanged
         {
-            Factory.SetBaseClass(typeof(TBase), onPropertyChangeMethod);
+            Factory.SetBastType(typeof(TBase), onPropertyChangeMethod);
         }
 
         /// <summary>
@@ -89,44 +91,112 @@ namespace CodeSharp.Proxy
         /// The name of the method to raise the 
         /// <see cref="INotifyPropertyChanged.PropertyChanged"/> event.
         /// </param>
-        public static void SetBaseClass(Type baseClassType, string onPropertyChangeMethod)
+        public static void SetBaseType(Type baseClassType, string onPropertyChangeMethod)
         {
-            Factory.SetBaseClass(baseClassType, onPropertyChangeMethod);
-        }
+            Factory.SetBastType(baseClassType, onPropertyChangeMethod);
+        } 
+
+        #endregion
+
+        #region SetMarkingAttribute Methods
 
         /// <summary>
-        /// Save all generated proxy types in an assembly.
-        /// </summary>
-        public static void SaveAssembly()
-        {
-            Factory.SaveAssembly();
-        }
-
-        /// <summary>
-        /// The filter to indicate if ghe factory should generate proxy for
-        /// types that are used as parameter or return value of type of which
-        /// a proxy is being generated.
+        /// Indicates the given attribute type <typeparamref name="TA"/>
+        /// marks the types that should be wrapped by its proxy.
         /// </summary>
         /// <remarks>
-        /// This property can only be set before any proxy is generated.
+        /// <para>
+        /// By defaul, <see cref="NotifyPropertyChangeFactory"/> recognizes
+        /// <see cref="NotifyPropertyChangeAttribute"/>. This method allows
+        /// developer to replace it with another custom attribute.
+        /// </para>
+        /// <para>
+        /// Use <see cref="SetMarkingAttribute{TA}(Converter{TA,Type})"/>
+        /// if the custom attribute also carries base type information.
+        /// </para>
+        /// <para>
+        /// <see cref="NotifyPropertyChangeFactory"/> will also look for a
+        /// property of "OnPropertyChangedMethodName" on the attribute 
+        /// <typeparamref name="TA"/>. If one exist, user can optionally
+        /// use that property to override the event raising method specified
+        /// in <see cref="SetBaseType{TBase}(string)"/>.
+        /// </para>
+        /// <para>
+        /// This method can only be called before any proxy is generated.
         /// Otherwise <see cref="InvalidOperationException"/> is thrown.
+        /// </para>
         /// </remarks>
-        public static Predicate<Type> DeepProxyFilter
+        /// <typeparam name="TA">Type of the attribute.</typeparam>
+        public static void SetMarkingAttribute<TA>()
+            where TA : Attribute
         {
-            set { Factory.DeepProxyFilter = value; }
+            Factory.SetMarkingAttribute<TA>(null);
         }
 
         /// <summary>
         /// Indicates the given attribute type <typeparamref name="TA"/>
         /// marks the types that should be wrapped by its proxy.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// By defaul, <see cref="NotifyPropertyChangeFactory"/> recognizes
+        /// <see cref="NotifyPropertyChangeAttribute"/>. This method allows
+        /// developer to replace it with another custom attribute.
+        /// </para>
+        /// <para>
+        /// <see cref="NotifyPropertyChangeFactory"/> will also look for a
+        /// property of "OnPropertyChangedMethodName" on the attribute 
+        /// <typeparamref name="TA"/>. If one exist, user can optionally
+        /// use that property to override the event raising method specified
+        /// in <see cref="SetBaseType{TBase}(string)"/>.
+        /// </para>
+        /// <para>
+        /// This method can only be called before any proxy is generated.
+        /// Otherwise <see cref="InvalidOperationException"/> is thrown.
+        /// </para>
+        /// </remarks>
         /// <typeparam name="TA">Type of the attribute.</typeparam>
-        /// <seealso cref="DeepProxyFilter"/>
-        public static void SetDeepProxyAttribute<TA>()
+        /// <param name="baseType">
+        /// A delegate that retrieves the base type information from given
+        /// custom attribute type <typeparamref name="TA"/>.
+        /// </param>
+        public static void SetMarkingAttribute<TA>(Converter<TA, Type> baseType)
             where TA : Attribute
         {
-            Factory.DeepProxyFilter = t => t.GetCustomAttributes(typeof (TA), true).Length != 0;
+            Factory.SetMarkingAttribute(baseType);
         }
+
+        #endregion
+
+        #region SetEventRaiserAttribute Methods
+
+        /// <summary>
+        /// Set the attribute that is applied to the members of the proxy
+        /// target to specify a different method, other then the method 
+        /// specified in the <see cref="SetBaseType{TBase}(string)"/>,
+        /// to be used to raise property change event(s).
+        /// </summary>
+        /// <remarks>
+        /// <see cref="NotifyPropertyChangeFactory"/> will search for the
+        /// specified attribute on the memebers of the proxy target. If one
+        /// is found, it then uses the <paramref name="onPropertyChanged"/>
+        /// delegate to retrieve the name of the method to be used to raise
+        /// the event. If the name of the method is null, no event will be
+        /// raised.
+        /// </remarks>
+        /// <typeparam name="TA">
+        /// The type of attribute to be used by <see cref="NotifyPropertyChangeFactory"/>.
+        /// </typeparam>
+        /// <param name="onPropertyChanged">
+        /// The delegate to retrieve the event raiser name from the attribute.
+        /// </param>
+        public static void SetEventRaiserAttribute<TA>(Converter<TA, string> onPropertyChanged)
+            where TA : Attribute
+        {
+            Factory.SetEventRaiserAttribute(onPropertyChanged);
+        }
+
+        #endregion
 
         /// <summary>
         /// Create a new instance of proxy for given <paramref name="target"/>.
@@ -389,28 +459,11 @@ namespace CodeSharp.Proxy
         #endregion
 
         /// <summary>
-        /// The default base class of proxies generated by <see cref="NotifyPropertyChangedFactory"/>.
+        /// Save all generated proxy types in an assembly.
         /// </summary>
-        public class ProxyBase : INotifyPropertyChanged
+        public static void SaveAssembly()
         {
-            /// <summary>
-            /// Occurs when a property value changes.
-            /// </summary>
-            public event PropertyChangedEventHandler PropertyChanged;
-
-            /// <summary>
-            /// Raise <see cref="PropertyChanged"/> event for the propery
-            /// specified by <paramref name="propertyName"/>.
-            /// </summary>
-            /// <param name="propertyName">
-            /// The name of the property that is changed.
-            /// </param>
-            protected void OnPropertyChanged(string propertyName)
-            {
-                var propertyChanged = PropertyChanged;
-                if (propertyChanged != null)
-                    propertyChanged(this, new PropertyChangedEventArgs("propertyName"));
-            }
+            Factory.SaveAssembly();
         }
     }
 }

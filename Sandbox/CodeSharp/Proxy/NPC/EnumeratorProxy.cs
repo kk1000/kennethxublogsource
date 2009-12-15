@@ -24,7 +24,7 @@ namespace CodeSharp.Proxy.NPC
 
         protected override T Transform(T source)
         {
-            return NotifyPropertyChangedFactory.GetProxy(source);
+            return NotifyPropertyChangeFactory.GetProxy(source);
         }
 
         public IEnumerator<T> Target

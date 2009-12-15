@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CodeSharp;
 using CodeSharp.Emit;
 using CodeSharp.Proxy;
 
 namespace CompareIL
 {
-    internal class ProxyIValueObject : ChangeTrackerBase, IValueObject
+    internal class ProxyIValueObject : ValueObjectProxyBase, IValueObject
     {
         private readonly IValueObject _target;
         // ReSharper disable InconsistentNaming
@@ -94,19 +95,19 @@ namespace CompareIL
                     _ComponentProperty = null;
                     return null;
                 }
-                if (_ComponentProperty == null || !ReferenceEquals(NotifyPropertyChangedFactory.GetTarget(_ComponentProperty), component))
+                if (_ComponentProperty == null || !ReferenceEquals(NotifyPropertyChangeFactory.GetTarget(_ComponentProperty), component))
                 {
-                    _ComponentProperty = NotifyPropertyChangedFactory.GetProxy(component);
+                    _ComponentProperty = NotifyPropertyChangeFactory.GetProxy(component);
                 }
                 return _ComponentProperty;
             }
             set 
             {
-                IValueComponent newTarget = NotifyPropertyChangedFactory.GetTarget(value);
+                IValueComponent newTarget = NotifyPropertyChangeFactory.GetTarget(value);
                 if (ReferenceEquals(_target.ComponentProperty, newTarget)) return;
 
                 _target.ComponentProperty = newTarget;
-                _ComponentProperty = NotifyPropertyChangedFactory.GetProxy(value);
+                _ComponentProperty = NotifyPropertyChangeFactory.GetProxy(value);
                 FirePropertyChanged("ComponentProperty");
             }
         }
@@ -121,19 +122,19 @@ namespace CompareIL
                     _ComponentList = null;
                     return null;
                 }
-                if (_ComponentList == null || !ReferenceEquals(NotifyPropertyChangedFactory.GetTarget(_ComponentList), component))
+                if (_ComponentList == null || !ReferenceEquals(NotifyPropertyChangeFactory.GetTarget(_ComponentList), component))
                 {
-                    _ComponentList = NotifyPropertyChangedFactory.GetProxy(component);
+                    _ComponentList = NotifyPropertyChangeFactory.GetProxy(component);
                 }
                 return _ComponentList;
             }
             set
             {
-                IList<IValueComponent> newTarget = NotifyPropertyChangedFactory.GetTarget(value);
+                IList<IValueComponent> newTarget = NotifyPropertyChangeFactory.GetTarget(value);
                 if (ReferenceEquals(_target.ComponentList, newTarget)) return;
 
                 _target.ComponentList = newTarget;
-                _ComponentList = NotifyPropertyChangedFactory.GetProxy(value);
+                _ComponentList = NotifyPropertyChangeFactory.GetProxy(value);
                 FirePropertyChanged("ComponentList");
             }
         }
@@ -148,22 +149,76 @@ namespace CompareIL
                     _ComponentDictionary = null;
                     return null;
                 }
-                if (_ComponentDictionary == null || !ReferenceEquals(NotifyPropertyChangedFactory.GetTarget(_ComponentDictionary), component))
+                if (_ComponentDictionary == null || !ReferenceEquals(NotifyPropertyChangeFactory.GetTarget(_ComponentDictionary), component))
                 {
-                    _ComponentDictionary = NotifyPropertyChangedFactory.GetProxy(component);
+                    _ComponentDictionary = NotifyPropertyChangeFactory.GetProxy(component);
                 }
                 return _ComponentDictionary;
             }
             set
             {
-                IDictionary<int, IValueComponent> newTarget = NotifyPropertyChangedFactory.GetTarget(value);
+                IDictionary<int, IValueComponent> newTarget = NotifyPropertyChangeFactory.GetTarget(value);
                 if (ReferenceEquals(_target.ComponentDictionary, newTarget)) return;
 
                 _target.ComponentDictionary = newTarget;
-                _ComponentDictionary = NotifyPropertyChangedFactory.GetProxy(value);
+                _ComponentDictionary = NotifyPropertyChangeFactory.GetProxy(value);
                 FirePropertyChanged("ComponentDictionary");
             }
 
+        }
+
+        public void MinimalMethod()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void VoidMethod(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string ParamlessMethod()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string SimpleMethod(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string SimpleOutRef(int i, out string s, ref long l)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IValueComponent DeepMethod(IValueComponent component)
+        {
+            return
+                NotifyPropertyChangeFactory.GetProxy(
+                    _target.DeepMethod(NotifyPropertyChangeFactory.GetTarget(component)));
+        }
+
+        public IValueComponent DeepOutRef(IValueComponent a, out IValueComponent o, ref IValueObject r)
+        {
+            IValueComponent oTarget;
+            IValueObject rTarget = NotifyPropertyChangeFactory.GetTarget(r);
+            var result = _target.DeepOutRef(NotifyPropertyChangeFactory.GetTarget(a), out oTarget, ref rTarget);
+            o = NotifyPropertyChangeFactory.GetProxy(oTarget);
+            r = NotifyPropertyChangeFactory.GetProxy(rTarget);
+            return NotifyPropertyChangeFactory.GetProxy(result);
+        }
+
+        public IValueComponent this[IValueComponent a, IValueComponent o, IValueObject r]
+        {
+            get
+            {
+                return NotifyPropertyChangeFactory.GetProxy(_target[NotifyPropertyChangeFactory.GetTarget(a), NotifyPropertyChangeFactory.GetTarget(o), NotifyPropertyChangeFactory.GetTarget(r)]);
+            }
+            set
+            {
+                _target[NotifyPropertyChangeFactory.GetTarget(a), NotifyPropertyChangeFactory.GetTarget(o), NotifyPropertyChangeFactory.GetTarget(r)] = NotifyPropertyChangeFactory.GetTarget(value);
+            }
         }
 
         public bool AllGood()
@@ -171,7 +226,7 @@ namespace CompareIL
             return !IsReadonly && _target.IntProperty == 123 || _target.SimpleProperty == "any";
         }
 
-        public IValueObject Target
+        protected override IValueObject Target
         {
             get { return _target; }
         }

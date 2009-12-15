@@ -97,7 +97,9 @@ namespace CodeSharp.Emit
 
         internal override void EmitSet(ILGenerator il, Operand value)
         {
-            throw new NotImplementedException();
+            EmitGet(il);
+            value.EmitGet(il);
+            il.Emit(OpCodes.Stind_Ref);
         }
 
         internal static IParameter[] From(ParameterInfo[] parameterInfos)
@@ -118,6 +120,16 @@ namespace CodeSharp.Emit
             return parameterInfo.ParameterType.IsByRef
                     ? (parameterInfo.IsOut ? ParameterDirection.Out : ParameterDirection.Ref)
                     : ParameterDirection.In;
+        }
+
+        public ParameterDirection Direction
+        {
+            get { return _direction; }
+        }
+
+        public string Name
+        {
+            get { return _name; }
         }
     }
 }

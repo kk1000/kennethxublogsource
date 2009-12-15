@@ -24,7 +24,7 @@ namespace CodeSharp.Proxy.NPC
 
         protected sealed override TValue ReverseValue(TValue value)
         {
-            return NotifyPropertyChangedFactory.GetTarget(value);
+            return NotifyPropertyChangeFactory.GetTarget(value);
         }
 
         protected sealed override TKey TransformKey(TKey key)
@@ -39,7 +39,7 @@ namespace CodeSharp.Proxy.NPC
 
         protected sealed override TValue TransformValue(TValue value)
         {
-            return NotifyPropertyChangedFactory.GetProxy(value);
+            return NotifyPropertyChangeFactory.GetProxy(value);
         }
 
         public IDictionary<TKey, TValue> Target

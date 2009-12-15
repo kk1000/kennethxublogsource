@@ -38,5 +38,15 @@ namespace CodeSharp.Emit
         {
             get { return Args[_origParameters.Count]; }
         }
+
+        #region ISetter Members
+
+        ISetter ISetter.Override(MethodInfo method)
+        {
+            Override(method);
+            return this;
+        }
+
+        #endregion
     }
 }

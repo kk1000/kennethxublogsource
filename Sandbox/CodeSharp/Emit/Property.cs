@@ -39,6 +39,12 @@ namespace CodeSharp.Emit
             _type = type;
             _name = name;
             _parameters = parameters;
+            _propertyAttributes = 
+                MethodAttributes.Virtual | 
+                MethodAttributes.HideBySig |
+                MethodAttributes.NewSlot | 
+                MethodAttributes.Final | 
+                MethodAttributes.SpecialName;
         }
 
         public void EmitDefinition(TypeBuilder typeBuilder)
@@ -75,7 +81,16 @@ namespace CodeSharp.Emit
             }
         }
 
-        public IInvokable Getter()
+        public IProperty Override(PropertyInfo property)
+        {
+            var attrs = property.GetGetMethod(true).Attributes;
+            _propertyAttributes = 
+                _propertyAttributes & ~(MethodAttributes.MemberAccessMask|MethodAttributes.NewSlot) | 
+                attrs & MethodAttributes.MemberAccessMask;
+            return this;
+        }
+
+        public IMethod Getter()
         {
             _getter = new Getter(_type, "get_" + _name, _propertyAttributes, _parameters);
             return _getter;

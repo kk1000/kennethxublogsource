@@ -40,7 +40,8 @@ namespace CodeSharp.Emit
         public override void EmitCode()
         {
             var type = _constructorBuilder.DeclaringType.BaseType;
-            var mi = type.GetConstructor(Type.EmptyTypes);
+            var mi = type.GetConstructor(
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
             var il = GetILGenerator();
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Call, mi);

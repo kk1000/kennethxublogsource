@@ -83,6 +83,11 @@ namespace CodeSharp.Emit
         internal abstract void EmitGet(ILGenerator il);
         internal abstract void EmitSet(ILGenerator il, Operand value);
 
+        internal virtual void EmitByRef(ILGenerator il)
+        {
+            throw new InvalidOperationException();
+        }
+
         internal static Type[] ToTypes(IList<IOperand> operands)
         {
             if (operands == null) return null;

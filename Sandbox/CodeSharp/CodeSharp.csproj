@@ -99,6 +99,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Proxy\BaseDictionary.cs" />
     <Compile Include="Proxy\IWeakCollection.cs" />
+    <Compile Include="Proxy\NotifyPropertyChangeAttribute.cs" />
+    <Compile Include="Proxy\NotifyPropertyChangeBase.cs" />
     <Compile Include="Proxy\NPC\CollectionProxy.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -112,8 +114,9 @@
     <Compile Include="Proxy\NPC\DictionaryProxy.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Proxy\NotifyPropertyChangedFactory.cs" />
+    <Compile Include="Proxy\NotifyPropertyChangeFactory.cs" />
     <Compile Include="Proxy\NPC\Factory.cs" />
+    <Compile Include="Proxy\OnPropertyChangeAttribute.cs" />
     <Compile Include="Proxy\WeakDictionary.cs" />
     <Compile Include="Proxy\WeakKeyComparer.cs" />
     <Compile Include="Proxy\WeakKeyReference.cs" />

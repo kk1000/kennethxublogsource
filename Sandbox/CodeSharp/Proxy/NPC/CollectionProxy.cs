@@ -24,13 +24,13 @@ namespace CodeSharp.Proxy.NPC
 
         protected override bool TryReverse(T target, out T source)
         {
-            source = NotifyPropertyChangedFactory.GetTarget(target);
+            source = NotifyPropertyChangeFactory.GetTarget(target);
             return true;
         }
 
         protected override T Transform(T source)
         {
-            return NotifyPropertyChangedFactory.GetProxy(source);
+            return NotifyPropertyChangeFactory.GetProxy(source);
         }
     }
 }

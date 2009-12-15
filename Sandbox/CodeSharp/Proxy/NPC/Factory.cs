@@ -18,19 +18,26 @@ namespace CodeSharp.Proxy.NPC
         #region Private Fields
 
         #region Assembly Related
-        const string _moduleName = "NotifyPropertyChangedFactory.dll";
+        const string _moduleName = "NotifyPropertyChangeFactory.dll";
         const string _namespace = "NPC";
         private static readonly AssemblyBuilder _assemblyBuilder;
         private static readonly ModuleBuilder _moduleBuilder;
         #endregion
 
         #region Initialization Related
-        private static readonly Predicate<Type> _noDeepProxy = t => false;
+        private static readonly Predicate<Type> _alwaysFalse =  t => false;
         private static readonly object _initLock = new object();
+
         private static bool _isInitialized;
-        private static MethodInfo _onPropertyChanged;
-        private static Type _baseClassType;
-        private static Predicate<Type> _deepProxyFilter = _noDeepProxy; 
+        private static Type _defaultBaseType;
+        private static MethodInfo _defaultPropertyChangedRaiser;
+        private static Type _markingAttribute;
+        private static Type _raiserAttribute;
+
+        private static Predicate<Type> _isProxyTargetType = _alwaysFalse;
+        private static Converter<object, Type> _getBaseTypeFromMarkingAttribute;
+        private static Converter<object, string> _getPropertyChangedRaiserFromRaiserAttribute;
+        private static Converter<object, string> _getPropertyChangedRaiserFromMarkingAttribute;
         #endregion
 
         #region Cache Related
@@ -41,8 +48,9 @@ namespace CodeSharp.Proxy.NPC
         #pragma warning restore 169 
 	    #endregion
 
-        private static readonly Dictionary<string, MethodInfo> _getProxyMethods = new Dictionary<string, MethodInfo>();
-        private static readonly Dictionary<string, MethodInfo> _getTargetMethods = new Dictionary<string, MethodInfo>();
+        private static readonly Dictionary<string, FactoryPair> _factoryPairs = 
+            new Dictionary<string, FactoryPair>();
+
 
         #endregion
 
@@ -52,7 +60,9 @@ namespace CodeSharp.Proxy.NPC
             AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(an, AssemblyBuilderAccess.RunAndSave);
             _assemblyBuilder = ab;
             _moduleBuilder = ab.DefineDynamicModule(_moduleName, _moduleName);
-            SetBaseClass(typeof(NotifyPropertyChangedFactory.ProxyBase), NotifyPropertyChangedFactory.DefaultOnPropertyChangedMethodName);
+            SetBastType(typeof(NotifyPropertyChangeBase), NotifyPropertyChangeFactory.DefaultOnPropertyChangedMethodName);
+            SetMarkingAttribute<NotifyPropertyChangeAttribute>(a => a.BaseType);
+            SetEventRaiserAttribute<OnPropertyChangeAttribute>(a => a.OnPropertyChangedMethod);
             DiscoverMethodInfo();
         }
 
@@ -66,61 +76,50 @@ namespace CodeSharp.Proxy.NPC
         
         #region Initialization Related Members
 
-        /// <summary>
-        /// Set the base class for all the generated proxies.
-        /// </summary>
-        /// <remarks>
-        /// <paramref name="baseClassType"/> must be a class that is not sealed and
-        /// implements <see cref="INotifyPropertyChanged"/>. It also must has a
-        /// non-abstract method that take one string parameter. The name of the
-        /// method is specified by <paramref name="onPropertyChangeMethod"/>.
-        /// </remarks>
-        /// <param name="baseClassType">
-        /// Type of the base class.
-        /// </param>
-        /// <param name="onPropertyChangeMethod">
-        /// The name of the method to raise the 
-        /// <see cref="INotifyPropertyChanged.PropertyChanged"/> event.
-        /// </param>
-        internal static void SetBaseClass(Type baseClassType, string onPropertyChangeMethod)
+        /// <seealso cref="NotifyPropertyChangeFactory.SetBaseType(Type,string)"/>
+        internal static void SetBastType(Type baseType, string onPropertyChangedMethod)
         {
-            if (baseClassType == null) throw new ArgumentNullException("baseClassType");
-            if (onPropertyChangeMethod == null) throw new ArgumentNullException("onPropertyChangeMethod");
+            if (baseType == null) throw new ArgumentNullException("baseType");
+            if (onPropertyChangedMethod == null) throw new ArgumentNullException("onPropertyChangedMethod");
             lock (_initLock)
             {
                 RequiresNotInitialized();
-                var onPropertyChanged = baseClassType.GetMethod(
-                    onPropertyChangeMethod, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-                    null, new[] { typeof(string) }, null);
-                if (onPropertyChanged == null || !(onPropertyChanged.IsPublic || onPropertyChanged.IsFamily) || onPropertyChanged.IsAbstract)
-                {
-                    throw new ArgumentException(string.Format(
-                        "Public or protected method {0}.{1}(string) doesn't exist.",
-                        baseClassType.FullName, onPropertyChangeMethod));
-                }
-                _baseClassType = baseClassType;
-                _onPropertyChanged = onPropertyChanged;
+                _defaultBaseType = baseType;
+                _defaultPropertyChangedRaiser = GetOnPropertyChangedMethod(baseType, onPropertyChangedMethod);
             }
         }
 
-        /// <summary>
-        /// The filter to indicate if the factory should generate proxy for
-        /// types that are used as parameter or return value of type of which
-        /// a proxy is being generated.
-        /// </summary>
-        /// <remarks>
-        /// This property can only be set before any proxy is generated.
-        /// Otherwise <see cref="InvalidOperationException"/> is thrown.
-        /// </remarks>
-        internal static Predicate<Type> DeepProxyFilter
+        /// <seealso cref="NotifyPropertyChangeFactory.SetMarkingAttribute{TA}(Converter{TA,Type})"/>
+        internal static void SetMarkingAttribute<TA>(Converter<TA, Type> baseType)
+            where TA : Attribute
         {
-            set
+            lock(_initLock)
             {
-                lock (_initLock)
-                {
-                    RequiresNotInitialized();
-                    _deepProxyFilter = value ?? _noDeepProxy;
-                }
+                RequiresNotInitialized();
+                _markingAttribute = typeof (TA);
+                _isProxyTargetType = t => t.GetCustomAttributes(typeof(TA), true).Length != 0;
+                _getBaseTypeFromMarkingAttribute = baseType == null ? (Converter<object, Type>)null : o => baseType((TA)o);
+                _getPropertyChangedRaiserFromMarkingAttribute = null;
+                var changedName = typeof (TA).GetProperty("OnPropertyChangedMethodName", typeof (string));
+                if (changedName == null) return;
+                var getter = changedName.GetGetMethod();
+                if (getter == null) return;
+                var getRaiserName = (Converter<TA, string>) Delegate.CreateDelegate(typeof (Converter<TA, string>), getter);
+                if (getRaiserName == null) return;
+                _getPropertyChangedRaiserFromMarkingAttribute = o => getRaiserName((TA) o);
+            }
+        }
+
+        /// <seealso cref="NotifyPropertyChangeFactory.SetEventRaiserAttribute{TA}(Converter{TA,string})"/>
+        internal static void SetEventRaiserAttribute<TA>(Converter<TA, string> onPropertyChanged)
+            where TA : Attribute
+        {
+            if (onPropertyChanged == null) throw new ArgumentNullException("onPropertyChanged");
+            lock(_initLock)
+            {
+                RequiresNotInitialized();
+                _raiserAttribute = typeof (TA);
+                _getPropertyChangedRaiserFromRaiserAttribute = o => onPropertyChanged((TA) o);
             }
         }
 
@@ -131,6 +130,22 @@ namespace CodeSharp.Proxy.NPC
                 throw new InvalidOperationException(
                     "This method can only be called before any proxy object are created.");
             }
+        }
+
+        private static MethodInfo GetOnPropertyChangedMethod(Type baseType, string onPropertyChangedMethod)
+        {
+            var onPropertyChanged = baseType.GetMethod(
+                onPropertyChangedMethod, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+                null, new[] { typeof(string) }, null);
+            if (onPropertyChanged == null || 
+                !(onPropertyChanged.IsPublic || onPropertyChanged.IsFamily) || 
+                onPropertyChanged.IsAbstract)
+            {
+                throw new ArgumentException(
+                    string.Format("Public or protected method {0}.{1}(string) doesn't exist.",
+                                  baseType.FullName, onPropertyChangedMethod));
+            }
+            return onPropertyChanged;
         }
 
         #endregion
@@ -168,32 +183,57 @@ namespace CodeSharp.Proxy.NPC
 
         #endregion
 
+        /// <summary>
+        /// Initialize the GetProxy and GetTarget method pair to be used by
+        /// <see cref="GetFactoryPair"/> method.
+        /// </summary>
         private static void DiscoverMethodInfo()
         {
-            var members = typeof(NotifyPropertyChangedFactory).GetMembers(BindingFlags.Static | BindingFlags.Public);
+            var members = typeof(NotifyPropertyChangeFactory).GetMembers(BindingFlags.Static | BindingFlags.Public);
             foreach (MethodInfo method in members.Where(m => m.MemberType == MemberTypes.Method))
             {
+                Action<FactoryPair, MethodInfo> setter;
                 switch (method.Name)
                 {
                     case "GetProxy":
-                        _getProxyMethods[method.GetParameters()[0].ParameterType.ToString()] = method;
+                        setter = (p, m) => p.GetProxy = m;
                         break;
                     case "GetTarget":
-                        _getTargetMethods[method.GetParameters()[0].ParameterType.ToString()] = method;
+                        setter = (p, m) => p.GetTarget = m;
                         break;
+                    default:
+                        setter = null;
+                        break;
+                }
+                if (setter != null)
+                {
+                    var key = method.GetParameters()[0].ParameterType.ToString();
+                    FactoryPair pair;
+                    if(!_factoryPairs.TryGetValue(key, out pair))
+                    {
+                        pair = new FactoryPair();
+                        _factoryPairs[key] = pair;
+                    }
+                    setter(pair, method);
                 }
             }
 
         }
-        private static string GetDeepProxyKey(Type type)
+
+        /// <summary>
+        /// This gives you GetProxy and GetTarget method pair if the type is
+        /// proxy-able. Otherwise return null.
+        /// </summary>
+        private static FactoryPair GetFactoryPair(Type type)
         {
             string key = "T";
+            if (type.IsByRef) type = type.GetElementType();
             if (type.IsGenericType)
             {
                 var genericType = type.GetGenericTypeDefinition();
                 if (genericType == typeof(IDictionary<,>))
                 {
-                    type = type.GetGenericArguments()[1];
+                    if (!_isProxyTargetType(type.GetGenericArguments()[1])) return null;
                     key = genericType.ToString();
                 }
                 else if (
@@ -202,19 +242,35 @@ namespace CodeSharp.Proxy.NPC
                     genericType == typeof(IEnumerable<>) ||
                     genericType == typeof(IEnumerator<>))
                 {
-                    type = type.GetGenericArguments()[0];
+                    if (!_isProxyTargetType(type.GetGenericArguments()[0])) return null;
                     key = genericType.ToString();
                 }
+                else
+                {
+                    return null;
+                }
             }
-            return _deepProxyFilter(type) ? key : null;
+            else
+            {
+                if(!_isProxyTargetType(type)) return null;
+            }
+
+            var typeArguments = key == "T" ? new[] { type } : type.GetGenericArguments();
+            var pair = _factoryPairs[key];
+
+            return new FactoryPair
+                       {
+                           GetProxy = pair.GetProxy.MakeGenericMethod(typeArguments),
+                           GetTarget = pair.GetTarget.MakeGenericMethod(typeArguments),
+                       };
         }
         
         /// <summary>Actual proxy generator.</summary>
-        internal struct Generator<T> where T : class 
+        internal class Generator<T> where T : class 
         {
             static readonly Converter<T, T> _newProxy;
             static readonly Converter<T, T> _getTarget;
-            static readonly Type _type;
+            static readonly Type _proxyType;
 
             private static readonly WeakDictionary<T, T> _cache
                 = new WeakDictionary<T, T>();
@@ -222,6 +278,12 @@ namespace CodeSharp.Proxy.NPC
             private IGenerator g;
             private IField _target;
             private IClass _proxy;
+            private Type _baseType;
+            private Type _interfaceType;
+            private MethodInfo _propertyChangedRaiser;
+            private Dictionary<MethodInfo, MethodInfo> _interfaceToBaseMethods;
+            private readonly Dictionary<string, MethodInfo> _propertyChangedRaiserCache = 
+                new Dictionary<string, MethodInfo>();
 
             static Generator()
             {
@@ -232,24 +294,29 @@ namespace CodeSharp.Proxy.NPC
                 if (!@interface.IsInterface)
                     throw new InvalidOperationException(@interface + " is not an interface type.");
                 Emitter e = new Emitter(_moduleBuilder);
-                _type = e.Generate(new Generator<T>{g=e}.DefineProxy());
+                _proxyType = e.Generate(new Generator<T>{g=e}.DefineProxy());
                 //var factoryMethod = _type.GetMethod("CreateProxy", new[] {@interface});
                 //_newProxy = (Converter<T, T>) Delegate.CreateDelegate(typeof(Converter<T, T>), factoryMethod);
 
-                var constructor = _type.GetConstructor(new[] { @interface });
+                var constructor = _proxyType.GetConstructor(new[] { @interface });
                 _newProxy = x => (T)constructor.Invoke(new object[] { x });
-                _getTarget = (Converter<T, T>)Delegate.CreateDelegate(typeof(Converter<T, T>), _type.GetMethod("GetTarget"));
+                _getTarget = (Converter<T, T>)Delegate.CreateDelegate(typeof(Converter<T, T>), _proxyType.GetMethod("GetTarget"));
             }
 
+            // So nobody except this class itself can instanciate.
+            private Generator() {}
+
+            /// <seealso cref="NotifyPropertyChangeFactory.NewProxy{T}(T)"/>
             internal static T NewProxy(T target)
             {
                 return _newProxy(target);
             }
 
+            /// <seealso cref="NotifyPropertyChangeFactory.GetProxy{T}(T)"/>
             internal static T GetProxy(T target)
             {
                 if (target == null) return null;
-                if (target.GetType() == _type) return target;
+                if (target.GetType() == _proxyType) return target;
 
                 lock (_cache)
                 {
@@ -263,6 +330,7 @@ namespace CodeSharp.Proxy.NPC
                 }
             }
 
+            /// <seealso cref="NotifyPropertyChangeFactory.GetTarget{T}(T)"/>
             internal static T GetTarget(T proxy)
             {
                 return _getTarget(proxy);
@@ -270,42 +338,152 @@ namespace CodeSharp.Proxy.NPC
 
             private IClass DefineProxy()
             {
-                Type @interface = typeof (T);
-                _proxy = g.Class("Proxy" + @interface.Name).In(_namespace).Inherits(_baseClassType).Implements(@interface).Public;
+                _interfaceType = typeof (T);
+                ProcessMarkingAttribute(_interfaceType);
+                MapMethods();
+                // public class ProxyIValueObject : ChangeTrackerBase, IValueObject
+                _proxy = g.Class("Proxy" + _interfaceType.Name).In(_namespace).Inherits(_baseType).Implements(_interfaceType).Public;
                 {
-                    _target = _proxy.Field(@interface, "_target").Internal.ReadOnly;
+                    // private readonly IValueObject _target;
+                    _target = _proxy.Field(_interfaceType, "_target").Internal.ReadOnly;
 
-                    var ctor = _proxy.Constructor(g.Arg(@interface, "target")).Public;
-                    using (var c = ctor.Code())
+                    ImplConstructor();
+
+                    var pi = _baseType.GetProperty(
+                        "Target", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    if(pi != null && pi.PropertyType == _interfaceType && pi.GetGetMethod(true).IsAbstract && pi.GetSetMethod(true) == null)
                     {
-                        c.Assign(_target, ctor.Args[0]);
+                        ImplTargetProperty(pi);
                     }
 
-                    GenGetTarget();
+                    ImplGetTarget();
 
-                    GenInterfaceImpl(@interface);
+                    ImplInterface();
                 }
                 return _proxy;
             }
 
-            private void GenGetTarget()
+            private void ProcessMarkingAttribute(Type @interface)
             {
+                // default to factory default
+                _baseType = _defaultBaseType;
+                _propertyChangedRaiser = _defaultPropertyChangedRaiser;
+                // end if there is no delegate to get additional information.
+                if (_getBaseTypeFromMarkingAttribute == null && 
+                    _getPropertyChangedRaiserFromMarkingAttribute == null) return;
+                // otherwise try to get the attribute.
+                var attrs = @interface.GetCustomAttributes(_markingAttribute, false);
+                // end if there is no marking attribute.
+                if (attrs.Length == 0) return;
+                // if there is a different type specified in marking attribute, use it.
+                if (_getBaseTypeFromMarkingAttribute != null)
+                {
+                    var baseType = _getBaseTypeFromMarkingAttribute(attrs[0]);
+                    if(baseType!=null) _baseType = baseType;
+                }
+                // if there is a diffrent property changed event raiser specified, use it.
+                if (_getPropertyChangedRaiserFromMarkingAttribute != null)
+                {
+                    var raiserName = _getPropertyChangedRaiserFromMarkingAttribute(attrs[0]);
+                    if (raiserName != null)
+                        _propertyChangedRaiser = GetOnPropertyChangedMethod(_baseType, raiserName);
+                }
+            }
+
+            /// <summary>
+            /// Maps the methods between those in the interface and those in 
+            /// the base class. The information will be used to determine what
+            /// and how to implement in the proxy.
+            /// </summary>
+            private void MapMethods()
+            {
+                if(_baseType.GetInterfaces().Contains(_interfaceType))
+                {
+                    var map = _baseType.GetInterfaceMap(_interfaceType);
+                    var count = map.InterfaceMethods.Length;
+                    _interfaceToBaseMethods = new Dictionary<MethodInfo, MethodInfo>(count);
+                    for (int i = count - 1; i >= 0; i--)
+                    {
+                        _interfaceToBaseMethods[map.InterfaceMethods[i]] = map.TargetMethods[i];
+                    }
+                }
+                var interfaceMethods = _interfaceType.GetMethods();
+                _interfaceToBaseMethods = new Dictionary<MethodInfo, MethodInfo>(interfaceMethods.Length);
+                foreach (var interfaceMethod in interfaceMethods)
+                {
+                    foreach (var methodInfo in _baseType.GetMethods(BindingFlags.Instance | BindingFlags.Public))
+                    {
+                        if (MethodSignatureAreSame(methodInfo, interfaceMethod))
+                        {
+                            _interfaceToBaseMethods[interfaceMethod] = methodInfo;
+                        }
+                    }
+                }
+            }
+
+            /// <summary>
+            /// To compare if the signatures and return types of two given 
+            /// methods are the same.
+            /// </summary>
+            private static bool MethodSignatureAreSame(MethodInfo m1, MethodInfo m2)
+            {
+                if (m1.Name != m2.Name || m1.ReturnType != m2.ReturnType) return false;
+                var p1 = m1.GetParameters(); 
+                var p2 = m2.GetParameters();
+                if (p1.Length != p2.Length) return false;
+                for (int i = p1.Length - 1; i >= 0; i--)
+                {
+                    if (p1[i].ParameterType != p2[i].ParameterType) return false;
+                }
+                return true;
+            }
+
+            private void ImplConstructor()
+            {
+                // public ProxyIValueObject(IValueObject target)
+                var ctor = _proxy.Constructor(g.Arg(_interfaceType, "target")).Public;
+                using (var c = ctor.Code())
+                {
+                    // _target = target;
+                    c.Assign(_target, ctor.Args[0]);
+                }
+            }
+
+            private void ImplTargetProperty(PropertyInfo pi)
+            {
+                // protected override Target
+                var property = _proxy.Property(pi).Override(pi);
+                using (var c = property.Getter().Code())
+                // get
+                {
+                    // return _target;
+                    c.Return(_target);
+                }
+            }
+
+            private void ImplGetTarget()
+            {
+                // public static IValueObject GetTarget(IValueObject proxy)
                 var getTarget = _proxy.Method(typeof (T), "GetTarget", g.Arg(typeof (T), "proxy")).Public.Static;
                 using (var c = getTarget.Code())
                 {
+                    // var confirmProxy = proxy as ProxyIValueObject;
                     var confirmProxy = c.Variable(_proxy, "confirmProxy", getTarget.Args[0].As(_proxy));
+                    // if(confirmProxy == null)
                     c.If(c.IsNull(confirmProxy));
                     {
+                        // return proxy;
                         c.Return(getTarget.Args[0]);
                     }
                     c.End();
+                    // return confirmProxy._target;
                     c.Return(confirmProxy.Field(_target));
                 }
             }
 
-            private void GenInterfaceImpl(Type @interface)
+            private void ImplInterface()
             {
-                foreach (MemberInfo info in @interface.GetMembers(BindingFlags.Public | BindingFlags.Instance))
+                foreach (MemberInfo info in _interfaceType.GetMembers(BindingFlags.Public | BindingFlags.Instance))
                 {
                     switch (info.MemberType)
                     {
@@ -313,20 +491,20 @@ namespace CodeSharp.Proxy.NPC
                             MethodInfo mi = (MethodInfo)info;
                             if (!mi.IsSpecialName)
                             {
-                                GenMethod(mi);
+                                ImplMethod(mi);
                             }
                             break;
                         case MemberTypes.Property:
                             PropertyInfo pi = (PropertyInfo)info;
                             if (pi.GetIndexParameters().Length != 0)
                             {
-                                GenIndexer(pi);
+                                ImplIndexer(pi);
                             }
                             else
                             {
-                                var key = GetDeepProxyKey(pi.PropertyType);
-                                if (key != null) GenDeepProxiedProperty(pi, key);
-                                else GenProperty(pi);
+                                var pair = GetFactoryPair(pi.PropertyType);
+                                if (pair != null) ImplProxyTargetProperty(pi, pair);
+                                else ImplProperty(pi);
                             }
                             break;
                         default:
@@ -336,137 +514,274 @@ namespace CodeSharp.Proxy.NPC
                 }
             }
 
-            private void GenMethod(MethodInfo mi)
+            private void ImplMethod(MethodInfo mi)
             {
+                MethodInfo mBase;
+                if (!NeedsMethod(mi, out mBase)) return;
                 var method = _proxy.Method(mi).Public;
-                using (var code = method.Code())
+                if (mBase != null) method.Override(mi);
+                using (var c = method.Code())
                 {
-                    code.Return(_target.Invoke(mi, method.Args.AsOperands()));
+                    ProxyInvoke(c, mi.ReturnType, method.Args, (r, p) => _target.Invoke(mi, p));
                 }
             }
 
-            private void GenIndexer(PropertyInfo pi)
+            private void ImplIndexer(PropertyInfo pi)
             {
-                var property = _proxy.Property(pi).Public;
-                if (pi.CanRead)
-                {
-                    var getter = property.Getter();
-                    using (var c = getter.Code())
+                ImplProperty(
+                    pi,
+                    getter =>
                     {
-                        c.Return(_target.Property(pi, getter.Args.AsOperands()));
-                    }
-                }
-                if (pi.CanWrite)
-                {
-                    var setter = property.Setter();
-                    using (var c = setter.Code())
-                    {
-                        c.Assign(_target.Property(pi, setter.Args.AsOperands()), setter.Value);
-                    }
-                }
-            }
-
-            private void GenProperty(PropertyInfo pi)
-            {
-                // public int IntProperty
-                var property = _proxy.Property(pi).Public;
-                {
-                    if (pi.CanRead)
-                    {
-                        var getter = property.Getter();
                         using (var c = getter.Code())
-                            // get
                         {
-                            // return _target.IntProperty;
-                            c.Return(_target.Property(pi));
+                            ProxyInvoke(c, pi.PropertyType, getter.Args, 
+                                (r, p) => _target.Property(pi, p));
                         }
-                    }
-                    if (pi.CanWrite)
+                    },
+                    setter =>
                     {
-                        var setter = property.Setter();
                         using (var c = setter.Code())
-                            // set
                         {
-                            // if (_target.IntProperty != value)
-                            c.If(c.AreNotEqual(_target.Property(pi, setter.Args.AsOperands()), setter.Value));
-                            {
-                                // _target.IntProperty = value;
-                                c.Assign(_target.Property(pi), setter.Value);
-                                // FirePropertyChanged("IntProperty");
-                                c.Call(_proxy.This.Invoke(_onPropertyChanged, g.Const(pi.Name)));
-                            }
-                            c.End();
+                            ProxyInvoke(c, pi.PropertyType, setter.Args,
+                                (r, p) =>
+                                    {
+                                        IOperand value = setter.Value;
+                                        if (r != null) value = c.Invoke(r.GetTarget, value);
+                                        c.Assign(_target.Property(pi, p), value);
+                                        return null;
+                                    });
                         }
-                    }
-                }
+                    });
             }
 
-            private void GenDeepProxiedProperty(PropertyInfo pi, string key)
+            private void ImplProperty(PropertyInfo pi)
             {
+                var onPropertychangedMethod = FindOnPropertyChangedMethod(pi);
+                // public int IntProperty
+                ImplProperty(
+                    pi,
+                    getter =>
+                        {
+                            // get
+                            using (var c = getter.Code())
+                            {
+                                // return _target.IntProperty;
+                                c.Return(_target.Property(pi));
+                            }
+                        },
+                    setter =>
+                        {
+                            // set
+                            using (var c = setter.Code())
+                            {
+                                // if (_target.IntProperty != value)
+                                c.If(c.AreNotEqual(_target.Property(pi, setter.Args.AsOperands()), setter.Value));
+                                {
+                                    // _target.IntProperty = value;
+                                    c.Assign(_target.Property(pi), setter.Value);
+                                    // FirePropertyChanged("IntProperty");
+                                    if (onPropertychangedMethod!=null)
+                                        c.Call(_proxy.This.Invoke(_defaultPropertyChangedRaiser, g.Const(pi.Name)));
+                                }
+                                c.End();
+                            }
+                        });
+            }
+
+            private void ImplProxyTargetProperty(PropertyInfo pi, FactoryPair pair)
+            {
+                var onPropertychangedMethod = FindOnPropertyChangedMethod(pi);
                 var propertyType = pi.PropertyType;
-                var typeArguments = key == "T" ? new[] {propertyType} : propertyType.GetGenericArguments();
+
+                // private IValueComponent _ComponentProperty;
                 var backingField = _proxy.Field(propertyType, "_" + pi.Name);
-                MethodInfo getTargetMethod = _getTargetMethods[key].MakeGenericMethod(typeArguments);
-                MethodInfo getProxyMethod = _getProxyMethods[key].MakeGenericMethod(typeArguments);
 
                 // public IValueComponent ComponentProperty
-                var property = _proxy.Property(pi).Public;
-                if (pi.CanRead)
-                {
-                    var getter = property.Getter();
-                    using (var c = getter.Code())
-                    // get
-                    {
-                        // var p = _target.ComponentProperty;
-                        var p = c.Variable(propertyType, "p");
-                        c.Assign(p, _target.Property(pi, getter.Args.AsOperands()));
-
-                        // if (p == null)
-                        c.If(c.IsNull(p));
+                ImplProperty(
+                    pi,
+                    getter =>
                         {
-                            var @null = g.Null(propertyType);
-                            // _ComponentProperty = null;
-                            c.Assign(backingField, @null);
-                            // reurn null;
-                            c.Return(@null);
-                        }
-                        c.End();
+                            // get
+                            using (var c = getter.Code())
+                            {
+                                // var p = _target.ComponentProperty;
+                                var p = c.Variable(propertyType, "p", _target.Property(pi, getter.Args.AsOperands()));
 
-                        // if (_ComponentProperty == null || !ReferenceEquals((NotifyPropertyChangedFactory.GetTarget(_ComponentProperty), p))
-                        c.If(c.Or(c.IsNull(backingField), c.NotReferenceEquals(c.Invoke(getTargetMethod, backingField), p)));
-                        {
-                            // _ComponentProperty = NotifyPropertyChangedFactory.GetProxy(p);
-                            c.Assign(backingField, c.Invoke(getProxyMethod, p));
-                        }
-                        c.End();
+                                // if (p == null)
+                                c.If(c.IsNull(p));
+                                {
+                                    // _ComponentProperty = null;
+                                    c.Assign(backingField, g.Null(propertyType));
+                                    // return null;
+                                    c.Return(g.Null(propertyType));
+                                }
+                                c.End();
 
-                        //return _ComponentProperty;
-                        c.Return(backingField);
-                    }
-                }
-                if (pi.CanWrite)
-                {
-                    var setter = property.Setter();
-                    using (var c = setter.Code())
-                    // set
-                    {
-                        // var newTarget = NotifyPropertyChangedFactory.GetTarget(value);
-                        var newTarget = c.Variable(propertyType, "newTarget", c.Invoke(getTargetMethod, setter.Value));
-                        // if (!ReferenceEquals(_target.ComponentProperty, newTarget))
-                        c.If(c.NotReferenceEquals(_target.Property(pi), newTarget));
+                                // if (_ComponentProperty == null || !ReferenceEquals((NotifyPropertyChangeFactory.GetTarget(_ComponentProperty), p))
+                                c.If(c.Or(c.IsNull(backingField),
+                                          c.NotReferenceEquals(c.Invoke(pair.GetProxy, backingField), p)));
+                                {
+                                    // _ComponentProperty = NotifyPropertyChangeFactory.GetProxy(p);
+                                    c.Assign(backingField, c.Invoke(pair.GetTarget, p));
+                                }
+                                c.End();
+
+                                // return _ComponentProperty;
+                                c.Return(backingField);
+                            }
+                        },
+                    setter =>
                         {
-                            // _target.ComponentProperty = newTarget;
-                            c.Assign(_target.Property(pi), newTarget);
-                            // _ComponentProperty = NotifyPropertyChangedFactory.GetProxy(value);
-                            c.Assign(backingField, c.Invoke(getProxyMethod, setter.Value));
-                            //this.FirePropertyChanged("ComponentProperty");
-                            c.Call(_proxy.This.Invoke(_onPropertyChanged, g.Const(pi.Name)));
-                        }
-                        c.End();
-                    }
-                }
+                            // set
+                            using (var c = setter.Code())
+                            {
+                                // var newTarget = NotifyPropertyChangeFactory.GetTarget(value);
+                                var newTarget = c.Variable(propertyType, "newTarget",
+                                                           c.Invoke(pair.GetTarget, setter.Value));
+                                // if (!ReferenceEquals(_target.ComponentProperty, newTarget))
+                                c.If(c.NotReferenceEquals(_target.Property(pi), newTarget));
+                                {
+                                    // _target.ComponentProperty = newTarget;
+                                    c.Assign(_target.Property(pi), newTarget);
+                                    // _ComponentProperty = NotifyPropertyChangeFactory.GetProxy(value);
+                                    c.Assign(backingField, c.Invoke(pair.GetTarget, setter.Value));
+                                    // FirePropertyChanged("ComponentProperty");
+                                    if (onPropertychangedMethod != null)
+                                        c.Call(_proxy.This.Invoke(_defaultPropertyChangedRaiser, g.Const(pi.Name)));
+                                }
+                                c.End();
+                            }
+                        });
                 // end of ComponentProperty
             }
+
+            private void ImplProperty(PropertyInfo pi, Action<IMethod> getterImpl, Action<ISetter> setterImpl)
+            {
+                MethodInfo mGetter, mSetter;
+                bool needsGetter = NeedsGetter(pi, out mGetter);
+                bool needsSetter = NeedsSetter(pi, out mSetter);
+                // if both getter and setter are implemented in base class, do nothing.
+                if (!needsGetter && !needsSetter) return;
+                var property = _proxy.Property(pi).Public;
+                // if has getter and not implemented in base class.
+                if (needsGetter)
+                {
+                    var getter = property.Getter();
+                    if (mGetter != null) getter.Override(mGetter);
+                    getterImpl(getter);
+                }
+                // if has setter and not implemented in base class.
+                if (needsSetter)
+                {
+                    var setter = property.Setter();
+                    if (mSetter != null) setter.Override(mGetter);
+                    setterImpl(setter);
+                }
+            }
+
+            private MethodInfo FindOnPropertyChangedMethod(PropertyInfo pi)
+            {
+                var attrs = pi.GetCustomAttributes(_raiserAttribute, false);
+                // use the type level raise when no raiser attribute exists.
+                if (attrs.Length == 0) return _propertyChangedRaiser;
+                string methodName = _getPropertyChangedRaiserFromRaiserAttribute(attrs[0]);
+                // don't raise event when raiser method name is null.
+                if (methodName == null ) return null;
+                MethodInfo result;
+                // return from cache if one already exists.
+                if (_propertyChangedRaiserCache.TryGetValue(methodName, out result)) return result;
+                // try to find the specified method
+                result = _baseType.GetMethod(
+                    methodName,
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+                    null, new[] {typeof (string)}, null);
+                // error if no method found.
+                if (result==null || !(result.IsPublic || result.IsFamily))
+                {
+                    throw new MissingMemberException(
+                        string.Format("Missing method {2}.{3}(string) specified by attribute {1} on property {0}.",
+                                      pi, attrs[0].GetType().FullName, _baseType, methodName));
+                }
+                // cache the raiser for future use.
+                _propertyChangedRaiserCache[methodName] = result;
+                return result;
+            }
+
+            private bool NeedsGetter(PropertyInfo interfaceProperty, out MethodInfo baseGetter)
+            {
+                baseGetter = null;
+                if (!interfaceProperty.CanRead) return false; // property has no getter
+                return NeedsMethod(interfaceProperty.GetGetMethod(), out baseGetter);
+            }
+
+            private bool NeedsSetter(PropertyInfo interfaceProperty, out MethodInfo baseSetter)
+            {
+                baseSetter = null;
+                if (!interfaceProperty.CanWrite) return false; // property has no setter
+                return NeedsMethod(interfaceProperty.GetSetMethod(), out baseSetter);
+            }
+
+            private bool NeedsMethod(MethodInfo interfaceMethod, out MethodInfo baseMethod)
+            {
+                baseMethod = FindMethodInBaseType(interfaceMethod);
+                return baseMethod == null || baseMethod.IsAbstract;
+            }
+
+            private MethodInfo FindMethodInBaseType(MethodInfo interfaceMethod)
+            {
+                MethodInfo result;
+                _interfaceToBaseMethods.TryGetValue(interfaceMethod, out result);
+                return result;
+            }
+
+            private static void ProxyInvoke(ICode c, Type returnType, IParameterList args, 
+                                            Func<FactoryPair, IOperand[], IOperand> callTarget)
+            {
+                bool hasRef = false;
+                IOperand[] vars = new IOperand[args.Count];
+                IOperand[] parameters = new IOperand[args.Count];
+                FactoryPair[] pairs = new FactoryPair[args.Count];
+                for (int i = 0; i < args.Count; i++)
+                {
+                    var arg = args[i];
+                    var pair = GetFactoryPair(arg.Type);
+                    if (pair == null) { parameters[i] = arg; continue; }
+                    pairs[i] = pair;
+                    if (arg.Direction == ParameterDirection.In)
+                    {
+                        parameters[i] = c.Invoke(pair.GetTarget, arg);
+                        continue;
+                    }
+                    hasRef = true;
+                    vars[i] = c.Variable(arg.Type.GetElementType(), arg.Name + "Target");
+                    if (arg.Direction == ParameterDirection.Ref)
+                    {
+                        c.Assign(vars[i], c.Invoke(pair.GetTarget, arg));
+                    }
+                    parameters[i] = vars[i];
+                }
+                var returnPair = GetFactoryPair(returnType);
+                var result = callTarget(returnPair, parameters);
+                bool isVoid = returnType == typeof(void) || result == null;
+                if (hasRef)
+                {
+                    if(!isVoid) result = c.Variable(returnType, "result", result);
+                    for (int i = 0; i < args.Count; i++)
+                    {
+                        if (vars[i] == null) continue;
+                        c.Assign(args[i], c.Invoke(pairs[i].GetProxy, vars[i]));
+                    }
+                }
+                if (result == null) c.Return();
+                else if (returnPair == null) c.Return(result);
+                else c.Return(c.Invoke(returnPair.GetProxy, result));
+            }
+        }
+
+        private class FactoryPair
+        {
+            internal MethodInfo GetProxy;
+            internal MethodInfo GetTarget;
         }
     }
 }

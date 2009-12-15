@@ -32,27 +32,54 @@ namespace CodeSharp.Emit
 
         internal override void EmitGet(ILGenerator il)
         {
-            switch (_variable.LocalIndex)
+            ushort position = (ushort) _variable.LocalIndex;
+            switch (position)
             {
                 case 0:
                     il.Emit(OpCodes.Ldloc_0);
                     break;
+                case 1:
+                    il.Emit(OpCodes.Ldloc_1);
+                    break;
+                case 2:
+                    il.Emit(OpCodes.Ldloc_2);
+                    break;
+                case 3:
+                    il.Emit(OpCodes.Ldloc_3);
+                    break;
                 default:
-                    throw new NotImplementedException();
+                    il.Emit(OpCodes.Ldarg_S, position);
+                    break;
             }
         }
 
         internal override void EmitSet(ILGenerator il, Operand value)
         {
             value.EmitGet(il);
-            switch (_variable.LocalIndex)
+            ushort position = (ushort)_variable.LocalIndex;
+            switch (position)
             {
                 case 0:
                     il.Emit(OpCodes.Stloc_0);
                     break;
+                case 1:
+                    il.Emit(OpCodes.Stloc_1);
+                    break;
+                case 2:
+                    il.Emit(OpCodes.Stloc_2);
+                    break;
+                case 3:
+                    il.Emit(OpCodes.Stloc_3);
+                    break;
                 default:
-                    throw new NotImplementedException();
+                    il.Emit(OpCodes.Stloc_S, position);
+                    break;
             }
+        }
+
+        internal override void EmitByRef(ILGenerator il)
+        {
+            il.Emit(OpCodes.Ldloca_S, _variable);
         }
 
         internal void EmitDefinition(ILGenerator il)

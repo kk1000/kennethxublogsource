@@ -9,7 +9,7 @@ namespace CodeSharp.Emit
         public Getter(Type returnType, string name, MethodAttributes methodAttributes, params IParameter[] parameters) 
             : base(returnType, name, parameters)
         {
-            _methodAttributes |= methodAttributes | MethodAttributes.SpecialName;
+            _methodAttributes = methodAttributes;
         }
 
         public MethodBuilder MethodBuilder

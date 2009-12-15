@@ -7,5 +7,14 @@ namespace CodeSharp
     /// </summary>
     public interface IParameter : IOperand
     {
+        /// <summary>
+        /// The direction of parameter.
+        /// </summary>
+        ParameterDirection Direction { get; }
+
+        /// <summary>
+        /// Name of parameter.
+        /// </summary>
+        string Name { get; }
     }
 }

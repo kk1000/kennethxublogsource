@@ -11,28 +11,23 @@ namespace CodeSharp.Emit
 {
     public class BvoAttribute : Attribute
     {
-        private readonly Type _baseType;
+        private Type _notifyPropertyChangedBase;
 
-        public BvoAttribute()
+        public Type NotifyPropertyChangedBase
         {
-        }
-
-        public BvoAttribute(Type baseType)
-        {
-            if (baseType != null && !typeof(ChangeTrackerBase).IsAssignableFrom(baseType))
+            get { return _notifyPropertyChangedBase; }
+            set
             {
-                throw new ArgumentException("Must be sub class of " + typeof(ChangeTrackerBase), "baseType");
+                if (value != null && !typeof(ChangeTrackerBase).IsAssignableFrom(value))
+                {
+                    throw new ArgumentException("Must be sub class of " + typeof(ChangeTrackerBase), "value");
+                }
+                _notifyPropertyChangedBase = value;
             }
-            _baseType = baseType;
-        }
-
-        public Type BaseType
-        {
-            get { return _baseType; }
         }
     }
 
-    [BvoAttribute(typeof(ChangeTrackerBase))]
+    [Bvo(NotifyPropertyChangedBase = typeof(ValueObjectProxyBase))]
     public interface IValueObject
     {
         string SimpleProperty { get; set; }
@@ -42,9 +37,27 @@ namespace CodeSharp.Emit
         IValueComponent ComponentProperty { get; set; }
         IList<IValueComponent> ComponentList { get; set; }
         IDictionary<int, IValueComponent> ComponentDictionary { get; set; }
+        void MinimalMethod();
+        void VoidMethod(int i);
+        string ParamlessMethod();
+        string SimpleMethod(int i);
+        string SimpleOutRef(int i, out string s, ref long l);
+        IValueComponent DeepMethod(IValueComponent component);
+        IValueComponent DeepOutRef(IValueComponent a, out IValueComponent o, ref IValueObject r);
+        IValueComponent this[IValueComponent a, IValueComponent o, IValueObject r] { get; set;}
     }
 
-    [BvoAttribute]
+    public abstract class ValueObjectProxyBase : ChangeTrackerBase
+    {
+        protected abstract IValueObject Target { get; }
+        public abstract int IntProperty { get; set; }
+        public virtual int LongProperty {
+            get { return 0; }
+            set { }
+        }
+    }
+
+    [Bvo]
     public interface IValueComponent
     {
         string StringProperty { get; set; }
@@ -60,27 +73,30 @@ namespace CodeSharp.Emit
         }
         [TestFixtureSetUp] public void TestFixtureSetUp()
         {
-            NotifyPropertyChangedFactory.SetDeepProxyAttribute<BvoAttribute>();
-            NotifyPropertyChangedFactory.SetBaseClass<ChangeTrackerBase>("FirePropertyChanged");
+            NotifyPropertyChangeFactory.SetMarkingAttribute<BvoAttribute>(b=>b.NotifyPropertyChangedBase);
+            NotifyPropertyChangeFactory.SetBaseType<ChangeTrackerBase>("FirePropertyChanged");
         }
 
         [TestFixtureTearDown] public void TestFixtureTearDown()
         {
-            NotifyPropertyChangedFactory.SaveAssembly();
+            NotifyPropertyChangeFactory.SaveAssembly();
         }
 
         [Test] public void CanCreateProxy()
         {
-            NewValueObject();
+            var o = NewValueObject();
+            var mock = NotifyPropertyChangeFactory.GetTarget(o);
+            mock.ComponentProperty = MockRepository.GenerateStub<IValueComponent>();
+            var x = o.ComponentProperty;
         }
 
         protected override IValueObject NewValueObject()
         {
             var mock = MockRepository.GenerateStub<IValueObject>();
-            return NotifyPropertyChangedFactory.NewProxy(mock);
+            return NotifyPropertyChangeFactory.NewProxy(mock);
         }
 
-        protected override System.Collections.IEnumerable TestData(System.Reflection.PropertyInfo property)
+        protected override System.Collections.IEnumerable TestData(PropertyInfo property)
         {
             if (property.PropertyType == typeof(IValueComponent))
             {
@@ -102,7 +118,7 @@ namespace CodeSharp.Emit
         {
             var getProxy = new Dictionary<string, MethodInfo>();
             var getTarget = new Dictionary<string, MethodInfo>();
-            var members = typeof (NotifyPropertyChangedFactory).GetMembers(BindingFlags.Static | BindingFlags.Public);
+            var members = typeof (NotifyPropertyChangeFactory).GetMembers(BindingFlags.Static | BindingFlags.Public);
             foreach (MethodInfo method in members.Where(m=>m.MemberType == MemberTypes.Method))
             {
                 switch (method.Name)

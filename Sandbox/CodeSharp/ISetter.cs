@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace CodeSharp
 {
     /// <summary>
@@ -9,5 +11,13 @@ namespace CodeSharp
         /// The value to set the property.
         /// </summary>
         IParameter Value { get; }
+
+        /// <summary>
+        /// Current method overrides the method
+        /// </summary>
+        /// <param name="method">
+        /// The method to be overridden.
+        /// </param>
+        ISetter Override(MethodInfo method);
     }
 }

@@ -108,6 +108,15 @@ namespace CodeSharp.Emit
             }
         }
 
+        public T Override(MethodInfo method)
+        {
+            var attrs = method.Attributes;
+            _methodAttributes = 
+                _methodAttributes & ~(MethodAttributes.MemberAccessMask|MethodAttributes.NewSlot) | 
+                attrs & MethodAttributes.MemberAccessMask;
+            return Self;
+        }
+
         protected abstract T Self { get; }
     }
 }
