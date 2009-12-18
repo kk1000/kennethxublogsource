@@ -17,7 +17,7 @@ namespace CodeSharp.Proxy
         ///</summary>
         public const string DefaultOnPropertyChangedMethodName = "OnPropertyChanged";
 
-        #region SetBastType Methods
+        #region SetBaseType Methods
 
         /// <summary>
         /// Set the base class for all the generated proxies.
@@ -40,23 +40,6 @@ namespace CodeSharp.Proxy
         /// Set the base class for all the generated proxies.
         /// </summary>
         /// <remarks>
-        /// <paramref name="baseClassType"/> must be a class that is not sealed and
-        /// implements <see cref="INotifyPropertyChanged"/>. It also must has a
-        /// non-abstract method with signature: <c>OnPropertyChanged(string)</c>
-        /// that is accessable by the derived class.
-        /// </remarks>
-        /// <param name="baseClassType">
-        /// Type of the base class.
-        /// </param>
-        public static void SetBaseType(Type baseClassType)
-        {
-            Factory.SetBastType(baseClassType, DefaultOnPropertyChangedMethodName);
-        }
-
-        /// <summary>
-        /// Set the base class for all the generated proxies.
-        /// </summary>
-        /// <remarks>
         /// <typeparamref name="TBase"/> must be a class that is not sealed and
         /// implements <see cref="INotifyPropertyChanged"/>. It also must has a
         /// non-abstract method that take one string parameter. The name of the
@@ -70,31 +53,10 @@ namespace CodeSharp.Proxy
         /// <see cref="INotifyPropertyChanged.PropertyChanged"/> event.
         /// </param>
         public static void SetBaseType<TBase>(string onPropertyChangeMethod)
-            where TBase : INotifyPropertyChanged
+            where TBase : class, INotifyPropertyChanged
         {
-            Factory.SetBastType(typeof(TBase), onPropertyChangeMethod);
+            Factory.SetBaseType(typeof(TBase), onPropertyChangeMethod);
         }
-
-        /// <summary>
-        /// Set the base class for all the generated proxies.
-        /// </summary>
-        /// <remarks>
-        /// <paramref name="baseClassType"/> must be a class that is not sealed and
-        /// implements <see cref="INotifyPropertyChanged"/>. It also must has a
-        /// non-abstract method that take one string parameter. The name of the
-        /// method is specified by <paramref name="onPropertyChangeMethod"/>.
-        /// </remarks>
-        /// <param name="baseClassType">
-        /// Type of the base class.
-        /// </param>
-        /// <param name="onPropertyChangeMethod">
-        /// The name of the method to raise the 
-        /// <see cref="INotifyPropertyChanged.PropertyChanged"/> event.
-        /// </param>
-        public static void SetBaseType(Type baseClassType, string onPropertyChangeMethod)
-        {
-            Factory.SetBastType(baseClassType, onPropertyChangeMethod);
-        } 
 
         #endregion
 
@@ -130,7 +92,7 @@ namespace CodeSharp.Proxy
         public static void SetMarkingAttribute<TA>()
             where TA : Attribute
         {
-            Factory.SetMarkingAttribute<TA>(null);
+            SetMarkingAttribute<TA>(null);
         }
 
         /// <summary>
@@ -158,7 +120,8 @@ namespace CodeSharp.Proxy
         /// <typeparam name="TA">Type of the attribute.</typeparam>
         /// <param name="baseType">
         /// A delegate that retrieves the base type information from given
-        /// custom attribute type <typeparamref name="TA"/>.
+        /// custom attribute type <typeparamref name="TA"/>. Or <c>null</c>
+        /// to disable this feature.
         /// </param>
         public static void SetMarkingAttribute<TA>(Converter<TA, Type> baseType)
             where TA : Attribute
