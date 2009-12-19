@@ -22,7 +22,9 @@ namespace CodeSharp.Proxy
     /// enumerator or those of the Keys and Values collections. Similarly,
     /// CopyTo will copy fewer than Count elements in this situation.
     /// </remarks>
-    sealed class WeakDictionary<TKey, TValue> : BaseDictionary<TKey, TValue>, IWeakCollection where TKey : class
+    [CoverageExclude] //copied externally
+    sealed class WeakDictionary<TKey, TValue> : BaseDictionary<TKey, TValue>, IWeakCollection
+        where TKey : class
         where TValue : class
     {
 

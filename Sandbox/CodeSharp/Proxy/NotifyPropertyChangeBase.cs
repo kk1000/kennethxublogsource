@@ -23,7 +23,7 @@ namespace CodeSharp.Proxy
         {
             var propertyChanged = PropertyChanged;
             if (propertyChanged != null)
-                propertyChanged(this, new PropertyChangedEventArgs("propertyName"));
+                propertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

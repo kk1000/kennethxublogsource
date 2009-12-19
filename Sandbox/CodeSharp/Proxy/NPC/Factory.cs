@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -22,7 +23,7 @@ namespace CodeSharp.Proxy.NPC
         const string _namespace = "NPC";
         private static AssemblyBuilder _assemblyBuilder;
         private static ModuleBuilder _moduleBuilder;
-        private static int _assemblySerialNumber;
+        private static int _customizationRevision;
         #endregion
 
         #region Initialization Related
@@ -64,6 +65,7 @@ namespace CodeSharp.Proxy.NPC
 
         private static void Init(string moduleName)
         {
+            var revision = _customizationRevision;
             AssemblyName an = new AssemblyName { Name = moduleName };
             AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(an, AssemblyBuilderAccess.RunAndSave);
             _assemblyBuilder = ab;
@@ -73,20 +75,37 @@ namespace CodeSharp.Proxy.NPC
             SetMarkingAttribute<NotifyPropertyChangeAttribute>(a => a.BaseType);
             SetEventRaiserAttribute<OnPropertyChangeAttribute>(a => a.OnPropertyChangedMethod);
             _caches = new List<IWeakCollection>();
+            _customizationRevision = revision;
         }
 
-        internal static void Reset()
+        internal static void Reset(bool cleanProxy)
         {
+            var name = MakeModuleName();
+
+            if (name == _assemblyBuilder.GetName().Name)
+            {
+                if (!cleanProxy || !_isInitialized) return;
+                ++_customizationRevision;
+                name = MakeModuleName();
+            }
             var caches = _caches;
-            Init(_moduleName + ++_assemblySerialNumber);
+            Init(name);
             foreach (var cache in caches)
             {
                 var type = cache.GetType().GetGenericArguments()[0];
                 var generatorType = typeof (Generator<>).MakeGenericType(type);
                 generatorType.GetMethod("Reset", BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Public).Invoke(null, null);
             }
-
         }
+
+        private static string MakeModuleName()
+        {
+            return _customizationRevision == 0 ? _moduleName :
+                Path.GetFileNameWithoutExtension(_moduleName) + 
+                _customizationRevision + 
+                Path.GetExtension(_moduleName);
+        }
+
 
         /// <summary>
         /// Save all generated proxy types to an assembly file.
@@ -107,9 +126,11 @@ namespace CodeSharp.Proxy.NPC
                 throw new ArgumentNullException("onPropertyChangedMethod");
             ValidateBaseType(baseType);
             var raiser = GetOnPropertyChangedMethod(baseType, onPropertyChangedMethod);
+            if (_defaultBaseType == baseType || _defaultPropertyChangedRaiser == raiser) return;
             lock (_initLock)
             {
                 RequiresNotInitialized();
+                _customizationRevision++;
                 _defaultBaseType = baseType;
                 _defaultPropertyChangedRaiser = raiser;
             }
@@ -134,7 +155,8 @@ namespace CodeSharp.Proxy.NPC
             lock(_initLock)
             {
                 RequiresNotInitialized();
-                _markingAttribute = typeof (TA);
+                _customizationRevision++;
+                _markingAttribute = typeof(TA);
                 _isProxyTargetType = t => t.GetCustomAttributes(typeof(TA), true).Length != 0;
                 _getBaseTypeFromMarkingAttribute = baseType == null ? (Converter<object, Type>)null : o => baseType((TA)o);
                 _getPropertyChangedRaiserFromMarkingAttribute = null;
@@ -156,7 +178,8 @@ namespace CodeSharp.Proxy.NPC
             lock(_initLock)
             {
                 RequiresNotInitialized();
-                _raiserAttribute = typeof (TA);
+                _customizationRevision++;
+                _raiserAttribute = typeof(TA);
                 _getPropertyChangedRaiserFromRaiserAttribute = o => onPropertyChanged((TA) o);
             }
         }
@@ -265,7 +288,7 @@ namespace CodeSharp.Proxy.NPC
         /// </summary>
         private static FactoryPair GetFactoryPair(Type type)
         {
-            string key = "T";
+            string key = null;
             if (type.IsByRef) type = type.GetElementType();
             if (type.IsGenericType)
             {
@@ -284,14 +307,11 @@ namespace CodeSharp.Proxy.NPC
                     if (!_isProxyTargetType(type.GetGenericArguments()[0])) return null;
                     key = genericType.ToString();
                 }
-                else
-                {
-                    return null;
-                }
             }
-            else
+            if (key == null)
             {
                 if(!_isProxyTargetType(type)) return null;
+                key = "T";
             }
 
             var typeArguments = key == "T" ? new[] { type } : type.GetGenericArguments();
@@ -573,9 +593,6 @@ namespace CodeSharp.Proxy.NPC
                                 else ImplProperty(pi);
                             }
                             break;
-                        default:
-                            Console.WriteLine(info + " : " + info.MemberType);
-                            break;
                     }
                 }
             }
@@ -640,14 +657,19 @@ namespace CodeSharp.Proxy.NPC
                             // set
                             using (var c = setter.Code())
                             {
+                                if (propertychangedRaiser == null)
+                                {
+                                    // _target.IntProperty = value;
+                                    c.Assign(_target.Property(pi), setter.Value);
+                                    return;
+                                }
                                 // if (_target.IntProperty != value)
                                 c.If(c.AreNotEqual(_target.Property(pi, setter.Args.AsOperands()), setter.Value));
                                 {
                                     // _target.IntProperty = value;
                                     c.Assign(_target.Property(pi), setter.Value);
                                     // FirePropertyChanged("IntProperty");
-                                    if (propertychangedRaiser!=null)
-                                        c.Call(_proxy.This.Invoke(propertychangedRaiser, g.Const(pi.Name)));
+                                    c.Call(_proxy.This.Invoke(propertychangedRaiser, g.Const(pi.Name)));
                                 }
                                 c.End();
                             }

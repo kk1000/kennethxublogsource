@@ -79,7 +79,7 @@ namespace CodeSharp.Emit
 
         [TestFixtureTearDown] public void TestFixtureTearDown()
         {
-            NotifyPropertyChangeFactory.SaveAssembly();
+            //NotifyPropertyChangeFactory.SaveAssembly();
         }
 
         [Test] public void CanCreateProxy()
@@ -108,34 +108,6 @@ namespace CodeSharp.Emit
                            };
             }
             return base.TestData(property);
-        }
-    }
-
-
-    public class Foo
-    {
-        public void Bar()
-        {
-            var getProxy = new Dictionary<string, MethodInfo>();
-            var getTarget = new Dictionary<string, MethodInfo>();
-            var members = typeof (NotifyPropertyChangeFactory).GetMembers(BindingFlags.Static | BindingFlags.Public);
-            foreach (MethodInfo method in members.Where(m=>m.MemberType == MemberTypes.Method))
-            {
-                switch (method.Name)
-                {
-                    case "GetProxy":
-                        getProxy[method.GetParamTypes()[0].ToString()] = method;
-                        break;
-                    case "GetTarget":
-                        getTarget[method.GetParamTypes()[0].ToString()] = method;
-                        break;
-                }
-            }
-            Console.WriteLine(getProxy[typeof(IList<>).ToString()]);
-        }
-
-        public void GetProxy<T>(IList<T> s)
-        {
         }
     }
 }

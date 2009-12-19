@@ -9,6 +9,7 @@ namespace CodeSharp.Proxy
     // the Create factory method is used in place of a constructor
     // to handle the case where target is null, but we want the
     // reference to still appear to be alive.
+    [CoverageExclude] //copied externally
     internal class WeakReference<T> : WeakReference where T : class
     {
         public static WeakReference<T> Create(T target)

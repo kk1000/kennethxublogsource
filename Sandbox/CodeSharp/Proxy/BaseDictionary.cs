@@ -16,6 +16,7 @@ namespace CodeSharp.Proxy
     /// </remarks>
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(PREFIX + "DictionaryDebugView`2" + SUFFIX)]
+    [CoverageExclude] //copied externally
     abstract class BaseDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private const string PREFIX = "System.Collections.Generic.Mscorlib_";
@@ -110,6 +111,7 @@ namespace CodeSharp.Proxy
             return this.GetEnumerator();
         }
 
+        [CoverageExclude] //copied externally
         private abstract class Collection<T> : ICollection<T>
         {
             protected readonly IDictionary<TKey, TValue> dictionary;
@@ -142,6 +144,7 @@ namespace CodeSharp.Proxy
                 return false;
             }
 
+            [CoverageExclude] //copied externally
             public IEnumerator<T> GetEnumerator()
             {
                 foreach (KeyValuePair<TKey, TValue> pair in this.dictionary)
@@ -173,6 +176,7 @@ namespace CodeSharp.Proxy
 
         [DebuggerDisplay("Count = {Count}")]
         [DebuggerTypeProxy(PREFIX + "DictionaryKeyCollectionDebugView`2" + SUFFIX)]
+        [CoverageExclude] //copied externally
         private class KeyCollection : Collection<TKey>
         {
             public KeyCollection(IDictionary<TKey, TValue> dictionary)
@@ -190,6 +194,7 @@ namespace CodeSharp.Proxy
 
         [DebuggerDisplay("Count = {Count}")]
         [DebuggerTypeProxy(PREFIX + "DictionaryValueCollectionDebugView`2" + SUFFIX)]
+        [CoverageExclude] //copied externally
         private class ValueCollection : Collection<TValue>
         {
             public ValueCollection(IDictionary<TKey, TValue> dictionary)
