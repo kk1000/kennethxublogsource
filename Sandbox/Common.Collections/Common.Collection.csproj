@@ -21,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Debug\Common.Collection.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +31,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Release\Common.Collection.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -56,6 +60,7 @@
     <Compile Include="AbstractListWrapper.cs" />
     <Compile Include="AbstractTransformingCollection.cs" />
     <Compile Include="AbstractTransformingDictionary.cs" />
+    <Compile Include="AbstractTransformingEnumerator.cs" />
     <Compile Include="AbstractTransformingList.cs" />
     <Compile Include="Collections.cs" />
     <Compile Include="CollectionWrapper.cs" />

@@ -24,93 +24,21 @@ using System.Collections.Generic;
 
 namespace Common.Collection
 {
-    /// <author>Kenneth Xu</author>
-    public abstract class AbstractTransformingEnumerator<TSource, TTarget> : AbstractEnumerator<TTarget>
-    {
-        protected readonly IEnumerator<TSource> _source;
-
-        protected AbstractTransformingEnumerator(IEnumerator<TSource> source)
-        {
-            if (source == null) throw new ArgumentNullException("source");
-            _source = source;
-        }
-
-        ///<summary>
-        ///Disposes the enumerator causes the source enumerator to be disposed 
-        /// as well.
-        ///</summary>
-        ///<filterpriority>2</filterpriority>
-        public override void Dispose()
-        {
-            _source.Dispose();
-        }
-
-        ///<summary>
-        ///Sets the enumerator to its initial position, which is before the 
-        /// first element in the collection.
-        ///</summary>
-        ///
-        ///<exception cref="T:System.InvalidOperationException">
-        /// The collection was modified after the enumerator was created. 
-        /// </exception>
-        /// <filterpriority>2</filterpriority>
-        public override void Reset()
-        {
-            _source.Reset();
-        }
-
-        ///<summary>
-        ///Advances the enumerator to the next element of the collection.
-        ///</summary>
-        ///
-        ///<returns>
-        ///true if the enumerator was successfully advanced to the next 
-        /// element; false if the enumerator has passed the end of the 
-        /// collection.
-        ///</returns>
-        ///
-        ///<exception cref="T:System.InvalidOperationException">
-        /// The collection was modified after the enumerator was created. 
-        /// </exception>
-        /// <filterpriority>2</filterpriority>
-        protected override bool GoNext()
-        {
-            return _source.MoveNext();
-        }
-
-        ///<summary>
-        ///Gets the element in the collection at the current position of the 
-        /// enumerator.
-        ///</summary>
-        ///
-        ///<returns>
-        ///The element in the collection at the current position of the 
-        /// enumerator.
-        ///</returns>
-        ///
-        protected override TTarget FetchCurrent()
-        {
-            return Transform(_source.Current);
-        }
-
-        protected abstract TTarget Transform(TSource source);
-    }
-
     /// <summary>
-    /// <see cref="TransformingEnumerator{TSource,TTarget}"/> transforms the elements
+    /// <see cref="TransformingEnumerator{TFrom,TTo}"/> transforms the elements
     /// from the source instance of <see cref="IEnumerator{T}"/> using a given transformer.
     /// </summary>
-    /// <typeparam name="TTarget">
-    /// Type of the data element after the transformed
+    /// <typeparam name="TTo">
+    /// Type of the data element of the transformed enumerator.
     /// </typeparam>
-    /// <typeparam name="TSource">
-    /// Type of the data element of the orignal enumerator
+    /// <typeparam name="TFrom">
+    /// Type of the data element of the orignal enumerator.
     /// </typeparam>
     /// <seealso cref="Converter{TInput,TOutput}"/>
     /// <author>Kenneth Xu</author>
-    public class TransformingEnumerator<TSource, TTarget> : AbstractTransformingEnumerator<TSource, TTarget>
+    public class TransformingEnumerator<TFrom, TTo> : AbstractTransformingEnumerator<TFrom, TTo>
     {
-        private readonly Converter<TSource, TTarget> _transformer;
+        private readonly Converter<TFrom, TTo> _transformer;
 
         /// <summary>
         /// The only constructor of <c>TransformingEnumerator</c>
@@ -125,16 +53,27 @@ namespace Common.Collection
         /// when parameter <paramref name="source"/> or <paramref name="transformer"/> 
         /// is null.
         /// </exception>
-        public TransformingEnumerator(IEnumerator<TSource> source, 
-            Converter<TSource, TTarget> transformer) : base(source)
+        public TransformingEnumerator(IEnumerator<TFrom> source, 
+            Converter<TFrom, TTo> transformer) : base(source)
         {
             if (transformer == null) throw new ArgumentNullException("transformer");
             _transformer = transformer;
         }
         
-        #region IEnumerator<TTarget> Members
+        #region IEnumerator<TTo> Members
 
-        protected override TTarget Transform(TSource source)
+        /// <summary>
+        /// Converts object of type <typeparamref name="TFrom"/> to
+        /// <typeparamref name="TTo"/> using the transformer delegate given
+        /// in the constructor.
+        /// </summary>
+        /// <param name="source">
+        /// Instace of <typeparamref name="TFrom"/> to be converted.
+        /// </param>
+        /// <returns>
+        /// Converted object of type <typeparamref name="TTo"/>.
+        /// </returns>
+        protected override TTo Transform(TFrom source)
         {
             return _transformer(source);
         }
@@ -144,7 +83,7 @@ namespace Common.Collection
 
 
     /// <summary>
-    /// <see cref="TransformingEnumerator{TTarget}"/> transforms the elements
+    /// <see cref="TransformingEnumerator{TTo}"/> transforms the elements
     /// from a source instance of <see cref="IEnumerator"/> using a given transformer.
     /// </summary>
     /// <typeparam name="TTarget">

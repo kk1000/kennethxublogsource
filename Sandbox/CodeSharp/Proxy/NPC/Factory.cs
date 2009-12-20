@@ -380,6 +380,7 @@ namespace CodeSharp.Proxy.NPC
             /// <seealso cref="NotifyPropertyChangeFactory.NewProxy{T}(T)"/>
             internal static T NewProxy(T target)
             {
+                if (target == null) return null;
                 if (_proxyType == null) Init();
                 return _newProxy(target);
             }
