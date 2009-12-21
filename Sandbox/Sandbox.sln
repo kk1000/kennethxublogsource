@@ -1,19 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitStuff", "NUnitStuff\NUnitStuff.csproj", "{62245073-1F85-4107-8F2B-961984DF871F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitStuff", "src\NUnitStuff\NUnitStuff.csproj", "{62245073-1F85-4107-8F2B-961984DF871F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSharp", "CodeSharp\CodeSharp.csproj", "{F2197ACC-22EF-409B-A1E7-DBE29E06A1B9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSharp", "src\CodeSharp\CodeSharp.csproj", "{F2197ACC-22EF-409B-A1E7-DBE29E06A1B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitStuff.Tests", "NUnitStuff.Tests\NUnitStuff.Tests.csproj", "{0DCDA093-16DA-4BB4-91E5-2A0E2650792F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitStuff.Tests", "test\NUnitStuff.Tests\NUnitStuff.Tests.csproj", "{0DCDA093-16DA-4BB4-91E5-2A0E2650792F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSharp.Tests", "CodeSharp.Tests\CodeSharp.Tests.csproj", "{D1669B3B-24BA-4DB2-8B92-9F48A946EA60}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSharp.Tests", "test\CodeSharp.Tests\CodeSharp.Tests.csproj", "{D1669B3B-24BA-4DB2-8B92-9F48A946EA60}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompareIL", "CompareIL\CompareIL.csproj", "{83B409F6-9FA2-4EEB-A2A2-16C5B0BD3236}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSharp.IL", "test\CodeSharp.IL\CodeSharp.IL.csproj", "{83B409F6-9FA2-4EEB-A2A2-16C5B0BD3236}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Collection", "Common.Collections\Common.Collection.csproj", "{6C5CDE9C-BC96-4EEC-95EA-E08DBF4E0C87}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Collection", "src\Common.Collection\Common.Collection.csproj", "{6C5CDE9C-BC96-4EEC-95EA-E08DBF4E0C87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Extension", "System.Extension\System.Extension.csproj", "{6D5D932C-4B00-44E2-8080-F097A3E1C5C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Extension", "src\System.Extension\System.Extension.csproj", "{6D5D932C-4B00-44E2-8080-F097A3E1C5C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Collection.Tests", "test\Common.Collection.Tests\Common.Collection.Tests.csproj", "{38708D20-E53B-4D75-A7F2-AF50D8761722}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -53,6 +55,10 @@ Global
 		{6D5D932C-4B00-44E2-8080-F097A3E1C5C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D5D932C-4B00-44E2-8080-F097A3E1C5C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D5D932C-4B00-44E2-8080-F097A3E1C5C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38708D20-E53B-4D75-A7F2-AF50D8761722}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38708D20-E53B-4D75-A7F2-AF50D8761722}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38708D20-E53B-4D75-A7F2-AF50D8761722}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38708D20-E53B-4D75-A7F2-AF50D8761722}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
