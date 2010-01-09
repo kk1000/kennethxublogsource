@@ -74,7 +74,7 @@
     <Compile Include="Emit\RefParameterMethodWrapperTest.cs" />
     <Compile Include="Emit\ReadOnlyPropertyWrapperTest.cs" />
     <Compile Include="Proxy\NotifyPropertyChangeFactoryTest.cs" />
-    <Compile Include="Proxy\NPC\FactoryTest.cs" />
+    <Compile Include="Proxy\NPC\ComplexInheritanceTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\CodeSharp\CodeSharp.csproj">

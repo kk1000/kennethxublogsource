@@ -145,6 +145,12 @@ namespace CodeSharp.Proxy.NPC
                 throw new ArgumentNullException("baseType");
             if (onPropertyChangedMethod == null) 
                 throw new ArgumentNullException("onPropertyChangedMethod");
+            if (baseType.IsGenericTypeDefinition && baseType.GetGenericArguments().Length > 1)
+            {
+                throw new ArgumentException(
+                    "Only one type parameter is allowed for open generic base type.", 
+                    "baseType");
+            }
             ValidateBaseType(baseType);
             var raiser = GetOnPropertyChangedMethod(baseType, onPropertyChangedMethod);
             if (_defaultBaseType == baseType || _defaultPropertyChangedRaiser == raiser) return;
@@ -359,7 +365,8 @@ namespace CodeSharp.Proxy.NPC
             private Type _baseType;
             private Type _interfaceType;
             private MethodInfo _propertyChangedRaiser;
-            private Dictionary<MethodInfo, MethodInfo> _interfaceToBaseMethods;
+            private Dictionary<MethodInfo, MethodInfo> _interfaceToBaseMethods =
+                new Dictionary<MethodInfo, MethodInfo>();
             private readonly Dictionary<string, MethodInfo> _propertyChangedRaiserCache = 
                 new Dictionary<string, MethodInfo>();
 
@@ -451,7 +458,7 @@ namespace CodeSharp.Proxy.NPC
 
                     var pi = _baseType.GetProperty(
                         "Target", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                    if(pi != null && pi.PropertyType == _interfaceType && pi.GetGetMethod(true).IsAbstract && pi.GetSetMethod(true) == null)
+                    if(pi != null && pi.PropertyType.IsAssignableFrom(_interfaceType) && pi.GetGetMethod(true).IsAbstract && pi.GetSetMethod(true) == null)
                     {
                         ImplTargetProperty(pi);
                     }
@@ -465,8 +472,13 @@ namespace CodeSharp.Proxy.NPC
 
             private void ProcessMarkingAttribute(Type @interface)
             {
+                var defaultBaseType = _defaultBaseType;
+                if (defaultBaseType.IsGenericTypeDefinition)
+                {
+                    defaultBaseType = defaultBaseType.MakeGenericType(_interfaceType);
+                }
                 // default to factory default
-                _baseType = _defaultBaseType;
+                _baseType = defaultBaseType;
                 _propertyChangedRaiser = _defaultPropertyChangedRaiser;
                 // end if there is no delegate to get additional information.
                 if (_getBaseTypeFromMarkingAttribute == null && 
@@ -492,7 +504,7 @@ namespace CodeSharp.Proxy.NPC
                     raiserName = _getPropertyChangedRaiserFromMarkingAttribute(attrs[0]);
                 }
                 if (raiserName == null) raiserName = _propertyChangedRaiser.Name;
-                if (_baseType != _defaultBaseType || raiserName != _propertyChangedRaiser.Name)
+                if (_baseType != defaultBaseType || raiserName != _propertyChangedRaiser.Name)
                 {
                     _propertyChangedRaiser = GetOnPropertyChangedMethod(_baseType, raiserName);
                 }
@@ -505,18 +517,26 @@ namespace CodeSharp.Proxy.NPC
             /// </summary>
             private void MapMethods()
             {
-                if(_baseType.GetInterfaces().Contains(_interfaceType))
+                MapMethods(_interfaceType);
+                foreach (var type in _interfaceType.GetInterfaces())
                 {
-                    var map = _baseType.GetInterfaceMap(_interfaceType);
+                    MapMethods(type);
+                }
+            }
+
+            private void MapMethods(Type interfaceType)
+            {
+                if(_baseType.GetInterfaces().Contains(interfaceType))
+                {
+                    var map = _baseType.GetInterfaceMap(interfaceType);
                     var count = map.InterfaceMethods.Length;
-                    _interfaceToBaseMethods = new Dictionary<MethodInfo, MethodInfo>(count);
                     for (int i = count - 1; i >= 0; i--)
                     {
                         _interfaceToBaseMethods[map.InterfaceMethods[i]] = map.TargetMethods[i];
                     }
+                    return;
                 }
-                var interfaceMethods = _interfaceType.GetMethods();
-                _interfaceToBaseMethods = new Dictionary<MethodInfo, MethodInfo>(interfaceMethods.Length);
+                var interfaceMethods = interfaceType.GetMethods();
                 foreach (var interfaceMethod in interfaceMethods)
                 {
                     foreach (var methodInfo in _baseType.GetMethods(BindingFlags.Instance | BindingFlags.Public))
@@ -544,6 +564,17 @@ namespace CodeSharp.Proxy.NPC
                     if (p1[i].ParameterType != p2[i].ParameterType) return false;
                 }
                 return true;
+            }
+
+            private IEnumerable<MemberInfo> GetInterfaceMembers()
+            {
+                foreach (var info in _interfaceType.GetMembers(BindingFlags.Public | BindingFlags.Instance))
+                    yield return info;
+                foreach (var type in _interfaceType.GetInterfaces())
+                {
+                    foreach (var info in type.GetMembers(BindingFlags.Public | BindingFlags.Instance))
+                        yield return info;
+                }
             }
 
             private void ImplConstructor()
@@ -591,7 +622,7 @@ namespace CodeSharp.Proxy.NPC
 
             private void ImplInterface()
             {
-                foreach (MemberInfo info in _interfaceType.GetMembers(BindingFlags.Public | BindingFlags.Instance))
+                foreach (MemberInfo info in GetInterfaceMembers())
                 {
                     switch (info.MemberType)
                     {

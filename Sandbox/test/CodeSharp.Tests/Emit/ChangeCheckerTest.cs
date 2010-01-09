@@ -86,7 +86,7 @@ namespace CodeSharp.Emit
     }
 
     [TestFixture]
-    public class ChangeCheckerTest : ValueObjectTestFixture<IValueObject>
+    public class ChangeCheckerTest : ValueObjectContract<IValueObject>
     {
         public ChangeCheckerTest()
         {

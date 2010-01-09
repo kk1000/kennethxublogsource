@@ -71,6 +71,30 @@ namespace CodeSharp.Proxy
             Assert.That(e.Message, Is.StringContaining(expected));
         }
 
+        [Test] public void SetBaseTypeChokesOnMoreThenOneOpenGenericTypeParameters()
+        {
+            var e = Assert.Throws<ArgumentException>(()=>NotifyPropertyChangeFactory.SetBaseType(typeof(NotifyPropertyChangeBase<,>)));
+            Assert.That(e.ParamName, Is.EqualTo("baseType"));
+        }
+
+        [Test] public void SetBaseTypeChokesOnValueType()
+        {
+            var e = Assert.Throws<ArgumentException>(() => NotifyPropertyChangeFactory.SetBaseType(typeof(ValueType), ""));
+            Assert.That(e.ParamName, Is.EqualTo("baseType"));
+        }
+
+        [Test] public void SetBaseTypeChokesOnTypeDoesNotImplementINotifyPropertyChanged()
+        {
+            var e = Assert.Throws<ArgumentException>(() => NotifyPropertyChangeFactory.SetBaseType(typeof(NotNotifyPropertyChanged), ""));
+            Assert.That(e.ParamName, Is.EqualTo("baseType"));
+        }
+
+        [Test] public void SetBaseTypeChokesOnNullBaseType()
+        {
+            var e = Assert.Throws<ArgumentNullException>(() => NotifyPropertyChangeFactory.SetBaseType(null, ""));
+            Assert.That(e.ParamName, Is.EqualTo("baseType"));
+        }
+
         [Test] public void SetBaseTypeChokesWhenFactoryAlreadyInitialized()
         {
             NotifyPropertyChangeFactory.GetProxy(MockRepository.GenerateStub<IFoo>());
@@ -366,6 +390,16 @@ namespace CodeSharp.Proxy
             Assert.That(((BigMessBase)proxy).Target, Is.SameAs(mock));
         }
 
+        [Test] public void ProxyImplementsGenericTargetProperty()
+        {
+            Factory.Reset(true);
+            NotifyPropertyChangeFactory.SetBaseType(typeof(NotifyPropertyChangeBase<>));
+            var mock = MockRepository.GenerateStub<IFoo>();
+            var proxy = NotifyPropertyChangeFactory.GetProxy(mock);
+            Assert.That(proxy, Is.InstanceOf<NotifyPropertyChangeBase<IFoo>>());
+            Assert.That(((NotifyPropertyChangeBase<IFoo>)proxy).Target, Is.SameAs(mock));
+        }
+
         [Test] public void ProxyOverridesAbstractMemberAndUtilizeImplementationInBase()
         {
             Factory.Reset(true);
@@ -497,6 +531,20 @@ namespace CodeSharp.Proxy
             public abstract IBar DeepMethod(IBar component);
             public abstract IBar DeepOutRef(IBar a, out IBar o, ref IBigMess r);
             public abstract IBar this[IBar a, IBar o, IBigMess r] { get; set; }
+        }
+
+        public abstract class NotifyPropertyChangeBase<T> : NotifyPropertyChangeBase
+        {
+            public abstract T Target { get; }
+        }
+
+        public class NotifyPropertyChangeBase<T, T2> : NotifyPropertyChangeBase
+        {
+        }
+
+        public class NotNotifyPropertyChanged
+        {
+            public void OnPropertyChanged(string name) { }
         }
     }
 }

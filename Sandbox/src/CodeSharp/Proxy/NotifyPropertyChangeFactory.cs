@@ -79,6 +79,58 @@ namespace CodeSharp.Proxy
             Factory.SetBaseType(typeof(TBase), onPropertyChangeMethod);
         }
 
+        /// <summary>
+        /// Set the base class for all the generated proxies.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <paramref name="baseType"/> must be a class that is not sealed and
+        /// implements <see cref="INotifyPropertyChanged"/>. It also must has a
+        /// non-abstract method with signature: <c>OnPropertyChanged(string)</c>
+        /// that is accessable by the derived class.
+        /// </para>
+        /// <para>
+        /// When <paramref name="baseType"/> is a generic type definition that
+        /// has only one generic type parameter, the type of the interface for 
+        /// the generated proxy will be used to close the generic type.
+        /// </para>
+        /// </remarks>
+        /// <param name="baseType">
+        /// Type of the base class.
+        /// </param>
+        public static void SetBaseType(Type baseType)
+        {
+            SetBaseType(baseType, DefaultOnPropertyChangedMethodName);
+        }
+
+        /// <summary>
+        /// Set the base class for all the generated proxies.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <paramref name="baseType"/> must be a class that is not sealed and
+        /// implements <see cref="INotifyPropertyChanged"/>. It also must has a
+        /// non-abstract method that take one string parameter. The name of the
+        /// method is specified by <paramref name="onPropertyChangeMethod"/>.
+        /// </para>
+        /// <para>
+        /// When <paramref name="baseType"/> is a generic type definition that
+        /// has only one generic type parameter, the type of the interface for 
+        /// the generated proxy will be used to close the generic type.
+        /// </para>
+        /// </remarks>
+        /// <param name="baseType">
+        /// Type of the base class.
+        /// </param>
+        /// <param name="onPropertyChangeMethod">
+        /// The name of the method to raise the 
+        /// <see cref="INotifyPropertyChanged.PropertyChanged"/> event.
+        /// </param>
+        public static void SetBaseType(Type baseType, string onPropertyChangeMethod)
+        {
+            Factory.SetBaseType(baseType, onPropertyChangeMethod);
+        }
+
         #endregion
 
         #region SetMarkingAttribute Methods
