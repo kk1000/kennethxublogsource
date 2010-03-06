@@ -66,6 +66,7 @@ namespace CodeSharp.Proxy.NPC
         #region Cache Related
 		private static List<IWeakCollection> _caches = new List<IWeakCollection>();
         private static int _isCleanupInProcess;
+        private static Func<object, int> _getOriginalHashCode;
         #pragma warning disable 169
         private static readonly Timer _cacheCleanupTimer;
         #pragma warning restore 169 
@@ -82,6 +83,8 @@ namespace CodeSharp.Proxy.NPC
             Init(_moduleName);
             DiscoverMethodInfo();
             _cacheCleanupTimer = new Timer(CleanupCaches, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+            var internalGetHashCode = typeof (object).GetMethod("InternalGetHashCode", BindingFlags.Static | BindingFlags.NonPublic);
+            _getOriginalHashCode = (Func<object, int>) Delegate.CreateDelegate(typeof (Func<object, int>), internalGetHashCode);
         }
 
         private static void Init(string moduleName)
@@ -133,6 +136,7 @@ namespace CodeSharp.Proxy.NPC
         /// </summary>
         internal static void SaveAssembly()
         {
+            _customizationRevision++;
             _assemblyBuilder.Save(_moduleName);
         }
         
@@ -315,30 +319,21 @@ namespace CodeSharp.Proxy.NPC
         /// </summary>
         private static FactoryPair GetFactoryPair(Type type)
         {
-            string key = null;
             if (type.IsByRef) type = type.GetElementType();
+            if (!IsProxyTargetType(type)) return null;
+
+            string key = "T";
             if (type.IsGenericType)
             {
                 var genericType = type.GetGenericTypeDefinition();
-                if (genericType == typeof(IDictionary<,>))
-                {
-                    if (!_isProxyTargetType(type.GetGenericArguments()[1])) return null;
-                    key = genericType.ToString();
-                }
-                else if (
+                if (genericType == typeof(IDictionary<,>) ||
                     genericType == typeof(IList<>) ||
                     genericType == typeof(ICollection<>) ||
                     genericType == typeof(IEnumerable<>) ||
                     genericType == typeof(IEnumerator<>))
                 {
-                    if (!_isProxyTargetType(type.GetGenericArguments()[0])) return null;
                     key = genericType.ToString();
                 }
-            }
-            if (key == null)
-            {
-                if(!_isProxyTargetType(type)) return null;
-                key = "T";
             }
 
             var typeArguments = key == "T" ? new[] { type } : type.GetGenericArguments();
@@ -349,6 +344,27 @@ namespace CodeSharp.Proxy.NPC
                            GetProxy = pair.GetProxy.MakeGenericMethod(typeArguments),
                            GetTarget = pair.GetTarget.MakeGenericMethod(typeArguments),
                        };
+        }
+
+        private static bool IsProxyTargetType(Type type)
+        {
+            if (_isProxyTargetType(type)) return true;
+            if (!type.IsGenericType) return false;
+
+            var genericType = type.GetGenericTypeDefinition();
+            if (genericType == typeof (IDictionary<,>))
+            {
+                return IsProxyTargetType(type.GetGenericArguments()[1]);
+            }
+            if (
+                genericType == typeof (IList<>) ||
+                genericType == typeof (ICollection<>) ||
+                genericType == typeof (IEnumerable<>) ||
+                genericType == typeof (IEnumerator<>))
+            {
+                return IsProxyTargetType(type.GetGenericArguments()[0]);
+            }
+            return false;
         }
         
         /// <summary>Actual proxy generator.</summary>
@@ -422,7 +438,7 @@ namespace CodeSharp.Proxy.NPC
             {
                 lock (_initLock) _isInitialized = true;
 
-                _cache = new WeakDictionary<T, T>();
+                _cache = new WeakDictionary<T, T>(new ReferenceEqualityComparer<T>());
                 RegisterCache(_cache);
                 var @interface = typeof(T);
                 if (!@interface.IsInterface)
@@ -924,5 +940,21 @@ namespace CodeSharp.Proxy.NPC
             internal MethodInfo GetProxy;
             internal MethodInfo GetTarget;
         }
+
+        private class ReferenceEqualityComparer<T> : EqualityComparer<T>
+        {
+            // true if and only if x and y are same instance.
+            public override bool Equals(T x, T y)
+            {
+                return ReferenceEquals(x, y);
+            }
+
+            // Returns the system default implementaion of GetHashCode.
+            public override int GetHashCode(T obj)
+            {
+                return _getOriginalHashCode(obj);
+            }
+        }
+
     }
 }
