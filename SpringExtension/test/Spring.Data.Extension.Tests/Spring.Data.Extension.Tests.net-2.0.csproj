@@ -21,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\build\Spring.Data.Extension.Tests\Debug\</OutputPath>
+    <OutputPath>..\..\build\Spring.Data.Extension.Tests\net-2.0\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -32,7 +32,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\build\Spring.Data.Extension.Tests\Release\</OutputPath>
+    <OutputPath>..\..\build\Spring.Data.Extension.Tests\net-2.0\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -113,7 +113,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Spring.Data.Extension\Spring.Data.Extension.csproj">
+    <ProjectReference Include="..\..\src\Spring.Data.Extension\Spring.Data.Extension.net-2.0.csproj">
       <Project>{4892082C-437F-4120-96E5-B76136C6B550}</Project>
       <Name>Spring.Data.Extension</Name>
     </ProjectReference>
