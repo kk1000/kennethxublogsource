@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("Spring.Extension.Tests")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
 [assembly: AssemblyProduct("Spring.Extension.Tests")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

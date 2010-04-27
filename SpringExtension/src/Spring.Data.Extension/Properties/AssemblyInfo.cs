@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("Spring.Extension")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
 [assembly: AssemblyProduct("Spring.Extension")]
 [assembly: AssemblyCompanyAttribute("Kenneth Xu")]
 [assembly: AssemblyCopyrightAttribute("Copyright (c) Kenneth Xu 2009")]
