@@ -114,6 +114,8 @@
     </Compile>
     <Compile Include="Data\Support\ExtendedRowCallbackResultSetExtractor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Transaction\Interceptor\TransactionInterceptorStatusProvider.cs" />
+    <Compile Include="Transaction\ITransactionStatusProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\dependency\Key\kennehtxu-open-source.snk">
