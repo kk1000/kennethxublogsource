@@ -51,6 +51,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\dependency\ODP.Net\net\2.x\Oracle.DataAccess.dll</HintPath>
     </Reference>
+    <Reference Include="Spring.Aop, Version=1.3.0.20349, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\dependency\Spring.Net\net\2.0\$(Configuration)\Spring.Aop.dll</HintPath>
+    </Reference>
     <Reference Include="Spring.Core, Version=1.1.2.20125, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\dependency\Spring.Net\net\2.0\$(Configuration)\Spring.Core.dll</HintPath>
