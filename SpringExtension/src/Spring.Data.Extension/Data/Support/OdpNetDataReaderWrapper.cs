@@ -233,7 +233,7 @@ namespace Spring.Data.Support
         {
             get
             {
-                return (int) RowSizeFieldInfo.GetValue(oracleReader);
+                return Convert.ToInt32(RowSizeFieldInfo.GetValue(oracleReader));
             }
         }
     }
