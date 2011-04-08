@@ -18,8 +18,6 @@
 
 #endregion
 
-using System;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Castle.DynamicProxy;
@@ -27,7 +25,7 @@ using Moq;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace Common.Reflection.UnitTests
+namespace ClassMockSyncTest
 {
     [TestFixture] public class MockSyncTest
     {
@@ -65,10 +63,10 @@ namespace Common.Reflection.UnitTests
         {
             Thread t = new Thread(
                 () =>
-                {
-                    Thread.Sleep(250);
-                    sync.Signal(); // signal after 250ms
-                });
+                    {
+                        Thread.Sleep(250);
+                        sync.Signal(); // signal after 250ms
+                    });
             t.Start();
             try
             {

@@ -8,8 +8,8 @@
     <ProjectGuid>{B9CCE23C-5FDD-49A4-931F-4B4E8C491463}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Common.Reflection.UnitTests</RootNamespace>
-    <AssemblyName>Common.Reflection.UnitTests</AssemblyName>
+    <RootNamespace>ClassMockSyncTest</RootNamespace>
+    <AssemblyName>ClassMockSyncTest</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkSubset>
