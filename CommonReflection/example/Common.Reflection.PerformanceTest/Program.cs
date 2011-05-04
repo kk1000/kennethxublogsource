@@ -106,7 +106,7 @@ namespace Common.Reflection.PerformanceTest
         private static void DynamicMethodInvokePerformanceTest()
         {
             Base sub = new Sub();
-            DynamicMethod dynamicMethod = Reflections.CreateDynamicMethod(typeof(Base).GetMethod(methodName));
+            DynamicMethod dynamicMethod = Utils.CreateDynamicMethod(typeof(Base).GetMethod(methodName));
             object o = new object();
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();

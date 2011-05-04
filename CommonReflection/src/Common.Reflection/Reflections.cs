@@ -20,8 +20,6 @@
 
 using System;
 using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
 
 namespace Common.Reflection
 {
@@ -32,6 +30,948 @@ namespace Common.Reflection
     public static class Reflections
     {
         #region Public Extension Methods
+
+        #region Static Property
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{TValue}"/> that can be used to get the value of
+        /// static property with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The property type must be compatible with
+        /// <typeparamref name="TValue"/>. Returns null if no match is found.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{TValue}"/> or null when
+        /// no matching property getter.
+        /// </returns>
+        /// <seealso cref="GetStaticPropertyGetter{TValue}"/>
+        /// <seealso cref="GetStaticPropertySetterOrNull{TValue}"/>
+        public static Func<TValue> GetStaticPropertyGetterOrNull<TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, false, false).CreateGetter(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{TValue}"/> that can be used to get the value of
+        /// static property with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The property type must be compatible
+        /// with <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property getter.
+        /// </exception>
+        /// <seealso cref="GetStaticPropertyGetterOrNull{TValue}"/>
+        /// <seealso cref="GetStaticPropertySetter{TValue}"/>
+        public static Func<TValue> GetStaticPropertyGetter<TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, true, false).CreateGetter(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{TValue}"/> that can be used to set the value of
+        /// static property with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The property type must be compatible
+        /// with <typeparamref name="TValue"/>. Returns null no match is found.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{TValue}"/> or null when
+        /// no matching property setter.
+        /// </returns>
+        /// <seealso cref="GetStaticPropertySetter{TValue}"/>
+        /// <seealso cref="GetStaticPropertyGetterOrNull{TValue}"/>
+        public static Action<TValue> GetStaticPropertySetterOrNull<TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, false, false).CreateSetter(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{TValue}"/> that can be used to set the value of
+        /// static property with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The property type must be compatible with
+        /// <typeparamref name="TValue"/>. Returns null no match is found.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property setter.
+        /// </exception>
+        /// <seealso cref="GetStaticPropertySetterOrNull{TValue}"/>
+        /// <seealso cref="GetStaticPropertyGetter{TValue}"/>
+        public static Action<TValue> GetStaticPropertySetter<TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, true, false).CreateSetter(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{TValue}"/> that
+        /// can be used to access the value of static property with given
+        /// <paramref name="name"/> of given <paramref name="type"/>. The
+        /// property type must be compatible with <typeparamref name="TValue"/>.
+        /// The <see cref="Accessor{T}.Get"/>, or <see cref="Accessor{T}.Set"/>,
+        /// or both could be null when there is no matching property getter
+        /// and/or setter was found.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{TValue}"/> for property.
+        /// </returns>
+        /// <seealso cref="GetStaticProperty{TValue}"/>
+        public static Accessor<TValue> GetStaticPropertyOrNull<TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, false, false).CreateAccessor(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{TValue}"/> that
+        /// can be used to access the value of static property with given
+        /// <paramref name="name"/> of given <paramref name="type"/>. The
+        /// property type must be compatible with <typeparamref name="TValue"/>
+        /// and has both getter and setter.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{TValue}"/> for property.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property or the property missing getter
+        /// or setter.
+        /// </exception>
+        /// <seealso cref="GetStaticPropertyOrNull{TValue}"/>
+        public static Accessor<TValue> GetStaticProperty<TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, true, false).CreateAccessor(false);
+        }
+
+        #endregion Static Property
+
+        #region Instance Property Untargeted
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{T, TValue}"/> that can be used to get the value of
+        /// instance property with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The property type must be compatible with
+        /// <typeparamref name="TValue"/>. Returns null if no match is found.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can be passed to the result delegate to get
+        /// the property value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{T, TValue}"/> or null when
+        /// no matching property getter.
+        /// </returns>
+        /// <seealso cref="GetInstancePropertyGetter{T, TValue}"/>
+        /// <seealso cref="GetInstancePropertySetterOrNull{T, TValue}"/>
+        public static Func<T, TValue> GetInstancePropertyGetterOrNull<T, TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, false, true).CreateGetter<T>(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{T, TValue}"/> that can be used to get the value of
+        /// instance property with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The property type must be compatible with
+        /// <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can be passed to the result delegate to get
+        /// the property value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{T, TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property getter.
+        /// </exception>
+        /// <seealso cref="GetInstancePropertyGetterOrNull{T, TValue}"/>
+        /// <seealso cref="GetInstancePropertySetter{T, TValue}"/>
+        public static Func<T, TValue> GetInstancePropertyGetter<T, TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, true, true).CreateGetter<T>(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{T, TValue}"/> that can be used to set the value
+        /// of instance property with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The property type must be compatible with
+        /// <typeparamref name="TValue"/>. Returns null if no match is found.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can be passed to the result delegate to set
+        /// the property value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{T, TValue}"/> or null when
+        /// no matching property setter.
+        /// </returns>
+        /// <seealso cref="GetInstancePropertySetter{T, TValue}"/>
+        /// <seealso cref="GetInstancePropertyGetterOrNull{T, TValue}"/>
+        public static Action<T, TValue> GetInstancePropertySetterOrNull<T, TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, false, true).CreateSetter<T>(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{T, TValue}"/> that can be used to set the value
+        /// of instance property with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The property type must be compatible with
+        /// <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can be passed to the result delegate to set
+        /// the property value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{T, TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property setter.
+        /// </exception>
+        /// <seealso cref="GetInstancePropertySetterOrNull{T, TValue}"/>
+        /// <seealso cref="GetInstancePropertyGetter{T, TValue}"/>
+        public static Action<T, TValue> GetInstancePropertySetter<T, TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, true, true).CreateSetter<T>(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{T, TValue}"/> that
+        /// can be used to access the value of instance property with given
+        /// <paramref name="name"/> of given <paramref name="type"/>. The
+        /// property type must be compatible with <typeparamref name="TValue"/>.
+        /// The <see cref="Accessor{T}.Get"/>, or <see cref="Accessor{T}.Set"/>,
+        /// or both could be null when there is no matching property getter
+        /// and/or setter was found.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can use the result accessor to set and/or
+        /// get the property value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{T, TValue}"/> for property.
+        /// </returns>
+        /// <seealso cref="GetInstancePropertyAccessor{T,TValue}"/>
+        public static Accessor<T, TValue> GetInstancePropertyAccessorOrNull<T, TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, false, true).CreateAccessor<T>(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{T, TValue}"/> that
+        /// can be used to access the value of instance property with given
+        /// <paramref name="name"/> of given <paramref name="type"/>. The
+        /// property type must be compatible with <typeparamref name="TValue"/>
+        /// and has both getter and setter.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can use the result accessor to set and/or
+        /// get the property value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{T, TValue}"/> for property.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property or the property missing getter
+        /// or setter.
+        /// </exception>
+        /// <seealso cref="GetInstancePropertyAccessorOrNull{T,TValue}"/>
+        public static Accessor<T, TValue> GetInstancePropertyAccessor<T, TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, true, true).CreateAccessor<T>(false);
+        }
+        #endregion Instance Property Untargeted
+
+        #region Non Virtaul Property Untargeted
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{T, TValue}"/> that can be used to make non
+        /// virtual read from the value of instance property with given
+        /// <paramref name="name"/> of given <paramref name="type"/>. The
+        /// property type must be compatible with <typeparamref name="TValue"/>.
+        /// Returns null if no match is found.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can be passed to the result delegate to get
+        /// the property value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{T, TValue}"/> or null when
+        /// no matching property getter.
+        /// </returns>
+        /// <seealso cref="GetNonVirtualPropertyGetter{T, TValue}"/>
+        /// <seealso cref="GetNonVirtualPropertySetterOrNull{T, TValue}"/>
+        public static Func<T, TValue> GetNonVirtualPropertyGetterOrNull<T, TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, false, true).CreateGetter<T>(true);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{T, TValue}"/> that can be used to make non
+        /// virtual read from the value of instance property with given
+        /// <paramref name="name"/> of given <paramref name="type"/>. The
+        /// property type must be compatible with <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can be passed to the result delegate to get
+        /// the property value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{T, TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property getter.
+        /// </exception>
+        /// <seealso cref="GetNonVirtualPropertyGetterOrNull{T, TValue}"/>
+        /// <seealso cref="GetNonVirtualPropertySetter{T, TValue}"/>
+        public static Func<T, TValue> GetNonVirtualPropertyGetter<T, TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, true, true).CreateGetter<T>(true);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{T, TValue}"/> that can be used to make non
+        /// virtual write to the value of instance property with given
+        /// <paramref name="name"/> of given <paramref name="type"/>. The
+        /// property type must be compatible with <typeparamref name="TValue"/>.
+        /// Returns null if no match is found.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can be passed to the result delegate to set
+        /// the property value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{T, TValue}"/> or null when
+        /// no matching property setter.
+        /// </returns>
+        /// <seealso cref="GetNonVirtualPropertySetter{T, TValue}"/>
+        /// <seealso cref="GetNonVirtualPropertyGetterOrNull{T, TValue}"/>
+        public static Action<T, TValue> GetNonVirtualPropertySetterOrNull<T, TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, false, true).CreateSetter<T>(true);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{T, TValue}"/> that can be used to make non
+        /// virtual write to the value of instance property with given
+        /// <paramref name="name"/> of given <paramref name="type"/>. The
+        /// property type must be compatible with <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can be passed to the result delegate to set
+        /// the property value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{T, TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property setter.
+        /// </exception>
+        /// <seealso cref="GetNonVirtualPropertySetterOrNull{T, TValue}"/>
+        /// <seealso cref="GetNonVirtualPropertyGetter{T, TValue}"/>
+        public static Action<T, TValue> GetNonVirtualPropertySetter<T, TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, true, true).CreateSetter<T>(true);
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{T, TValue}"/>
+        /// that can be used to make non virtual access to the value of
+        /// instance property with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The property type must be compatible with
+        /// <typeparamref name="TValue"/>. The <see cref="Accessor{T}.Get"/>,
+        /// or <see cref="Accessor{T}.Set"/>, or both could be null when there
+        /// is no matching property getter and/or setter was found.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can use the result accessor to set and/or
+        /// get the property value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{T, TValue}"/> for property.
+        /// </returns>
+        /// <seealso cref="GetNonVirtualPropertyAccessor{T,TValue}"/>
+        public static Accessor<T, TValue> GetNonVirtualPropertyAccessorOrNull<T, TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, false, true).CreateAccessor<T>(true);
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{T, TValue}"/>
+        /// that can be used to make non virtual access to the value of
+        /// instance property with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The property type must be compatible with
+        /// <typeparamref name="TValue"/> and has both getter and setter.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can use the result accessor to set and/or
+        /// get the property value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{T, TValue}"/> for property.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property or the property missing getter
+        /// or setter.
+        /// </exception>
+        /// <seealso cref="GetNonVirtualPropertyAccessorOrNull{T,TValue}"/>
+        public static Accessor<T, TValue> GetNonVirtualPropertyAccessor<T, TValue>(this Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(type, name, true, true).CreateAccessor<T>(true);
+        }
+        #endregion Non Virtual Property Untargeted
+
+        #region Instance Property Targeted
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{TValue}"/> that can be used to get the value of
+        /// instance property with given <paramref name="name"/> on the given 
+        /// instance <paramref name="obj"/>. The property type must be
+        /// compatible with <typeparamref name="TValue"/>. Returns null if no
+        /// match is found.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result property accessor is 
+        /// associated.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{TValue}"/> or null when
+        /// no matching property getter.
+        /// </returns>
+        /// <seealso cref="GetInstancePropertyGetter{TValue}"/>
+        /// <seealso cref="GetInstancePropertySetterOrNull{TValue}"/>
+        public static Func<TValue> GetInstancePropertyGetterOrNull<TValue>(this object obj, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(obj, obj.GetType(), name, false).CreateGetter(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{TValue}"/> that can be used to get the value of
+        /// instance property with given <paramref name="name"/> on the given
+        /// instance <paramref name="obj"/>. The property type must be
+        /// compatible with <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result property accessor is 
+        /// associated.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property getter.
+        /// </exception>
+        /// <seealso cref="GetInstancePropertyGetterOrNull{TValue}"/>
+        /// <seealso cref="GetInstancePropertySetter{TValue}"/>
+        public static Func<TValue> GetInstancePropertyGetter<TValue>(this object obj, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(obj, obj.GetType(), name, true).CreateGetter(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{TValue}"/> that can be used to set the value of
+        /// instance property with given <paramref name="name"/> on the given
+        /// instance <paramref name="obj"/>. The property type must be
+        /// compatible with <typeparamref name="TValue"/>. Returns null if no
+        /// match is found.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result property accessor is 
+        /// associated.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{TValue}"/> or null when
+        /// no matching property setter.
+        /// </returns>
+        /// <seealso cref="GetInstancePropertySetter{TValue}"/>
+        /// <seealso cref="GetInstancePropertyGetterOrNull{TValue}"/>
+        public static Action<TValue> GetInstancePropertySetterOrNull<TValue>(this object obj, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(obj, obj.GetType(), name, false).CreateSetter(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{TValue}"/> that can be used to set the value of
+        /// instance property with given <paramref name="name"/> on the given
+        /// instance <paramref name="obj"/>. The property type must be
+        /// compatible with <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result property accessor is 
+        /// associated.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property setter.
+        /// </exception>
+        /// <seealso cref="GetInstancePropertySetterOrNull{TValue}"/>
+        /// <seealso cref="GetInstancePropertyGetter{TValue}"/>
+        public static Action<TValue> GetInstancePropertySetter<TValue>(this object obj, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(obj, obj.GetType(), name, true).CreateSetter(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{TValue}"/> that
+        /// can be used to access the value of instance property with given
+        /// <paramref name="name"/> on the given instance <paramref name="obj"/>. The
+        /// property type must be compatible with <typeparamref name="TValue"/>.
+        /// The <see cref="Accessor{T}.Get"/>, or <see cref="Accessor{T}.Set"/>,
+        /// or both could be null when there is no matching property getter
+        /// and/or setter was found.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result property accessor is 
+        /// associated.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{TValue}"/> for property.
+        /// </returns>
+        /// <seealso cref="GetInstancePropertyAccessor{TValue}"/>
+        public static Accessor<TValue> GetInstancePropertyAccessorOrNull<TValue>(this object obj, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(obj, obj.GetType(), name, false).CreateAccessor(false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{TValue}"/> that
+        /// can be used to access the value of instance property with given
+        /// <paramref name="name"/> on the given instance <paramref name="obj"/>. The
+        /// property type must be compatible with <typeparamref name="TValue"/>
+        /// and has both getter and setter.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result property accessor is 
+        /// associated.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{TValue}"/> for property.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property or the property missing getter
+        /// or setter.
+        /// </exception>
+        /// <seealso cref="GetInstancePropertyAccessorOrNull{TValue}"/>
+        public static Accessor<TValue> GetInstancePropertyAccessor<TValue>(this object obj, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(obj, obj.GetType(), name, true).CreateAccessor(false);
+        }
+        #endregion Instance Property Targeted
+
+        #region Non Virtaul Property Targeted
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{TValue}"/> that can be used to make non virtual
+        /// read from the value of instance property with given
+        /// <paramref name="name"/> defined in given <paramref name="type"/> on
+        /// the given instance <paramref name="obj"/>. The property type must
+        /// be compatible with <typeparamref name="TValue"/>. Returns null if
+        /// no match is found.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result property accessor is 
+        /// associated.
+        /// </param>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{TValue}"/> or null when
+        /// no matching property getter.
+        /// </returns>
+        /// <seealso cref="GetNonVirtualPropertyGetter{TValue}"/>
+        /// <seealso cref="GetNonVirtualPropertySetterOrNull{TValue}"/>
+        public static Func<TValue> GetNonVirtualPropertyGetterOrNull<TValue>(this object obj, Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(obj, type, name, false).CreateGetter(true);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{TValue}"/> that can be used to make non virtual
+        /// read from the value of instance property with given
+        /// <paramref name="name"/> defined in given <paramref name="type"/> on
+        /// the given instance <paramref name="obj"/>. The property type must
+        /// be compatible with <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result property accessor is 
+        /// associated.
+        /// </param>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property getter.
+        /// </exception>
+        /// <seealso cref="GetNonVirtualPropertyGetterOrNull{TValue}"/>
+        /// <seealso cref="GetNonVirtualPropertySetter{TValue}"/>
+        public static Func<TValue> GetNonVirtualPropertyGetter<TValue>(this object obj, Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(obj, type, name, true).CreateGetter(true);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{TValue}"/> that can be used to make non virtual
+        /// write to the value of instance property with given
+        /// <paramref name="name"/> defined in given <paramref name="type"/> on
+        /// the given instance <paramref name="obj"/>. The property type must
+        /// be compatible with <typeparamref name="TValue"/>. Returns null no
+        /// match is found.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result property accessor is 
+        /// associated.
+        /// </param>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{TValue}"/> or null when
+        /// no matching property setter.
+        /// </returns>
+        /// <seealso cref="GetNonVirtualPropertySetter{TValue}"/>
+        /// <seealso cref="GetNonVirtualPropertyGetterOrNull{TValue}"/>
+        public static Action<TValue> GetNonVirtualPropertySetterOrNull<TValue>(this object obj, Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(obj, type, name, false).CreateSetter(true);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{TValue}"/> that can be used to make non virtual
+        /// write to the value of instance property with given
+        /// <paramref name="name"/> defined in given <paramref name="type"/> on
+        /// the given instance <paramref name="obj"/>. The property type must
+        /// be compatible with <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result property accessor is 
+        /// associated.
+        /// </param>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property setter.
+        /// </exception>
+        /// <seealso cref="GetNonVirtualPropertySetterOrNull{TValue}"/>
+        /// <seealso cref="GetNonVirtualPropertyGetter{TValue}"/>
+        public static Action<TValue> GetNonVirtualPropertySetter<TValue>(this object obj, Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(obj, type, name, true).CreateSetter(true);
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{TValue}"/> that
+        /// can be used to make non virtual access to the value of instance
+        /// property with given <paramref name="name"/> defined in given
+        /// <paramref name="type"/> on the given instance <paramref name="obj"/>. The
+        /// property type must be compatible with <typeparamref name="TValue"/>.
+        /// The <see cref="Accessor{T}.Get"/>, or <see cref="Accessor{T}.Set"/>,
+        /// or both could be null when there is no matching property getter
+        /// and/or setter was found.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result property accessor is 
+        /// associated.
+        /// </param>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{TValue}"/> for property.
+        /// </returns>
+        /// <seealso cref="GetNonVirtualPropertyAccessor{TValue}"/>
+        public static Accessor<TValue> GetNonVirtualPropertyAccessorOrNull<TValue>(this object obj, Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(obj, type, name, false).CreateAccessor(true);
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{TValue}"/> that
+        /// can be used to make non virtual access to the value of instance
+        /// property with given <paramref name="name"/> defined in given
+        /// <paramref name="type"/> on the given instance <paramref name="obj"/>. The
+        /// property type must be compatible with <typeparamref name="TValue"/>
+        /// and has both getter and setter.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the property value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result property accessor is 
+        /// associated.
+        /// </param>
+        /// <param name="type">
+        /// The type to locate the compatible property.
+        /// </param>
+        /// <param name="name">
+        /// The name of the property.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{TValue}"/> for property.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching property or the property missing getter
+        /// or setter.
+        /// </exception>
+        /// <seealso cref="GetNonVirtualPropertyAccessorOrNull{TValue}"/>
+        public static Accessor<TValue> GetNonVirtualPropertyAccessor<TValue>(this object obj, Type type, string name)
+        {
+            return new PropertyDelegateBuilder<TValue>(obj, type, name, true).CreateAccessor(true);
+        }
+        #endregion Non Virtual Property Targeted
 
         /// <summary>
         /// Extension method to obtain a delegate of type 
@@ -57,7 +997,7 @@ namespace Common.Reflection
         public static TDelegate GetStaticInvoker<TDelegate>(this Type type, string name)
             where TDelegate : class
         {
-            return new DelegateBuilder<TDelegate>(type, name, false, false).CreateInvoker();
+            return new MethodDelegateBuilder<TDelegate>(type, name, false, false).CreateInvoker();
         }
 
         /// <summary>
@@ -86,7 +1026,7 @@ namespace Common.Reflection
         public static TDelegate GetStaticInvokerOrFail<TDelegate>(this Type type, string name)
             where TDelegate : class 
         {
-            return new DelegateBuilder<TDelegate>(type, name, true, false).CreateInvoker();
+            return new MethodDelegateBuilder<TDelegate>(type, name, true, false).CreateInvoker();
         }
 
         /// <summary>
@@ -116,7 +1056,7 @@ namespace Common.Reflection
         public static TDelegate GetInstanceInvoker<TDelegate>(this Type type, string name)
             where TDelegate : class
         {
-            return new DelegateBuilder<TDelegate>(type, name, false, true).CreateInvoker();
+            return new MethodDelegateBuilder<TDelegate>(type, name, false, true).CreateInvoker();
         }
 
         /// <summary>
@@ -149,7 +1089,7 @@ namespace Common.Reflection
         public static TDelegate GetInstanceInvokerOrFail<TDelegate>(this Type type, string name)
             where TDelegate : class
         {
-            return new DelegateBuilder<TDelegate>(type, name, true, true).CreateInvoker();
+            return new MethodDelegateBuilder<TDelegate>(type, name, true, true).CreateInvoker();
         }
 
         /// <summary>
@@ -177,7 +1117,7 @@ namespace Common.Reflection
         public static TDelegate GetInstanceInvoker<TDelegate>(this object obj, string name)
             where TDelegate : class
         {
-            return new DelegateBuilder<TDelegate>(obj, obj.GetType(), name, false).CreateInvoker();
+            return new MethodDelegateBuilder<TDelegate>(obj, obj.GetType(), name, false).CreateInvoker();
         }
 
         /// <summary>
@@ -208,7 +1148,7 @@ namespace Common.Reflection
         public static TDelegate GetInstanceInvokerOrFail<TDelegate>(this object obj, string name)
             where TDelegate : class
         {
-            return new DelegateBuilder<TDelegate>(obj, obj.GetType(), name, true).CreateInvoker();
+            return new MethodDelegateBuilder<TDelegate>(obj, obj.GetType(), name, true).CreateInvoker();
         }
 
         /// <summary>
@@ -238,7 +1178,7 @@ namespace Common.Reflection
         public static TDelegate GetNonVirtualInvoker<TDelegate>(this Type type, string name)
             where TDelegate : class
         {
-            return new DelegateBuilder<TDelegate>(type, name, false, true).CreateInvoker(true);
+            return new MethodDelegateBuilder<TDelegate>(type, name, false, true).CreateInvoker(true);
         }
 
         /// <summary>
@@ -270,7 +1210,7 @@ namespace Common.Reflection
         public static TDelegate GetNonVirtualInvokerOrFail<TDelegate>(this Type type, string name)
             where TDelegate : class
         {
-            return new DelegateBuilder<TDelegate>(type, name, true, true).CreateInvoker(true);
+            return new MethodDelegateBuilder<TDelegate>(type, name, true, true).CreateInvoker(true);
         }
 
         /// <summary>
@@ -302,7 +1242,7 @@ namespace Common.Reflection
         public static TDelegate GetNonVirtualInvoker<TDelegate>(this object obj, Type type, string name)
             where TDelegate : class
         {
-            return new DelegateBuilder<TDelegate>(obj, type, name, false).CreateInvoker(true);
+            return new MethodDelegateBuilder<TDelegate>(obj, type, name, false).CreateInvoker(true);
         }
 
         /// <summary>
@@ -337,7 +1277,7 @@ namespace Common.Reflection
         public static TDelegate GetNonVirtualInvokerOrFail<TDelegate>(this object obj, Type type, string name)
             where TDelegate : class
         {
-            return new DelegateBuilder<TDelegate>(obj, type, name, true).CreateInvoker(true);
+            return new MethodDelegateBuilder<TDelegate>(obj, type, name, true).CreateInvoker(true);
         }
 
         /// <summary>
@@ -375,7 +1315,7 @@ namespace Common.Reflection
         public static TDelegate GetInvoker<TDelegate>(object obj, Type type, string name, BindingFlags bindingAttr, Predicate<MethodInfo> filter)
             where TDelegate : class
         {
-            return new DelegateBuilder<TDelegate>(obj, type, name, false, bindingAttr)
+            return new MethodDelegateBuilder<TDelegate>(obj, type, name, false, bindingAttr)
                        {
                            MethodFilter = filter, 
                        }.CreateInvoker();
@@ -422,7 +1362,7 @@ namespace Common.Reflection
         public static TDelegate GetInvokerOrFail<TDelegate>(object obj, Type type, string name, BindingFlags bindingAttr, Predicate<MethodInfo> filter, string filterMessage)
             where TDelegate : class
         {
-            return new DelegateBuilder<TDelegate>(obj, type, name, true, bindingAttr)
+            return new MethodDelegateBuilder<TDelegate>(obj, type, name, true, bindingAttr)
             {
                 MethodFilter = filter,
                 MethodFilterMessage = filterMessage
@@ -430,184 +1370,5 @@ namespace Common.Reflection
         }
 
         #endregion
-
-        #region Internal Methods
-
-        internal static DynamicMethod CreateDynamicMethod(MethodInfo method)
-        {
-            int offset = (method.IsStatic ? 0 : 1);
-            var parameters = method.GetParameters();
-            int size = parameters.Length + offset;
-            Type[] types = new Type[size];
-            if (offset > 0) types[0] = method.DeclaringType;
-            for (int i = offset; i < size; i++)
-            {
-                types[i] = parameters[i - offset].ParameterType;
-            }
-
-            DynamicMethod dynamicMethod = new DynamicMethod(
-                "NonVirtualInvoker_" + method.Name, method.ReturnType, types, method.DeclaringType);
-            ILGenerator il = dynamicMethod.GetILGenerator();
-            for (int i = 0; i < types.Length; i++) il.Emit(OpCodes.Ldarg, i);
-            il.EmitCall(OpCodes.Call, method, null);
-            il.Emit(OpCodes.Ret);
-            return dynamicMethod;
-        }
-
-        internal static void AssertIsDelegate(Type delegateType)
-        {
-            if (!typeof(MulticastDelegate).IsAssignableFrom(delegateType))
-            {
-                throw new InvalidOperationException(
-                    "Expecting type parameter to be a Delegate type, but got " +
-                    delegateType.FullName);
-            }
-        }
-
-        #endregion;
-
-        private class DelegateBuilder<T> where T : class
-        {
-            #region Constants
-            private const BindingFlags ALL_STATIC_METHOD =
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod;
-
-            private const BindingFlags ALL_INSTANCE_METHOD =
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod;
-            #endregion
-
-            private readonly bool _failFast;
-            private readonly string _methodName;
-            private readonly Type _targetType;
-            private readonly object _targetObject;
-            private readonly BindingFlags _bindingAttr;
-            private Type _returnType;
-            private Type[] _parameterTypes;
-
-            internal Predicate<MethodInfo> MethodFilter { get; set; }
-            internal string MethodFilterMessage { get; set; }
-
-            public DelegateBuilder(object targetObject, Type targetType, string methodName, bool failFast)
-                :this(targetObject, targetType, methodName, failFast, ALL_INSTANCE_METHOD)
-            {
-            }
-
-            public DelegateBuilder(Type targetType, string methodName, bool failFast, bool isInstanceMethod)
-                : this(null, targetType, methodName, failFast, isInstanceMethod ? ALL_INSTANCE_METHOD : ALL_STATIC_METHOD)
-            {
-            }
-
-            internal DelegateBuilder(object targetObject, Type targetType, string methodName, bool failFast, BindingFlags bindingAttr)
-            {
-                AssertIsDelegate(typeof(T));
-
-                _targetObject = targetObject;
-                _targetType = targetType;
-                _methodName = methodName;
-                _failFast = failFast;
-                _bindingAttr = bindingAttr;
-            }
-
-            public T CreateInvoker()
-            {
-                return CreateInvoker(false);
-            }
-
-            public T CreateInvoker(bool nonVirtual)
-            {
-                var method = GetMethod();
-                if (method == null) return null;
-                try
-                {
-                    if (nonVirtual && method.IsVirtual)
-                    {
-                        var dynamicMethod = CreateDynamicMethod(method);
-                        return _targetObject == null ?
-                            dynamicMethod.CreateDelegate(typeof(T)) as T :
-                            dynamicMethod.CreateDelegate(typeof(T), _targetObject) as T;
-                    }
-                    return _targetObject == null ? 
-                        Delegate.CreateDelegate(typeof(T), method) as T :
-                        Delegate.CreateDelegate(typeof(T), _targetObject, method) as T;
-                }
-                catch (ArgumentException ex)
-                {
-                    if (!_failFast) return null;
-                    throw new MissingMethodException(BuildExceptionMessage(), ex);
-                }
-            }
-
-            private MethodInfo GetMethod()
-            {
-                MethodInfo invokeMethod = typeof(T).GetMethod("Invoke");
-                ParameterInfo[] parameters = invokeMethod.GetParameters();
-                _returnType = invokeMethod.ReturnType;
-                bool instanceToStatic = (_targetObject == null && _bindingAttr == ALL_INSTANCE_METHOD);
-                if (instanceToStatic)
-                {
-                    if (parameters.Length == 0)
-                    {
-                        throw new InvalidOperationException(string.Format(
-                            "Delegate {0} has no parameter. It is required to have at least one parameter that is assignable from target type.",
-                            typeof(T)));
-                    }
-                    Type instanceType = parameters[0].ParameterType;
-                    if (!_targetType.IsAssignableFrom(instanceType))
-                    {
-                        if (!_failFast) return null;
-                        throw new MissingMethodException(string.Format(
-                            "Target type {0} is not assignable to the first parameter of delegate {1}.",
-                            _targetType, instanceType));
-                    }
-                }
-
-                int offset = instanceToStatic ? 1 : 0;
-                int size = parameters.Length - offset;
-
-                Type[] types = new Type[size];
-                for (int i = 0; i < size; i++)
-                {
-                    types[i] = parameters[i + offset].ParameterType;
-                }
-                _parameterTypes = types;
-
-                var method = _targetType.GetMethod(_methodName, _bindingAttr, null, _parameterTypes, null);
-                var methodFilter = MethodFilter;
-                if(method !=null && methodFilter != null && !methodFilter(method))
-                {
-                    method = null;
-                }
-                if (method == null && _failFast)
-                {
-                    throw new MissingMethodException(BuildExceptionMessage());
-                }
-                return method;
-            }
-
-            private string BuildExceptionMessage()
-            {
-                StringBuilder sb = new StringBuilder()
-                    .Append("No matching method found in the type ")
-                    .Append(_targetType)
-                    .Append(" for signature ")
-                    .Append(_returnType).Append(" ")
-                    .Append(_methodName).Append("(");
-                if (_parameterTypes.Length > 0)
-                {
-                    foreach (Type parameter in _parameterTypes)
-                    {
-                        sb.Append(parameter).Append(", ");
-                    }
-                    sb.Length -= 2;
-                }
-                sb.Append(") with binding flags: ").Append(_bindingAttr);
-                if (MethodFilter != null)
-                {
-                    sb.Append(" with filter ").Append(MethodFilterMessage??MethodFilter.ToString());
-                }
-                sb.Append(".");
-                return sb.ToString();
-            }
-        }
     }
 }

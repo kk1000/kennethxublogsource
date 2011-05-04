@@ -54,6 +54,13 @@
       <Link>AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Property\InstancePropertyTest.cs" />
+    <Compile Include="Property\NonVirtualPropertyTest.cs" />
+    <Compile Include="Property\PropertyBase.cs" />
+    <Compile Include="Property\PropertySub.cs" />
+    <Compile Include="Property\StaticPropertyTest.cs" />
+    <Compile Include="Property\TargetedInstancePropertyTest.cs" />
+    <Compile Include="Property\TargetedNonVirtualPropertyTest.cs" />
     <Compile Include="ReflectionsTest.cs" />
   </ItemGroup>
   <ItemGroup>
