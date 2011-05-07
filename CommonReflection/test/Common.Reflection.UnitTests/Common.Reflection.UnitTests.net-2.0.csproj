@@ -53,6 +53,10 @@
     <Compile Include="..\..\AssemblyVersion.cs">
       <Link>AssemblyVersion.cs</Link>
     </Compile>
+    <Compile Include="Field\FieldBase.cs" />
+    <Compile Include="Field\InstanceFieldTest.cs" />
+    <Compile Include="Field\StaticFieldTest.cs" />
+    <Compile Include="Field\TargetedInstanceFieldTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Property\InstancePropertyTest.cs" />
     <Compile Include="Property\NonVirtualPropertyTest.cs" />

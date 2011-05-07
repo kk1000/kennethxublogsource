@@ -64,6 +64,36 @@ namespace Common.Reflection
             return dynamicMethod;
         }
 
+        internal static DynamicMethod CreateGetterMethod(this FieldInfo field, Type fieldType, Type instanceType)
+        {
+            var isStatic = field.IsStatic;
+            var types = isStatic ? Type.EmptyTypes : new[]{field.DeclaringType};
+            DynamicMethod dynamicMethod = new DynamicMethod(
+                "FieldGetter_" + field.Name, field.FieldType, types, field.DeclaringType);
+            ILGenerator il = dynamicMethod.GetILGenerator();
+            if (!isStatic) il.Emit(OpCodes.Ldarg, 0);
+            if (isStatic) il.Emit(OpCodes.Ldsfld, field);
+            else il.Emit(OpCodes.Ldfld, field);
+            il.Emit(OpCodes.Ret);
+            return dynamicMethod;
+        }
+
+        internal static DynamicMethod CreateSetterMethod(this FieldInfo field, Type fieldType, Type instanceType)
+        {
+            var isStatic = field.IsStatic;
+            var types = isStatic
+                            ? new[] { field.FieldType }
+                            : new[] { field.DeclaringType, field.FieldType };
+            DynamicMethod dynamicMethod = new DynamicMethod(
+                "FieldSetter_" + field.Name, typeof(void), types, field.DeclaringType);
+            ILGenerator il = dynamicMethod.GetILGenerator();
+            for (int i = 0; i < types.Length; i++) il.Emit(OpCodes.Ldarg, i);
+            if (isStatic) il.Emit(OpCodes.Stsfld, field);
+            else il.Emit(OpCodes.Stfld, field);
+            il.Emit(OpCodes.Ret);
+            return dynamicMethod;
+        }
+
         internal static void AssertIsDelegate(this Type delegateType)
         {
             if (!typeof(MulticastDelegate).IsAssignableFrom(delegateType))

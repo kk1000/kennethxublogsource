@@ -30,11 +30,11 @@ namespace Common.Reflection
     internal class PropertyDelegateBuilder<T>
     {
         #region Constants
-        private const BindingFlags _allStaticMethod =
-            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod;
+        private const BindingFlags _allStaticProperty =
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 
-        private const BindingFlags _allInstanceMethod =
-            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod;
+        private const BindingFlags _allInstanceProperty =
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
         #endregion
 
         private readonly bool _failFast;
@@ -44,12 +44,12 @@ namespace Common.Reflection
         private readonly BindingFlags _bindingAttr;
 
         public PropertyDelegateBuilder(object targetObject, Type targetType, string propertyName, bool failFast)
-            : this(targetObject, targetType, propertyName, failFast, _allInstanceMethod)
+            : this(targetObject, targetType, propertyName, failFast, _allInstanceProperty)
         {
         }
 
-        public PropertyDelegateBuilder(Type targetType, string methodName, bool failFast, bool isInstanceMember)
-            : this(null, targetType, methodName, failFast, isInstanceMember ? _allInstanceMethod : _allStaticMethod)
+        public PropertyDelegateBuilder(Type targetType, string propertyName, bool failFast, bool isInstanceMember)
+            : this(null, targetType, propertyName, failFast, isInstanceMember ? _allInstanceProperty : _allStaticProperty)
         {
         }
 

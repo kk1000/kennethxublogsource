@@ -222,7 +222,7 @@ namespace Common.Reflection.UnitTests.Property
         #region accessor
         [Test] public void GetStaticPropertyOrNull_WhenNoSuchPropertyName_ReturnsNoDelegates()
         {
-            var accessor = typeof(PropertyBase<T>).GetStaticPropertyOrNull<T>("NoSuchProperty");
+            var accessor = typeof(PropertyBase<T>).GetStaticPropertyAccessorOrNull<T>("NoSuchProperty");
             Assert.That(accessor.Get, Is.Null);
             Assert.That(accessor.Set, Is.Null);
         }
@@ -230,25 +230,25 @@ namespace Common.Reflection.UnitTests.Property
         [Test] public void GetStaticProperty_WhenNoSuchPropertyName_ThrowsException()
         {
             Assert.Throws<MissingMemberException>(
-                () => typeof(PropertyBase<T>).GetStaticProperty<T>("NoSuchProperty"));
+                () => typeof(PropertyBase<T>).GetStaticPropertyAccessor<T>("NoSuchProperty"));
         }
 
         [Test] public void GetStaticPropertyOrNull_WhenExactMatch_ReturnsBothDelegates()
         {
-            var accessor = typeof(PropertyBase<T>).GetStaticPropertyOrNull<T>("StaticPropertyT");
+            var accessor = typeof(PropertyBase<T>).GetStaticPropertyAccessorOrNull<T>("StaticPropertyT");
             AssertGetterT(accessor.Get);
             AssertSetterT(accessor.Set);
         }
 
         [Test] public void GetStaticProperty_WhenExactMatch_ReturnsBothDelegates()
         {
-            var accessor = typeof(PropertyBase<T>).GetStaticPropertyOrNull<T>("StaticPropertyT");
+            var accessor = typeof(PropertyBase<T>).GetStaticPropertyAccessorOrNull<T>("StaticPropertyT");
             AssertGetterT(accessor.Get);
             AssertSetterT(accessor.Set);
         }
         [Test] public void GetStaticPropertyOrNull_WhenReadOnly_ReturnsGetter()
         {
-            var accessor = typeof(PropertyBase<T>).GetStaticPropertyOrNull<T>("StaticReadOnlyT");
+            var accessor = typeof(PropertyBase<T>).GetStaticPropertyAccessorOrNull<T>("StaticReadOnlyT");
             AssertGetterT(accessor.Get);
             Assert.That(accessor.Set, Is.Null);
         }
@@ -256,12 +256,12 @@ namespace Common.Reflection.UnitTests.Property
         [Test] public void GetStaticProperty_WhenReadOnly_ThrowsException()
         {
             Assert.Throws<MissingMemberException>(
-                () => typeof(PropertyBase<T>).GetStaticProperty<T>("StaticReadOnlyT"));
+                () => typeof(PropertyBase<T>).GetStaticPropertyAccessor<T>("StaticReadOnlyT"));
         }
 
         [Test] public void GetStaticPropertyOrNull_WhenWriteOnly_ReturnsSetter()
         {
-            var accessor = typeof(PropertyBase<T>).GetStaticPropertyOrNull<T>("StaticWriteOnlyT");
+            var accessor = typeof(PropertyBase<T>).GetStaticPropertyAccessorOrNull<T>("StaticWriteOnlyT");
             Assert.That(accessor.Get, Is.Null);
             AssertSetterT(accessor.Set);
         }
@@ -269,14 +269,14 @@ namespace Common.Reflection.UnitTests.Property
         [Test] public void GetStaticProperty_WhenWriteOnly_ThrowsException()
         {
             Assert.Throws<MissingMemberException>(
-                () => typeof(PropertyBase<T>).GetStaticProperty<T>("StaticWriteOnlyT"));
+                () => typeof(PropertyBase<T>).GetStaticPropertyAccessor<T>("StaticWriteOnlyT"));
         }
 
         [Test] public void GetStaticPropertyOrNull_WhenWidenedMatch_ReturnsSetter()
         {
             if (typeof(T).IsValueType) return;
 
-            var accessor = typeof(PropertyBase<T>).GetStaticPropertyOrNull<T>("StaticPropertyObject");
+            var accessor = typeof(PropertyBase<T>).GetStaticPropertyAccessorOrNull<T>("StaticPropertyObject");
             Assert.That(accessor.Get, Is.Null);
             AssertSetterObject(accessor.Set);
         }
@@ -285,13 +285,13 @@ namespace Common.Reflection.UnitTests.Property
         {
             if (typeof(T).IsValueType) return;
             Assert.Throws<MissingMemberException>(
-                () => typeof(PropertyBase<T>).GetStaticProperty<T>("StaticPropertyObject"));
+                () => typeof(PropertyBase<T>).GetStaticPropertyAccessor<T>("StaticPropertyObject"));
         }
 
         [Test] public void GetStaticPropertyOrNull_WhenNarrowedMatch_ReturnsGetter()
         {
             if (typeof(T).IsValueType) return;
-            var accessor = typeof(PropertyBase<T>).GetStaticPropertyOrNull<object>("StaticPropertyT");
+            var accessor = typeof(PropertyBase<T>).GetStaticPropertyAccessorOrNull<object>("StaticPropertyT");
             AssertGetterT(accessor.Get);
             Assert.That(accessor.Set, Is.Null);
         }
@@ -300,7 +300,7 @@ namespace Common.Reflection.UnitTests.Property
         {
             if (typeof(T).IsValueType) return;
             Assert.Throws<MissingMemberException>(
-                () => typeof(PropertyBase<T>).GetStaticProperty<object>("StaticPropertyT"));
+                () => typeof(PropertyBase<T>).GetStaticPropertyAccessor<object>("StaticPropertyT"));
         }
         #endregion accessor
     }

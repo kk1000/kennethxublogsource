@@ -29,7 +29,548 @@ namespace Common.Reflection
     /// <author>Kenneth Xu</author>
     public static class Reflections
     {
-        #region Public Extension Methods
+        #region Static Field
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{TValue}"/> that can be used to get the value of
+        /// static field with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The field type must be compatible with
+        /// <typeparamref name="TValue"/>. Returns null if the field doesn't
+        /// exist.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the field.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible field.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{TValue}"/> or null when
+        /// the field doesn't exist.
+        /// </returns>
+        /// <seealso cref="GetStaticFieldGetter{TValue}"/>
+        /// <seealso cref="GetStaticFieldSetterOrNull{TValue}"/>
+        public static Func<TValue> GetStaticFieldGetterOrNull<TValue>(this Type type, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(type, name, false, false).CreateGetter();
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{TValue}"/> that can be used to get the value of
+        /// static field with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The field type must be compatible with
+        /// <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the field.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible field.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When the field doesn't exist.
+        /// </exception>
+        /// <seealso cref="GetStaticFieldGetterOrNull{TValue}"/>
+        /// <seealso cref="GetStaticFieldSetter{TValue}"/>
+        public static Func<TValue> GetStaticFieldGetter<TValue>(this Type type, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(type, name, true, false).CreateGetter();
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{TValue}"/> that can be used to set the value of
+        /// static field with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The field type must be compatible with
+        /// <typeparamref name="TValue"/>. Returns null if the field doesn't
+        /// exist.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the field.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible field.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{TValue}"/> or null when
+        /// the field doesn't exist.
+        /// </returns>
+        /// <seealso cref="GetStaticFieldSetter{TValue}"/>
+        /// <seealso cref="GetStaticFieldGetterOrNull{TValue}"/>
+        public static Action<TValue> GetStaticFieldSetterOrNull<TValue>(this Type type, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(type, name, false, false).CreateSetter();
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{TValue}"/> that can be used to set the value of
+        /// static field with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The field type must be compatible with
+        /// <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the field.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible field.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When the field doesn't exist.
+        /// </exception>
+        /// <seealso cref="GetStaticFieldSetterOrNull{TValue}"/>
+        /// <seealso cref="GetStaticFieldGetter{TValue}"/>
+        public static Action<TValue> GetStaticFieldSetter<TValue>(this Type type, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(type, name, true, false).CreateSetter();
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{TValue}"/> that
+        /// can be used to access the value of static field with given
+        /// <paramref name="name"/> of given <paramref name="type"/>. The
+        /// field type must be compatible with <typeparamref name="TValue"/>.
+        /// The <see cref="Accessor{T}.Get"/>, or <see cref="Accessor{T}.Set"/>,
+        /// or both could be null when there is no matching field getter
+        /// and/or setter was found.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the field.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible field.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{TValue}"/> for field.
+        /// </returns>
+        /// <seealso cref="GetStaticFieldAccessor{TValue}"/>
+        public static Accessor<TValue> GetStaticFieldAccessorOrNull<TValue>(this Type type, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(type, name, false, false).CreateAccessor();
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{TValue}"/> that
+        /// can be used to access the value of static field with given
+        /// <paramref name="name"/> of given <paramref name="type"/>. The
+        /// field type must be compatible with <typeparamref name="TValue"/>
+        /// and has both getter and setter.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the field.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible field.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{TValue}"/> for field.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching field or the field missing getter
+        /// or setter.
+        /// </exception>
+        /// <seealso cref="GetStaticFieldAccessorOrNull{TValue}"/>
+        public static Accessor<TValue> GetStaticFieldAccessor<TValue>(this Type type, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(type, name, true, false).CreateAccessor();
+        }
+
+        #endregion Static Field
+
+        #region Instance Field Untargeted
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{T, TValue}"/> that can be used to get the value of
+        /// instance field with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The field type must be compatible with
+        /// <typeparamref name="TValue"/>. Returns null if no match is found.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can be passed to the result delegate to get
+        /// the field value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the field value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible field.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{T, TValue}"/> or null when
+        /// no matching field.
+        /// </returns>
+        /// <seealso cref="GetInstanceFieldGetter{T, TValue}"/>
+        /// <seealso cref="GetInstanceFieldSetterOrNull{T, TValue}"/>
+        public static Func<T, TValue> GetInstanceFieldGetterOrNull<T, TValue>(this Type type, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(type, name, false, true).CreateGetter<T>();
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{T, TValue}"/> that can be used to get the value of
+        /// instance field with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The field type must be compatible with
+        /// <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can be passed to the result delegate to get
+        /// the field value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the field value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible field.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{T, TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching field.
+        /// </exception>
+        /// <seealso cref="GetInstanceFieldGetterOrNull{T, TValue}"/>
+        /// <seealso cref="GetInstanceFieldSetter{T, TValue}"/>
+        public static Func<T, TValue> GetInstanceFieldGetter<T, TValue>(this Type type, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(type, name, true, true).CreateGetter<T>();
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{T, TValue}"/> that can be used to set the value
+        /// of instance field with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The field type must be compatible with
+        /// <typeparamref name="TValue"/>. Returns null if no match is found.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can be passed to the result delegate to set
+        /// the field value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the field value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible field.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{T, TValue}"/> or null when
+        /// no matching field.
+        /// </returns>
+        /// <seealso cref="GetInstanceFieldSetter{T, TValue}"/>
+        /// <seealso cref="GetInstanceFieldGetterOrNull{T, TValue}"/>
+        public static Action<T, TValue> GetInstanceFieldSetterOrNull<T, TValue>(this Type type, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(type, name, false, true).CreateSetter<T>();
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{T, TValue}"/> that can be used to set the value
+        /// of instance field with given <paramref name="name"/> of given
+        /// <paramref name="type"/>. The field type must be compatible with
+        /// <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can be passed to the result delegate to set
+        /// the field value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the field value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible field.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{T, TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching field.
+        /// </exception>
+        /// <seealso cref="GetInstanceFieldSetterOrNull{T, TValue}"/>
+        /// <seealso cref="GetInstanceFieldGetter{T, TValue}"/>
+        public static Action<T, TValue> GetInstanceFieldSetter<T, TValue>(this Type type, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(type, name, true, true).CreateSetter<T>();
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{T, TValue}"/> that
+        /// can be used to access the value of instance field with given
+        /// <paramref name="name"/> of given <paramref name="type"/>. The
+        /// field type must be compatible with <typeparamref name="TValue"/>.
+        /// The <see cref="Accessor{T}.Get"/>, or <see cref="Accessor{T}.Set"/>,
+        /// or both could be null when there is no matching field was found.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can use the result accessor to set and/or
+        /// get the field value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the field value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible field.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{T, TValue}"/> for field.
+        /// </returns>
+        /// <seealso cref="GetInstanceFieldAccessor{T,TValue}"/>
+        public static Accessor<T, TValue> GetInstanceFieldAccessorOrNull<T, TValue>(this Type type, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(type, name, false, true).CreateAccessor<T>();
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{T, TValue}"/> that
+        /// can be used to access the value of instance field with given
+        /// <paramref name="name"/> of given <paramref name="type"/>. The
+        /// field type must be compatible with <typeparamref name="TValue"/>
+        /// and the field is not read only.
+        /// </summary>
+        /// <typeparam name="T">
+        /// Type of the object that can use the result accessor to set and/or
+        /// get the field value.
+        /// </typeparam>
+        /// <typeparam name="TValue">
+        /// Type of a the field value.
+        /// </typeparam>
+        /// <param name="type">
+        /// The type to locate the compatible field.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{T, TValue}"/> for field.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching field or the field is read only.
+        /// </exception>
+        /// <seealso cref="GetInstanceFieldAccessorOrNull{T,TValue}"/>
+        public static Accessor<T, TValue> GetInstanceFieldAccessor<T, TValue>(this Type type, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(type, name, true, true).CreateAccessor<T>();
+        }
+        #endregion Instance Field Untargeted
+
+        #region Instance Field Targeted
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{TValue}"/> that can be used to get the value of
+        /// instance field with given <paramref name="name"/> on the given 
+        /// instance <paramref name="obj"/>. The field type must be compatible
+        /// with <typeparamref name="TValue"/>. Returns null if no match is
+        /// found.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the field value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result field getter is 
+        /// associated.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{TValue}"/> or null when
+        /// no matching field.
+        /// </returns>
+        /// <seealso cref="GetInstanceFieldGetter{TValue}"/>
+        /// <seealso cref="GetInstanceFieldSetterOrNull{TValue}"/>
+        public static Func<TValue> GetInstanceFieldGetterOrNull<TValue>(this object obj, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(obj, obj.GetType(), name, false).CreateGetter();
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{TValue}"/> that can be used to get the value of
+        /// instance field with given <paramref name="name"/> on the given
+        /// instance <paramref name="obj"/>. The field type must be compatible
+        /// with <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the field value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result field getter is 
+        /// associated.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Func{TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching field.
+        /// </exception>
+        /// <seealso cref="GetInstanceFieldGetterOrNull{TValue}"/>
+        /// <seealso cref="GetInstanceFieldSetter{TValue}"/>
+        public static Func<TValue> GetInstanceFieldGetter<TValue>(this object obj, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(obj, obj.GetType(), name, true).CreateGetter();
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{TValue}"/> that can be used to set the value of
+        /// instance field with given <paramref name="name"/> on the given
+        /// instance <paramref name="obj"/>. The field type must be compatible
+        /// with <typeparamref name="TValue"/>. Returns null if no match is
+        /// found.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the field value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result field setter is 
+        /// associated.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{TValue}"/> or null when
+        /// no matching field or field is readonly.
+        /// </returns>
+        /// <seealso cref="GetInstanceFieldSetter{TValue}"/>
+        /// <seealso cref="GetInstanceFieldGetterOrNull{TValue}"/>
+        public static Action<TValue> GetInstanceFieldSetterOrNull<TValue>(this object obj, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(obj, obj.GetType(), name, false).CreateSetter();
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Action{TValue}"/> that can be used to set the value of
+        /// instance field with given <paramref name="name"/> on the given
+        /// instance <paramref name="obj"/>. The field type must be compatible
+        /// with <typeparamref name="TValue"/>.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the field value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result field setter is 
+        /// associated.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// A delegate of type <see cref="Action{TValue}"/>.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching field or field is read only.
+        /// </exception>
+        /// <seealso cref="GetInstanceFieldSetterOrNull{TValue}"/>
+        /// <seealso cref="GetInstanceFieldGetter{TValue}"/>
+        public static Action<TValue> GetInstanceFieldSetter<TValue>(this object obj, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(obj, obj.GetType(), name, true).CreateSetter();
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{TValue}"/> that
+        /// can be used to access the value of instance field with given
+        /// <paramref name="name"/> on the given instance <paramref name="obj"/>. The
+        /// field type must be compatible with <typeparamref name="TValue"/>.
+        /// The <see cref="Accessor{T}.Get"/>, or <see cref="Accessor{T}.Set"/>,
+        /// or both could be null when there is no matching field was found or
+        /// the field is read only.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the field value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result field accessor is 
+        /// associated.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{TValue}"/> for field.
+        /// </returns>
+        /// <seealso cref="GetInstanceFieldAccessor{TValue}"/>
+        public static Accessor<TValue> GetInstanceFieldAccessorOrNull<TValue>(this object obj, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(obj, obj.GetType(), name, false).CreateAccessor();
+        }
+
+        /// <summary>
+        /// Extension method to obtain an <see cref="Accessor{TValue}"/> that
+        /// can be used to access the value of instance field with given
+        /// <paramref name="name"/> on the given instance <paramref name="obj"/>. The
+        /// field type must be compatible with <typeparamref name="TValue"/>
+        /// and has both getter and setter.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// Type of a the field value.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The instance of object with which the result field accessor is 
+        /// associated.
+        /// </param>
+        /// <param name="name">
+        /// The name of the field.
+        /// </param>
+        /// <returns>
+        /// An accessor of type <see cref="Accessor{TValue}"/> for field.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching field or the field is read only.
+        /// </exception>
+        /// <seealso cref="GetInstanceFieldAccessorOrNull{TValue}"/>
+        public static Accessor<TValue> GetInstanceFieldAccessor<TValue>(this object obj, string name)
+        {
+            return new FieldDelegateBuilder<TValue>(obj, obj.GetType(), name, true).CreateAccessor();
+        }
+        #endregion Instance Field Targeted
 
         #region Static Property
 
@@ -121,7 +662,7 @@ namespace Common.Reflection
         /// <see cref="Action{TValue}"/> that can be used to set the value of
         /// static property with given <paramref name="name"/> of given
         /// <paramref name="type"/>. The property type must be compatible with
-        /// <typeparamref name="TValue"/>. Returns null no match is found.
+        /// <typeparamref name="TValue"/>.
         /// </summary>
         /// <typeparam name="TValue">
         /// Type of a the property.
@@ -166,8 +707,8 @@ namespace Common.Reflection
         /// <returns>
         /// An accessor of type <see cref="Accessor{TValue}"/> for property.
         /// </returns>
-        /// <seealso cref="GetStaticProperty{TValue}"/>
-        public static Accessor<TValue> GetStaticPropertyOrNull<TValue>(this Type type, string name)
+        /// <seealso cref="GetStaticPropertyAccessor{TValue}"/>
+        public static Accessor<TValue> GetStaticPropertyAccessorOrNull<TValue>(this Type type, string name)
         {
             return new PropertyDelegateBuilder<TValue>(type, name, false, false).CreateAccessor(false);
         }
@@ -195,8 +736,8 @@ namespace Common.Reflection
         /// When there is no matching property or the property missing getter
         /// or setter.
         /// </exception>
-        /// <seealso cref="GetStaticPropertyOrNull{TValue}"/>
-        public static Accessor<TValue> GetStaticProperty<TValue>(this Type type, string name)
+        /// <seealso cref="GetStaticPropertyAccessorOrNull{TValue}"/>
+        public static Accessor<TValue> GetStaticPropertyAccessor<TValue>(this Type type, string name)
         {
             return new PropertyDelegateBuilder<TValue>(type, name, true, false).CreateAccessor(false);
         }
@@ -972,6 +1513,8 @@ namespace Common.Reflection
             return new PropertyDelegateBuilder<TValue>(obj, type, name, true).CreateAccessor(true);
         }
         #endregion Non Virtual Property Targeted
+
+        #region Method
 
         /// <summary>
         /// Extension method to obtain a delegate of type 
