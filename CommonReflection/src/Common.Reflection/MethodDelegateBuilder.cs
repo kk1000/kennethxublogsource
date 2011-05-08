@@ -115,13 +115,7 @@ namespace Common.Reflection
             }
 
             int offset = instanceToStatic ? 1 : 0;
-            int size = parameters.Length - offset;
-
-            Type[] types = new Type[size];
-            for (int i = 0; i < size; i++)
-            {
-                types[i] = parameters[i + offset].ParameterType;
-            }
+            Type[] types = Utils.ParameterToTypeArray(parameters, offset);
             _parameterTypes = types;
 
             var method = _targetType.GetMethod(_methodName, _bindingAttr, null, _parameterTypes, null);
@@ -145,14 +139,7 @@ namespace Common.Reflection
                 .Append(" for signature ")
                 .Append(_returnType).Append(" ")
                 .Append(_methodName).Append("(");
-            if (_parameterTypes.Length > 0)
-            {
-                foreach (Type parameter in _parameterTypes)
-                {
-                    sb.Append(parameter).Append(", ");
-                }
-                sb.Length -= 2;
-            }
+            sb.AppendArrayCommaSeparated(_parameterTypes);
             sb.Append(") with binding flags: ").Append(_bindingAttr);
             if (MethodFilter != null)
             {

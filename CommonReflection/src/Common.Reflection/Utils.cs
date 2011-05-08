@@ -20,6 +20,7 @@
 using System;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Text;
 
 namespace Common.Reflection
 {
@@ -45,15 +46,7 @@ namespace Common.Reflection
 
         internal static DynamicMethod CreateDynamicMethod(this MethodInfo method)
         {
-            int offset = (method.IsStatic ? 0 : 1);
-            var parameters = method.GetParameters();
-            int size = parameters.Length + offset;
-            Type[] types = new Type[size];
-            if (offset > 0) types[0] = method.DeclaringType;
-            for (int i = offset; i < size; i++)
-            {
-                types[i] = parameters[i - offset].ParameterType;
-            }
+            Type[] types = GetParameterTypes(method);
 
             DynamicMethod dynamicMethod = new DynamicMethod(
                 "NonVirtualInvoker_" + method.Name, method.ReturnType, types, method.DeclaringType);
@@ -62,6 +55,33 @@ namespace Common.Reflection
             il.EmitCall(OpCodes.Call, method, null);
             il.Emit(OpCodes.Ret);
             return dynamicMethod;
+        }
+
+        internal static DynamicMethod CreateDynamicMethod(this ConstructorInfo constructor)
+        {
+            Type[] types = GetParameterTypes(constructor);
+
+            DynamicMethod dynamicMethod = new DynamicMethod(
+                "Constructor_" + constructor.Name, constructor.DeclaringType, types, constructor.DeclaringType);
+            ILGenerator il = dynamicMethod.GetILGenerator();
+            for (int i = 0; i < types.Length; i++) il.Emit(OpCodes.Ldarg, i);
+            il.Emit(OpCodes.Newobj, constructor);
+            il.Emit(OpCodes.Ret);
+            return dynamicMethod;
+        }
+
+        private static Type[] GetParameterTypes(MethodBase method)
+        {
+            int offset = (method.IsStatic || method.IsConstructor ? 0 : 1);
+            var parameters = method.GetParameters();
+            int size = parameters.Length + offset;
+            Type[] types = new Type[size];
+            if (offset > 0) types[0] = method.DeclaringType;
+            for (int i = offset; i < size; i++)
+            {
+                types[i] = parameters[i - offset].ParameterType;
+            }
+            return types;
         }
 
         internal static DynamicMethod CreateGetterMethod(this FieldInfo field, Type fieldType, Type instanceType)
@@ -101,6 +121,30 @@ namespace Common.Reflection
                 throw new InvalidOperationException(
                     "Expecting type parameter to be a Delegate type, but got " +
                     delegateType.FullName);
+            }
+        }
+
+        internal static Type[] ParameterToTypeArray(ParameterInfo[] parameters, int offset)
+        {
+            int size = parameters.Length - offset;
+
+            Type[] types = new Type[size];
+            for (int i = 0; i < size; i++)
+            {
+                types[i] = parameters[i + offset].ParameterType;
+            }
+            return types;
+        }
+
+        internal static void AppendArrayCommaSeparated(this StringBuilder sb, object[] objects)
+        {
+            if (objects.Length > 0)
+            {
+                foreach (Type o in objects)
+                {
+                    sb.Append(o).Append(", ");
+                }
+                sb.Length -= 2;
             }
         }
     }

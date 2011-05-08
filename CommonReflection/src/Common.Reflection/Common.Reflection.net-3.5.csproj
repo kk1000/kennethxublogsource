@@ -51,6 +51,7 @@
       <Link>AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="Accessor.cs" />
+    <Compile Include="ConstructorDelegateBuilder.cs" />
     <Compile Include="FieldDelegateBuilder.cs" />
     <Compile Include="MethodDelegateBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

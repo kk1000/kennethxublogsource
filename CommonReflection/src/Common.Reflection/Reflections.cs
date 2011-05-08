@@ -1514,6 +1514,284 @@ namespace Common.Reflection
         }
         #endregion Non Virtual Property Targeted
 
+        #region Constructor
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <typeparamref name="TDelegate"/> that can be used to invoke the
+        /// constructor of the given <paramref name="type"/>. The parameter
+        /// list of the delegate must match the parameters of the constructor.
+        /// </summary>
+        /// <typeparam name="TDelegate">
+        /// Type of the delegate that is compatible with a constructor.
+        /// </typeparam>
+        /// <param name="type">
+        /// The actaully type to be constructed by the result delegate.
+        /// </param>
+        /// <returns>
+        /// A delegate that can be used to invoke the corresponding constructor.
+        /// Or null when there is no matching constructor on <paramref name="type"/>.
+        /// </returns>
+        public static TDelegate GetConstructorDelegateOrNull<TDelegate>(this Type type)
+            where TDelegate : class
+        {
+            return ConstructorDelegateBuilder.CreateConstructorDelegate<TDelegate>(type, true);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <typeparamref name="TDelegate"/> that can be used to invoke the
+        /// constructor of the given <paramref name="type"/>. The parameter
+        /// list of the delegate must match the parameters of the constructor.
+        /// </summary>
+        /// <typeparam name="TDelegate">
+        /// Type of the delegate that is compatible with a constructor.
+        /// </typeparam>
+        /// <param name="type">
+        /// The actaully type to be constructed by the result delegate.
+        /// </param>
+        /// <returns>
+        /// A delegate that can be used to invoke the corresponding constructor.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching constructor on <paramref name="type"/>.
+        /// </exception>
+        public static TDelegate GetConstructorDelegate<TDelegate>(this Type type)
+            where TDelegate : class
+        {
+            return ConstructorDelegateBuilder.CreateConstructorDelegate<TDelegate>(type, false);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{TResult}"/> that can be used to invoke the default
+        /// constructor of the given <paramref name="type"/>.
+        /// </summary>
+        /// <typeparam name="TResult">
+        /// Type of the delegate's return value, which needs to be compatible
+        /// with <paramref name="type"/>.
+        /// </typeparam>
+        /// <param name="type">The actual type to be constructed.</param>
+        /// <returns>
+        /// A delegate that can be used to invoke the corresponding constructor.
+        /// Or null when there is no matching constructor on <paramref name="type"/>.
+        /// </returns>
+        public static Func<TResult> GetConstructorOrNull<TResult>(this Type type)
+        {
+            return GetConstructorDelegateOrNull<Func<TResult>>(type);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{TResult}"/> that can be used to invoke the default
+        /// constructor of the given <paramref name="type"/>.
+        /// </summary>
+        /// <typeparam name="TResult">
+        /// Type of the delegate's return value, which needs to be compatible
+        /// with <paramref name="type"/>.
+        /// </typeparam>
+        /// <param name="type">The actual type to be constructed.</param>
+        /// <returns>
+        /// A delegate that can be used to invoke the corresponding constructor.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching constructor on <paramref name="type"/>.
+        /// </exception>
+        public static Func<TResult> GetConstructor<TResult>(this Type type)
+        {
+            return GetConstructorDelegate<Func<TResult>>(type);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{T,TResult}"/> that can be used to invoke the
+        /// constructor of the given <paramref name="type"/>. The parameter
+        /// the delegate must match the parameter of the constructor.
+        /// </summary>
+        /// <typeparam name="T">Type of first parameter.</typeparam>
+        /// <typeparam name="TResult">
+        /// Type of the delegate's return value, which needs to be compatible
+        /// with <paramref name="type"/>.
+        /// </typeparam>
+        /// <param name="type">The actual type to be constructed.</param>
+        /// <returns>
+        /// A delegate that can be used to invoke the corresponding constructor.
+        /// Or null when there is no matching constructor on <paramref name="type"/>.
+        /// </returns>
+        public static Func<T, TResult> GetConstructorOrNull<T, TResult>(this Type type)
+        {
+            return GetConstructorDelegateOrNull<Func<T, TResult>>(type);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{T,TResult}"/> that can be used to invoke the
+        /// constructor of the given <paramref name="type"/>. The parameter
+        /// the delegate must match the parameter of the constructor.
+        /// </summary>
+        /// <typeparam name="T">Type of first parameter.</typeparam>
+        /// <typeparam name="TResult">
+        /// Type of the delegate's return value, which needs to be compatible
+        /// with <paramref name="type"/>.
+        /// </typeparam>
+        /// <param name="type">The actual type to be constructed.</param>
+        /// <returns>
+        /// A delegate that can be used to invoke the corresponding constructor.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching constructor on <paramref name="type"/>.
+        /// </exception>
+        public static Func<T, TResult> GetConstructor<T, TResult>(this Type type)
+        {
+            return GetConstructorDelegate<Func<T, TResult>>(type);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{T1,T2,TResult}"/> that can be used to invoke the
+        /// constructor of the given <paramref name="type"/>. The parameter
+        /// list of the delegate must match the parameters of the constructor.
+        /// </summary>
+        /// <typeparam name="T1">Type of first parameter.</typeparam>
+        /// <typeparam name="T2">Type of second parameter.</typeparam>
+        /// <typeparam name="TResult">
+        /// Type of the delegate's return value, which needs to be compatible
+        /// with <paramref name="type"/>.
+        /// </typeparam>
+        /// <param name="type">The actual type to be constructed.</param>
+        /// <returns>
+        /// A delegate that can be used to invoke the corresponding constructor.
+        /// Or null when there is no matching constructor on <paramref name="type"/>.
+        /// </returns>
+        public static Func<T1, T2, TResult> GetConstructorOrNull<T1, T2, TResult>(this Type type)
+        {
+            return GetConstructorDelegateOrNull<Func<T1, T2, TResult>>(type);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{T1,T2,TResult}"/> that can be used to invoke the
+        /// constructor of the given <paramref name="type"/>. The parameter
+        /// list of the delegate must match the parameters of the constructor.
+        /// </summary>
+        /// <typeparam name="T1">Type of first parameter.</typeparam>
+        /// <typeparam name="T2">Type of second parameter.</typeparam>
+        /// <typeparam name="TResult">
+        /// Type of the delegate's return value, which needs to be compatible
+        /// with <paramref name="type"/>.
+        /// </typeparam>
+        /// <param name="type">The actual type to be constructed.</param>
+        /// <returns>
+        /// A delegate that can be used to invoke the corresponding constructor.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching constructor on <paramref name="type"/>.
+        /// </exception>
+        public static Func<T1, T2, TResult> GetConstructor<T1, T2, TResult>(this Type type)
+        {
+            return GetConstructorDelegate<Func<T1, T2, TResult>>(type);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{T1,T2,T3,TResult}"/> that can be used to invoke
+        /// the constructor of the given <paramref name="type"/>. The parameter
+        /// list of the delegate must match the parameters of the constructor.
+        /// </summary>
+        /// <typeparam name="T1">Type of first parameter.</typeparam>
+        /// <typeparam name="T2">Type of second parameter.</typeparam>
+        /// <typeparam name="T3">Type of third parameter.</typeparam>
+        /// <typeparam name="TResult">
+        /// Type of the delegate's return value, which needs to be compatible
+        /// with <paramref name="type"/>.
+        /// </typeparam>
+        /// <param name="type">The actual type to be constructed.</param>
+        /// <returns>
+        /// A delegate that can be used to invoke the corresponding constructor.
+        /// Or null when there is no matching constructor on <paramref name="type"/>.
+        /// </returns>
+        public static Func<T1, T2, T3, TResult> GetConstructorOrNull<T1, T2, T3, TResult>(this Type type)
+        {
+            return GetConstructorDelegateOrNull<Func<T1, T2, T3, TResult>>(type);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{T1,T2,T3,TResult}"/> that can be used to invoke
+        /// the constructor of the given <paramref name="type"/>. The parameter
+        /// list of the delegate must match the parameters of the constructor.
+        /// </summary>
+        /// <typeparam name="T1">Type of first parameter.</typeparam>
+        /// <typeparam name="T2">Type of second parameter.</typeparam>
+        /// <typeparam name="T3">Type of third parameter.</typeparam>
+        /// <typeparam name="TResult">
+        /// Type of the delegate's return value, which needs to be compatible
+        /// with <paramref name="type"/>.
+        /// </typeparam>
+        /// <param name="type">The actual type to be constructed.</param>
+        /// <returns>
+        /// A delegate that can be used to invoke the corresponding constructor.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching constructor on <paramref name="type"/>.
+        /// </exception>
+        public static Func<T1, T2, T3, TResult> GetConstructor<T1, T2, T3, TResult>(this Type type)
+        {
+            return GetConstructorDelegate<Func<T1, T2, T3, TResult>>(type);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{T1,T2,T3,T4,TResult}"/> that can be used to invoke
+        /// the constructor of the given <paramref name="type"/>. The parameter
+        /// list of the delegate must match the parameters of the constructor.
+        /// </summary>
+        /// <typeparam name="T1">Type of first parameter.</typeparam>
+        /// <typeparam name="T2">Type of second parameter.</typeparam>
+        /// <typeparam name="T3">Type of third parameter.</typeparam>
+        /// <typeparam name="T4">Type of fourth parameter.</typeparam>
+        /// <typeparam name="TResult">
+        /// Type of the delegate's return value, which needs to be compatible
+        /// with <paramref name="type"/>.
+        /// </typeparam>
+        /// <param name="type">The actual type to be constructed.</param>
+        /// <returns>
+        /// A delegate that can be used to invoke the corresponding constructor.
+        /// Or null when there is no matching constructor on <paramref name="type"/>.
+        /// </returns>
+        public static Func<T1, T2, T3, T4, TResult> GetConstructorOrNull<T1, T2, T3, T4, TResult>(this Type type)
+        {
+            return GetConstructorDelegateOrNull<Func<T1, T2, T3, T4, TResult>>(type);
+        }
+
+        /// <summary>
+        /// Extension method to obtain a delegate of type
+        /// <see cref="Func{T1,T2,T3,T4,TResult}"/> that can be used to invoke
+        /// the constructor of the given <paramref name="type"/>. The parameter
+        /// list of the delegate must match the parameters of the constructor.
+        /// </summary>
+        /// <typeparam name="T1">Type of first parameter.</typeparam>
+        /// <typeparam name="T2">Type of second parameter.</typeparam>
+        /// <typeparam name="T3">Type of third parameter.</typeparam>
+        /// <typeparam name="T4">Type of fourth parameter.</typeparam>
+        /// <typeparam name="TResult">
+        /// Type of the delegate's return value, which needs to be compatible
+        /// with <paramref name="type"/>.
+        /// </typeparam>
+        /// <param name="type">The actual type to be constructed.</param>
+        /// <returns>
+        /// A delegate that can be used to invoke the corresponding constructor.
+        /// </returns>
+        /// <exception cref="MissingMemberException">
+        /// When there is no matching constructor on <paramref name="type"/>.
+        /// </exception>
+        public static Func<T1, T2, T3, T4, TResult> GetConstructor<T1, T2, T3, T4, TResult>(this Type type)
+        {
+            return GetConstructorDelegate<Func<T1, T2, T3, T4, TResult>>(type);
+        }
+
+        #endregion
+
         #region Method
 
         /// <summary>

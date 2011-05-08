@@ -53,6 +53,10 @@
     <Compile Include="..\..\AssemblyVersion.cs">
       <Link>AssemblyVersion.cs</Link>
     </Compile>
+    <Compile Include="Constructor\ClassSample.cs" />
+    <Compile Include="Constructor\ConstructorTest.cs" />
+    <Compile Include="Constructor\ISample.cs" />
+    <Compile Include="Constructor\StructSample.cs" />
     <Compile Include="Field\FieldBase.cs" />
     <Compile Include="Field\InstanceFieldTest.cs" />
     <Compile Include="Field\StaticFieldTest.cs" />
@@ -65,7 +69,7 @@
     <Compile Include="Property\StaticPropertyTest.cs" />
     <Compile Include="Property\TargetedInstancePropertyTest.cs" />
     <Compile Include="Property\TargetedNonVirtualPropertyTest.cs" />
-    <Compile Include="ReflectionsTest.cs" />
+    <Compile Include="Method\MethodTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Common.Reflection\Common.Reflection.net-2.0.csproj">

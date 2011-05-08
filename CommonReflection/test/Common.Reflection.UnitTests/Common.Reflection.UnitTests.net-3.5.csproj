@@ -52,6 +52,10 @@
     <Compile Include="..\..\AssemblyVersion.cs">
       <Link>AssemblyVersion.cs</Link>
     </Compile>
+    <Compile Include="Constructor\ConstructorTest.cs" />
+    <Compile Include="Constructor\ISample.cs" />
+    <Compile Include="Constructor\StructSample.cs" />
+    <Compile Include="Constructor\ClassSample.cs" />
     <Compile Include="Field\FieldBase.cs" />
     <Compile Include="Field\InstanceFieldTest.cs" />
     <Compile Include="Field\StaticFieldTest.cs" />
