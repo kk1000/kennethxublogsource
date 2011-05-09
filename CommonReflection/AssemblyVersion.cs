@@ -12,5 +12,5 @@ using System.Reflection;
 
 [assembly: AssemblyTrademarkAttribute("")]
 [assembly: AssemblyCultureAttribute("")]
-[assembly: AssemblyVersionAttribute("1.0.1.*")]
+[assembly: AssemblyVersionAttribute("2.0.0.*")]
 
