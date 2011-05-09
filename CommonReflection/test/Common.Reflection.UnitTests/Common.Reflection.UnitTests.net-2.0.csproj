@@ -53,6 +53,7 @@
     <Compile Include="..\..\AssemblyVersion.cs">
       <Link>AssemblyVersion.cs</Link>
     </Compile>
+    <Compile Include="AccessorTest.cs" />
     <Compile Include="Constructor\ClassSample.cs" />
     <Compile Include="Constructor\ConstructorTest.cs" />
     <Compile Include="Constructor\ISample.cs" />
