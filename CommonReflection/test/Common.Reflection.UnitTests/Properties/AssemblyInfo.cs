@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("Common.Reflection.UnitTests")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
 [assembly: AssemblyProduct("Common.Reflection.UnitTests")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

@@ -5,9 +5,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Common.Reflection")]
+[assembly: AssemblyTitle("Common.Reflection for .NET 3.5 & Above")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
 [assembly: AssemblyProduct("Common.Reflection")]
 [assembly: AssemblyCompanyAttribute("Kenneth Xu")]
 [assembly: AssemblyCopyrightAttribute("Copyright (C) 2009 Kenneth Xu")]
