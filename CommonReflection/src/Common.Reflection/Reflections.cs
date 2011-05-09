@@ -1814,8 +1814,8 @@ namespace Common.Reflection
         /// A delegate of type <typeparamref name="TDelegate"/> or null when
         /// no matching method if found.
         /// </returns>
-        /// <seealso cref="GetStaticInvokerOrFail{TDelegate}"/>
-        public static TDelegate GetStaticInvoker<TDelegate>(this Type type, string name)
+        /// <seealso cref="GetStaticInvoker{TDelegate}"/>
+        public static TDelegate GetStaticInvokerOrNull<TDelegate>(this Type type, string name)
             where TDelegate : class
         {
             return new MethodDelegateBuilder<TDelegate>(type, name, false, false).CreateInvoker();
@@ -1843,8 +1843,8 @@ namespace Common.Reflection
         /// <exception name="MissingMethodException">
         /// When there is no matching method found.
         /// </exception>
-        /// <seealso cref="GetStaticInvoker{TDelegate}"/>
-        public static TDelegate GetStaticInvokerOrFail<TDelegate>(this Type type, string name)
+        /// <seealso cref="GetStaticInvokerOrNull{TDelegate}"/>
+        public static TDelegate GetStaticInvoker<TDelegate>(this Type type, string name)
             where TDelegate : class 
         {
             return new MethodDelegateBuilder<TDelegate>(type, name, true, false).CreateInvoker();
@@ -1872,9 +1872,9 @@ namespace Common.Reflection
         /// A delegate of type <typeparamref name="TDelegate"/> or null when
         /// no matching method if found.
         /// </returns>
-        /// <seealso cref="GetInstanceInvokerOrFail{TDelegate}(System.Type,string)"/>
-        /// <seealso cref="GetInstanceInvoker{TDelegate}(object,string)"/>
-        public static TDelegate GetInstanceInvoker<TDelegate>(this Type type, string name)
+        /// <seealso cref="GetInstanceInvoker{TDelegate}(Type,string)"/>
+        /// <seealso cref="GetInstanceInvokerOrNull{TDelegate}(object,string)"/>
+        public static TDelegate GetInstanceInvokerOrNull<TDelegate>(this Type type, string name)
             where TDelegate : class
         {
             return new MethodDelegateBuilder<TDelegate>(type, name, false, true).CreateInvoker();
@@ -1905,9 +1905,9 @@ namespace Common.Reflection
         /// <exception name="MissingMethodException">
         /// When there is no matching method found.
         /// </exception>
-        /// <seealso cref="GetInstanceInvoker{TDelegate}(System.Type,string)"/>
-        /// <seealso cref="GetInstanceInvokerOrFail{TDelegate}(object,string)"/>
-        public static TDelegate GetInstanceInvokerOrFail<TDelegate>(this Type type, string name)
+        /// <seealso cref="GetInstanceInvokerOrNull{TDelegate}(Type,string)"/>
+        /// <seealso cref="GetInstanceInvoker{TDelegate}(object,string)"/>
+        public static TDelegate GetInstanceInvoker<TDelegate>(this Type type, string name)
             where TDelegate : class
         {
             return new MethodDelegateBuilder<TDelegate>(type, name, true, true).CreateInvoker();
@@ -1933,9 +1933,9 @@ namespace Common.Reflection
         /// A delegate of type <typeparamref name="TDelegate"/> or null when
         /// no matching method if found.
         /// </returns>
-        /// <seealso cref="GetInstanceInvokerOrFail{TDelegate}(object,string)"/>
-        /// <seealso cref="GetInstanceInvoker{TDelegate}(System.Type,string)"/>
-        public static TDelegate GetInstanceInvoker<TDelegate>(this object obj, string name)
+        /// <seealso cref="GetInstanceInvoker{TDelegate}(object,string)"/>
+        /// <seealso cref="GetInstanceInvokerOrNull{TDelegate}(Type,string)"/>
+        public static TDelegate GetInstanceInvokerOrNull<TDelegate>(this object obj, string name)
             where TDelegate : class
         {
             return new MethodDelegateBuilder<TDelegate>(obj, obj.GetType(), name, false).CreateInvoker();
@@ -1964,9 +1964,9 @@ namespace Common.Reflection
         /// <exception name="MissingMethodException">
         /// When there is no matching method found.
         /// </exception>
-        /// <seealso cref="GetInstanceInvokerOrFail{TDelegate}(System.Type,string)"/>
-        /// <seealso cref="GetInstanceInvoker{TDelegate}(object ,string)"/>
-        public static TDelegate GetInstanceInvokerOrFail<TDelegate>(this object obj, string name)
+        /// <seealso cref="GetInstanceInvoker{TDelegate}(Type,string)"/>
+        /// <seealso cref="GetInstanceInvokerOrNull{TDelegate}(object,string)"/>
+        public static TDelegate GetInstanceInvoker<TDelegate>(this object obj, string name)
             where TDelegate : class
         {
             return new MethodDelegateBuilder<TDelegate>(obj, obj.GetType(), name, true).CreateInvoker();
@@ -1994,9 +1994,9 @@ namespace Common.Reflection
         /// A delegate of type <typeparamref name="TDelegate"/> or null when
         /// no matching method if found.
         /// </returns>
-        /// <seealso cref="GetNonVirtualInvokerOrFail{TDelegate}(Type,string)"/>
-        /// <seealso cref="GetNonVirtualInvoker{TDelegate}(object,Type,string)"/>
-        public static TDelegate GetNonVirtualInvoker<TDelegate>(this Type type, string name)
+        /// <seealso cref="GetNonVirtualInvoker{TDelegate}(Type,string)"/>
+        /// <seealso cref="GetNonVirtualInvokerOrNull{TDelegate}(object,Type,string)"/>
+        public static TDelegate GetNonVirtualInvokerOrNull<TDelegate>(this Type type, string name)
             where TDelegate : class
         {
             return new MethodDelegateBuilder<TDelegate>(type, name, false, true).CreateInvoker(true);
@@ -2026,9 +2026,9 @@ namespace Common.Reflection
         /// <exception name="MissingMethodException">
         /// When there is no matching method found.
         /// </exception>
-        /// <seealso cref="GetNonVirtualInvoker{TDelegate}(Type,string)"/>
-        /// <seealso cref="GetNonVirtualInvokerOrFail{TDelegate}(object,Type,string)"/>
-        public static TDelegate GetNonVirtualInvokerOrFail<TDelegate>(this Type type, string name)
+        /// <seealso cref="GetNonVirtualInvokerOrNull{TDelegate}(Type,string)"/>
+        /// <seealso cref="GetNonVirtualInvoker{TDelegate}(object,Type,string)"/>
+        public static TDelegate GetNonVirtualInvoker<TDelegate>(this Type type, string name)
             where TDelegate : class
         {
             return new MethodDelegateBuilder<TDelegate>(type, name, true, true).CreateInvoker(true);
@@ -2058,9 +2058,9 @@ namespace Common.Reflection
         /// A delegate of type <typeparamref name="TDelegate"/> or null when
         /// no matching method if found.
         /// </returns>
-        /// <seealso cref="GetNonVirtualInvokerOrFail{TDelegate}(object,Type,string)"/>
-        /// <seealso cref="GetNonVirtualInvoker{TDelegate}(System.Type,string)"/>
-        public static TDelegate GetNonVirtualInvoker<TDelegate>(this object obj, Type type, string name)
+        /// <seealso cref="GetNonVirtualInvoker{TDelegate}(object,Type,string)"/>
+        /// <seealso cref="GetNonVirtualInvokerOrNull{TDelegate}(Type,string)"/>
+        public static TDelegate GetNonVirtualInvokerOrNull<TDelegate>(this object obj, Type type, string name)
             where TDelegate : class
         {
             return new MethodDelegateBuilder<TDelegate>(obj, type, name, false).CreateInvoker(true);
@@ -2093,9 +2093,9 @@ namespace Common.Reflection
         /// <exception name="MissingMethodException">
         /// When there is no matching method found.
         /// </exception>
-        /// <seealso cref="GetNonVirtualInvokerOrFail{TDelegate}(Type,string)"/>
-        /// <seealso cref="GetNonVirtualInvoker{TDelegate}(object,Type,string)"/>
-        public static TDelegate GetNonVirtualInvokerOrFail<TDelegate>(this object obj, Type type, string name)
+        /// <seealso cref="GetNonVirtualInvoker{TDelegate}(Type,string)"/>
+        /// <seealso cref="GetNonVirtualInvokerOrNull{TDelegate}(object,Type,string)"/>
+        public static TDelegate GetNonVirtualInvoker<TDelegate>(this object obj, Type type, string name)
             where TDelegate : class
         {
             return new MethodDelegateBuilder<TDelegate>(obj, type, name, true).CreateInvoker(true);
@@ -2133,7 +2133,7 @@ namespace Common.Reflection
         /// A delegate of type <typeparamref name="TDelegate"/> or null when
         /// no matching method if found.
         /// </returns>
-        public static TDelegate GetInvoker<TDelegate>(object obj, Type type, string name, BindingFlags bindingAttr, Predicate<MethodInfo> filter)
+        public static TDelegate GetInvokerOrNull<TDelegate>(object obj, Type type, string name, BindingFlags bindingAttr, Predicate<MethodInfo> filter)
             where TDelegate : class
         {
             return new MethodDelegateBuilder<TDelegate>(obj, type, name, false, bindingAttr)
@@ -2180,7 +2180,7 @@ namespace Common.Reflection
         /// <exception name="MissingMethodException">
         /// When there is no matching method found.
         /// </exception>
-        public static TDelegate GetInvokerOrFail<TDelegate>(object obj, Type type, string name, BindingFlags bindingAttr, Predicate<MethodInfo> filter, string filterMessage)
+        public static TDelegate GetInvoker<TDelegate>(object obj, Type type, string name, BindingFlags bindingAttr, Predicate<MethodInfo> filter, string filterMessage)
             where TDelegate : class
         {
             return new MethodDelegateBuilder<TDelegate>(obj, type, name, true, bindingAttr)

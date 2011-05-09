@@ -32,216 +32,216 @@ namespace Common.Reflection.UnitTests.Method
     [TestFixture(typeof(string))] 
     public class MethodTest<T>
     {
-        [Test] public void GetStaticInvoker_ReturnsNull_WhenParameterMisMatch()
+        [Test] public void GetStaticInvokerOrNull_ReturnsNull_WhenParameterMisMatch()
         {
-            Assert.IsNull(typeof (Base).GetStaticInvoker<Action<string, MethodTest<T>>>("PublicStatic"));
+            Assert.IsNull(typeof (Base).GetStaticInvokerOrNull<Action<string, MethodTest<T>>>("PublicStatic"));
         }
 
-        [Test] public void GetStaticInvokerOrFail_Chokes_WhenParameterMisMatch()
+        [Test] public void GetStaticInvoker_Chokes_WhenParameterMisMatch()
         {
             var e = Assert.Throws<MissingMethodException>(
-                () => typeof (Base).GetStaticInvokerOrFail<Action<string, MethodTest<T>>>("PublicStatic"));
+                () => typeof (Base).GetStaticInvoker<Action<string, MethodTest<T>>>("PublicStatic"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicStatic", e.Message);
             StringAssert.Contains(typeof(string).ToString(), e.Message);
             StringAssert.Contains(typeof(MethodTest<T>).ToString(), e.Message);
         }
 
-        [Test] public void GetStaticInvoker_ReturnsNull_WhenReturnTypeMisMatch()
+        [Test] public void GetStaticInvokerOrNull_ReturnsNull_WhenReturnTypeMisMatch()
         {
-            Assert.IsNull(typeof (Base).GetStaticInvoker<Func<T, double>>("PublicStatic"));
+            Assert.IsNull(typeof (Base).GetStaticInvokerOrNull<Func<T, double>>("PublicStatic"));
         }
 
-        [Test] public void GetStaticInvoker_Chokes_WhenReturnTypeMisMatch()
+        [Test] public void GetStaticInvokerOrNull_Chokes_WhenReturnTypeMisMatch()
         {
             var e = Assert.Throws<MissingMethodException>(
-                () => typeof(Base).GetStaticInvokerOrFail<Func<T, double>>("PublicStatic"));
+                () => typeof(Base).GetStaticInvoker<Func<T, double>>("PublicStatic"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicStatic", e.Message);
             StringAssert.Contains(typeof(T).ToString(), e.Message);
             StringAssert.Contains(typeof(double).ToString(), e.Message);
         }
 
-        [Test] public void GetInstanceInvoker_ReturnsNull_WhenParameterMisMatch()
+        [Test] public void GetInstanceInvokerOrNull_ReturnsNull_WhenParameterMisMatch()
         {
-            Assert.IsNull(typeof(Base).GetInstanceInvoker<Action<Base, string, MethodTest<T>>>("PublicInstance"));
-            Assert.IsNull(new Base().GetInstanceInvoker<Action<string, MethodTest<T>>>("PublicInstance"));
+            Assert.IsNull(typeof(Base).GetInstanceInvokerOrNull<Action<Base, string, MethodTest<T>>>("PublicInstance"));
+            Assert.IsNull(new Base().GetInstanceInvokerOrNull<Action<string, MethodTest<T>>>("PublicInstance"));
         }
 
-        [Test] public void GetInstanceInvokerOrFail_Chokes_WhenParameterMisMatch()
+        [Test] public void GetInstanceInvoker_Chokes_WhenParameterMisMatch()
         {
             var e = Assert.Throws<MissingMethodException>(
-                () => typeof(Base).GetInstanceInvokerOrFail<Action<Base, string, MethodTest<T>>>("PublicInstance"));
+                () => typeof(Base).GetInstanceInvoker<Action<Base, string, MethodTest<T>>>("PublicInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicInstance", e.Message);
             StringAssert.Contains(typeof(string).ToString(), e.Message);
             StringAssert.Contains(typeof(MethodTest<T>).ToString(), e.Message);
 
             e = Assert.Throws<MissingMethodException>(
-                () => new Base().GetInstanceInvokerOrFail<Action<string, MethodTest<T>>>("PublicInstance"));
+                () => new Base().GetInstanceInvoker<Action<string, MethodTest<T>>>("PublicInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicInstance", e.Message);
             StringAssert.Contains(typeof(string).ToString(), e.Message);
             StringAssert.Contains(typeof(MethodTest<T>).ToString(), e.Message);
         }
 
-        [Test] public void GetInstanceInvoker_ReturnsNull_WhenReturnTypeMisMatch()
+        [Test] public void GetInstanceInvokerOrNull_ReturnsNull_WhenReturnTypeMisMatch()
         {
-            Assert.IsNull(typeof(Base).GetInstanceInvoker<Func<Base, double>>("PublicInstance"));
-            Assert.IsNull(new Base().GetInstanceInvoker<Func<double>>("PublicInstance"));
+            Assert.IsNull(typeof(Base).GetInstanceInvokerOrNull<Func<Base, double>>("PublicInstance"));
+            Assert.IsNull(new Base().GetInstanceInvokerOrNull<Func<double>>("PublicInstance"));
         }
 
-        [Test] public void GetInstanceInvokerOrFail_Chokes_WhenReturnTypeMisMatch()
+        [Test] public void GetInstanceInvoker_Chokes_WhenReturnTypeMisMatch()
         {
             var e = Assert.Throws<MissingMethodException>(
-                () => typeof(Base).GetInstanceInvokerOrFail<Func<Base, double>>("PublicInstance"));
+                () => typeof(Base).GetInstanceInvoker<Func<Base, double>>("PublicInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicInstance", e.Message);
             StringAssert.Contains(typeof(T).ToString(), e.Message);
             StringAssert.Contains(typeof(double).ToString(), e.Message);
 
             e = Assert.Throws<MissingMethodException>(
-                () => new Base().GetInstanceInvokerOrFail<Func<double>>("PublicInstance"));
+                () => new Base().GetInstanceInvoker<Func<double>>("PublicInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicInstance", e.Message);
             StringAssert.Contains(typeof(T).ToString(), e.Message);
             StringAssert.Contains(typeof(double).ToString(), e.Message);
         }
 
-        [Test] public void GetNonVirtualInvoker_ReturnsNull_WhenParameterMisMatch()
+        [Test] public void GetNonVirtualInvokerOrNull_ReturnsNull_WhenParameterMisMatch()
         {
-            Assert.IsNull(typeof(Base).GetNonVirtualInvoker<Action<Base, string, MethodTest<T>>>("PublicVirtualInstance"));
-            Assert.IsNull(new Base().GetNonVirtualInvoker<Action<string, MethodTest<T>>>(typeof(Base), "PublicVirtualInstance"));
+            Assert.IsNull(typeof(Base).GetNonVirtualInvokerOrNull<Action<Base, string, MethodTest<T>>>("PublicVirtualInstance"));
+            Assert.IsNull(new Base().GetNonVirtualInvokerOrNull<Action<string, MethodTest<T>>>(typeof(Base), "PublicVirtualInstance"));
         }
 
-        [Test] public void GetNonVirtualInvokerOrFail_Chokes_WhenParameterMisMatch()
+        [Test] public void GetNonVirtualInvoker_Chokes_WhenParameterMisMatch()
         {
             var e = Assert.Throws<MissingMethodException>(
-                () => typeof(Base).GetNonVirtualInvokerOrFail<Action<Base, string, MethodTest<T>>>("PublicVirtualInstance"));
+                () => typeof(Base).GetNonVirtualInvoker<Action<Base, string, MethodTest<T>>>("PublicVirtualInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicVirtualInstance", e.Message);
             StringAssert.Contains(typeof(string).ToString(), e.Message);
             StringAssert.Contains(typeof(MethodTest<T>).ToString(), e.Message);
 
             e = Assert.Throws<MissingMethodException>(
-                () => new Base().GetNonVirtualInvokerOrFail<Action<Base, string, MethodTest<T>>>(typeof(Base), "PublicVirtualInstance"));
+                () => new Base().GetNonVirtualInvoker<Action<Base, string, MethodTest<T>>>(typeof(Base), "PublicVirtualInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicVirtualInstance", e.Message);
             StringAssert.Contains(typeof(string).ToString(), e.Message);
             StringAssert.Contains(typeof(MethodTest<T>).ToString(), e.Message);
         }
 
-        [Test] public void GetNonVirtualInvoker_ReturnsNull_WhenReturnTypeMisMatch()
+        [Test] public void GetNonVirtualInvokerOrNull_ReturnsNull_WhenReturnTypeMisMatch()
         {
-            Assert.IsNull(typeof(Base).GetNonVirtualInvoker<Func<Base, T, double>>("PublicVirtualInstance"));
-            Assert.IsNull(new Base().GetNonVirtualInvoker<Func<T, double>>(typeof(Base), "PublicVirtualInstance"));
+            Assert.IsNull(typeof(Base).GetNonVirtualInvokerOrNull<Func<Base, T, double>>("PublicVirtualInstance"));
+            Assert.IsNull(new Base().GetNonVirtualInvokerOrNull<Func<T, double>>(typeof(Base), "PublicVirtualInstance"));
         }
 
-        [Test] public void GetNonVirtualInvokerOrFail_Chokes_WhenReturnTypeMisMatch()
+        [Test] public void GetNonVirtualInvoker_Chokes_WhenReturnTypeMisMatch()
         {
             var e = Assert.Throws<MissingMethodException>(
-                () => typeof(Base).GetNonVirtualInvokerOrFail<Func<Base, T, double>>("PublicVirtualInstance"));
+                () => typeof(Base).GetNonVirtualInvoker<Func<Base, T, double>>("PublicVirtualInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicVirtualInstance", e.Message);
             StringAssert.Contains(typeof(T).ToString(), e.Message);
             StringAssert.Contains(typeof(double).ToString(), e.Message);
 
             e = Assert.Throws<MissingMethodException>(
-                () => new Base().GetNonVirtualInvokerOrFail<Func<T, double>>(typeof(Base), "PublicVirtualInstance"));
+                () => new Base().GetNonVirtualInvoker<Func<T, double>>(typeof(Base), "PublicVirtualInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains("PublicVirtualInstance", e.Message);
             StringAssert.Contains(typeof(T).ToString(), e.Message);
             StringAssert.Contains(typeof(double).ToString(), e.Message);
         }
 
-        [Test] public void GetStaticInvoker_Chokes_OnNonDelegateGenericParameter()
+        [Test] public void GetStaticInvokerOrNull_Chokes_OnNonDelegateGenericParameter()
         {
             var e = Assert.Throws<InvalidOperationException>(
-                () => typeof (Base).GetStaticInvoker<MethodTest<T>>("PublicStatic"));
+                () => typeof (Base).GetStaticInvokerOrNull<MethodTest<T>>("PublicStatic"));
             StringAssert.Contains("Delegate type", e.Message);
             StringAssert.Contains(GetType().FullName, e.Message);
             Assert.Throws<InvalidOperationException>(
-                () => typeof(Base).GetStaticInvokerOrFail<MethodTest<T>>("PublicStatic"));
+                () => typeof(Base).GetStaticInvoker<MethodTest<T>>("PublicStatic"));
 
         }
 
-        [Test] public void GetInstanceInvoker_Chokes_OnNonDelegateGenericParameter()
+        [Test] public void GetInstanceInvokerOrNull_Chokes_OnNonDelegateGenericParameter()
         {
+            Assert.Throws<InvalidOperationException>(
+                () => typeof(Base).GetInstanceInvokerOrNull<MethodTest<T>>("PublicInstance"));
             Assert.Throws<InvalidOperationException>(
                 () => typeof(Base).GetInstanceInvoker<MethodTest<T>>("PublicInstance"));
-            Assert.Throws<InvalidOperationException>(
-                () => typeof(Base).GetInstanceInvokerOrFail<MethodTest<T>>("PublicInstance"));
 
             Assert.Throws<InvalidOperationException>(
-                () => new Base().GetInstanceInvoker<MethodTest<T>>("PublicInstance"));
+                () => new Base().GetInstanceInvokerOrNull<MethodTest<T>>("PublicInstance"));
             Assert.Throws<InvalidOperationException>(
-                () => new Base().GetInstanceInvokerOrFail<MethodTest<T>>("PublicInstance"));
+                () => new Base().GetInstanceInvoker<MethodTest<T>>("PublicInstance"));
 
         }
 
-        [Test] public void GetNonVirtualInvoker_Chokes_OnNonDelegateGenericParameter()
+        [Test] public void GetNonVirtualInvokerOrNull_Chokes_OnNonDelegateGenericParameter()
         {
             Assert.Throws<InvalidOperationException>(
-                () => typeof(Base).GetNonVirtualInvoker<MethodTest<T>>("PublicVirtualInstance"));
+                () => typeof(Base).GetNonVirtualInvokerOrNull<MethodTest<T>>("PublicVirtualInstance"));
             Assert.Throws<InvalidOperationException>(
-                () => typeof(Base).GetNonVirtualInvokerOrFail<MethodTest<T>>("PublicVirtualInstance"));
+                () => typeof(Base).GetNonVirtualInvoker<MethodTest<T>>("PublicVirtualInstance"));
 
             Assert.Throws<InvalidOperationException>(
-                () => new Base().GetNonVirtualInvoker<MethodTest<T>>(typeof(Base), "PublicVirtualInstance"));
+                () => new Base().GetNonVirtualInvokerOrNull<MethodTest<T>>(typeof(Base), "PublicVirtualInstance"));
             Assert.Throws<InvalidOperationException>(
-                () => new Base().GetNonVirtualInvokerOrFail<MethodTest<T>>(typeof(Base), "PublicVirtualInstance"));
+                () => new Base().GetNonVirtualInvoker<MethodTest<T>>(typeof(Base), "PublicVirtualInstance"));
         }
 
         [Test] public void GetInstanceInvokerByType_Chokes_OnNoParameterDelegate()
         {
             var e = Assert.Throws<InvalidOperationException>(
-                () => typeof(Base).GetInstanceInvoker<Action>("PublicInstance"));
+                () => typeof(Base).GetInstanceInvokerOrNull<Action>("PublicInstance"));
             StringAssert.Contains(typeof(Action).ToString(), e.Message);
             e = Assert.Throws<InvalidOperationException>(
-                () => typeof(Base).GetInstanceInvokerOrFail<Action>("PublicInstance"));
+                () => typeof(Base).GetInstanceInvoker<Action>("PublicInstance"));
             StringAssert.Contains(typeof(Action).ToString(), e.Message);
         }
 
         [Test] public void GetNonVirtualInvokerByType_Chokes_OnNoParameterDelegate()
         {
             var e = Assert.Throws<InvalidOperationException>(
-                () => typeof(Base).GetNonVirtualInvoker<Action>("PublicVirtualInstance"));
+                () => typeof(Base).GetNonVirtualInvokerOrNull<Action>("PublicVirtualInstance"));
             StringAssert.Contains(typeof(Action).ToString(), e.Message);
             e = Assert.Throws<InvalidOperationException>(
-                () => typeof(Base).GetNonVirtualInvokerOrFail<Action>("PublicVirtualInstance"));
+                () => typeof(Base).GetNonVirtualInvoker<Action>("PublicVirtualInstance"));
             StringAssert.Contains(typeof(Action).ToString(), e.Message);
         }
 
         [Test] public void GetInstanceInvokerByType_ReturnsNull_WhenFirstParameterMismatch()
         {
-            Assert.IsNull(typeof(Base).GetInstanceInvoker<Func<string, T, string, int, T>>("PublicInstance"));
+            Assert.IsNull(typeof(Base).GetInstanceInvokerOrNull<Func<string, T, string, int, T>>("PublicInstance"));
         }
 
-        [Test] public void GetInstanceInvokerOrFailByType_Chokes_WhenFirstParameterMismatch()
+        [Test] public void GetInstanceInvokerByType_Chokes_WhenFirstParameterMismatch()
         {
             var e = Assert.Throws<MissingMethodException>(
-                () => typeof(Base).GetInstanceInvokerOrFail<Func<string, T, string, int, T>>("PublicInstance"));
+                () => typeof(Base).GetInstanceInvoker<Func<string, T, string, int, T>>("PublicInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains(typeof(string).ToString(), e.Message);
         }
 
         [Test] public void GetNonVirtualInvokerByType_ReturnsNull_WhenFirstParameterMismatch()
         {
-            Assert.IsNull(typeof(Base).GetNonVirtualInvoker<Func<string, object, T, object>>("PublicVirtualInstance"));
+            Assert.IsNull(typeof(Base).GetNonVirtualInvokerOrNull<Func<string, object, T, object>>("PublicVirtualInstance"));
         }
 
-        [Test] public void GetNonVirtualInvokerOrFailByType_Chokes_WhenFirstParameterMismatch()
+        [Test] public void GetNonVirtualInvokerByType_Chokes_WhenFirstParameterMismatch()
         {
             var e = Assert.Throws<MissingMethodException>(
-                () => typeof(Base).GetNonVirtualInvokerOrFail<Func<string, object, T, object>>("PublicVirtualInstance"));
+                () => typeof(Base).GetNonVirtualInvoker<Func<string, object, T, object>>("PublicVirtualInstance"));
             StringAssert.Contains(typeof(Base).ToString(), e.Message);
             StringAssert.Contains(typeof(string).ToString(), e.Message);
         }
 
-        [Test] public void GetStaticInvoker_InvokesPublicMethod()
+        [Test] public void GetStaticInvokerOrNull_InvokesPublicMethod()
         {
             T value = (T) Convert.ChangeType(1212456, typeof(T));
-            var d = typeof (Base).GetStaticInvoker<Action<T>>("PublicStatic");
+            var d = typeof (Base).GetStaticInvokerOrNull<Action<T>>("PublicStatic");
             Base.PublicStatic(value);
             string expected = Base.JustCalled;
             Base.JustCalled = null;
@@ -249,10 +249,10 @@ namespace Common.Reflection.UnitTests.Method
             Assert.AreEqual(expected, Base.JustCalled);
         }
 
-        [Test] public void GetStaticInvokerOrFail_InvokesPrivateMethod()
+        [Test] public void GetStaticInvoker_InvokesPrivateMethod()
         {
             T value = (T)Convert.ChangeType(1212456, typeof(T));
-            var d = typeof(Base).GetStaticInvokerOrFail<Action<T>>("PrivateStatic");
+            var d = typeof(Base).GetStaticInvoker<Action<T>>("PrivateStatic");
             string expected = string.Format("PrivateStatic({0})", value);
             Base.JustCalled = null;
             d(value);
@@ -263,7 +263,7 @@ namespace Common.Reflection.UnitTests.Method
         {
             Base b = new Sub();
             T value = (T)Convert.ChangeType(1212456, typeof(T));
-            var d = typeof(Base).GetInstanceInvoker<Action<Base, T>>("PublicVirtualInstance");
+            var d = typeof(Base).GetInstanceInvokerOrNull<Action<Base, T>>("PublicVirtualInstance");
             b.PublicVirtualInstance(value);
             string expected = Base.JustCalled;
             Base.JustCalled = null;
@@ -271,12 +271,12 @@ namespace Common.Reflection.UnitTests.Method
             Assert.AreEqual(expected, Base.JustCalled);
         }
 
-        [Test] public void GetInstanceInvokerOrFailByType_InvokesBaseInternalMethod()
+        [Test] public void GetInstanceInvokerByType_InvokesBaseInternalMethod()
         {
             Base b = new Sub();
             T result = (T)Convert.ChangeType(384745, typeof(T));
             T value = (T)Convert.ChangeType(1212456, typeof(T));
-            var d = typeof(Base).GetInstanceInvokerOrFail<Func<Base, T, string, int, T>>("InternalInstance");
+            var d = typeof(Base).GetInstanceInvoker<Func<Base, T, string, int, T>>("InternalInstance");
             b.InternalInstance(value, "b", 88);
             string expected = Base.JustCalled;
             Base.JustCalled = null;
@@ -290,7 +290,7 @@ namespace Common.Reflection.UnitTests.Method
             Base b = new Sub();
             T result = (T)Convert.ChangeType(384745, typeof(T));
             T value = (T)Convert.ChangeType(1212456, typeof(T));
-            var d = b.GetInstanceInvoker<Func<T>>("PublicInstance");
+            var d = b.GetInstanceInvokerOrNull<Func<T>>("PublicInstance");
             (new Sub()).PublicInstance();
             string expected = Sub.JustCalled;
             Sub.JustCalled = null;
@@ -299,12 +299,12 @@ namespace Common.Reflection.UnitTests.Method
             Assert.AreEqual(expected, Base.JustCalled);
         }
 
-        [Test] public void GetInstanceInvokerOrFailByInstance_InvokesSubInternalVirtualMethod()
+        [Test] public void GetInstanceInvokerByInstance_InvokesSubInternalVirtualMethod()
         {
             Base b = new Sub();
             object result = "result";
             T value = (T)Convert.ChangeType(1212456, typeof(T));
-            var d = b.GetInstanceInvokerOrFail<Func<object, T, object>>("InternalProtectedVirtualInstance");
+            var d = b.GetInstanceInvoker<Func<object, T, object>>("InternalProtectedVirtualInstance");
             b.InternalProtectedVirtualInstance("b", value);
             string expected = Sub.JustCalled;
             Sub.JustCalled = null;
@@ -318,7 +318,7 @@ namespace Common.Reflection.UnitTests.Method
             Base b = new Sub();
             object result = "result";
             T value = (T)Convert.ChangeType(1212456, typeof(T));
-            var d = typeof(Base).GetNonVirtualInvoker<Func<Base, object, T, object>>("PublicVirtualInstance");
+            var d = typeof(Base).GetNonVirtualInvokerOrNull<Func<Base, object, T, object>>("PublicVirtualInstance");
             new Base().PublicVirtualInstance("object", value);
             string expected = Base.JustCalled;
             Base.JustCalled = null;
@@ -327,12 +327,12 @@ namespace Common.Reflection.UnitTests.Method
             Assert.AreEqual(expected, Base.JustCalled);
         }
 
-        [Test] public void GetNonVirtualInvokerOrFailByType_InvokesBaseInternalMethod()
+        [Test] public void GetNonVirtualInvokerByType_InvokesBaseInternalMethod()
         {
             Base b = new Sub();
             T result = (T)Convert.ChangeType(384745, typeof(T));
             T value = (T)Convert.ChangeType(1212456, typeof(T));
-            var d = typeof(Base).GetNonVirtualInvokerOrFail<Func<Base, T, string, int, T>>("InternalInstance");
+            var d = typeof(Base).GetNonVirtualInvoker<Func<Base, T, string, int, T>>("InternalInstance");
             b.InternalInstance(value, "b", 88);
             string expected = Base.JustCalled;
             Base.JustCalled = null;
@@ -345,7 +345,7 @@ namespace Common.Reflection.UnitTests.Method
         {
             Base b = new Sub();
             T result = (T)Convert.ChangeType(384745, typeof(T));
-            var d = b.GetNonVirtualInvoker<Func<T>>(typeof(Base), "PublicInstance");
+            var d = b.GetNonVirtualInvokerOrNull<Func<T>>(typeof(Base), "PublicInstance");
             b.PublicInstance();
             string expected = Base.JustCalled;
             Base.JustCalled = null;
@@ -354,12 +354,12 @@ namespace Common.Reflection.UnitTests.Method
             Assert.AreEqual(expected, Base.JustCalled);
         }
 
-        [Test] public void GetNonVirtualInvokerOrFailByInstance_InvokesBaseInternalVirtualMethod()
+        [Test] public void GetNonVirtualInvokerByInstance_InvokesBaseInternalVirtualMethod()
         {
             Base b = new Sub();
             object result = "result";
             T value = (T)Convert.ChangeType(1212456, typeof(T));
-            var d = b.GetNonVirtualInvokerOrFail<Func<object, T, object>>(typeof(Base), "InternalProtectedVirtualInstance");
+            var d = b.GetNonVirtualInvoker<Func<object, T, object>>(typeof(Base), "InternalProtectedVirtualInstance");
             new Base().InternalProtectedVirtualInstance("b", value);
             string expected = Base.JustCalled;
             Base.JustCalled = null;
@@ -370,7 +370,7 @@ namespace Common.Reflection.UnitTests.Method
 
         [Test] public void GetInstanceInvokerByType_InvokesSub_OnLoseParameterMatch()
         {
-            var d = typeof(Base).GetInstanceInvokerOrFail<LostParameterByTypeDelegate>("PublicVirtualInstance");
+            var d = typeof(Base).GetInstanceInvoker<LostParameterByTypeDelegate>("PublicVirtualInstance");
             Sub s1 = new Sub();
             Sub s2 = new Sub();
             int intout;
@@ -388,7 +388,7 @@ namespace Common.Reflection.UnitTests.Method
         {
             Sub s1 = new Sub();
             Sub s2 = new Sub();
-            var d = s1.GetInstanceInvokerOrFail<LostParameterByInstanceDelegate>("PublicVirtualInstance");
+            var d = s1.GetInstanceInvoker<LostParameterByInstanceDelegate>("PublicVirtualInstance");
             int intout;
             s1.PublicVirtualInstance(3445, "objectb", s2, out intout);
             string expected = Sub.JustCalled;
@@ -402,7 +402,7 @@ namespace Common.Reflection.UnitTests.Method
 
         [Test] public void GetNonVirtualInvokerByType_InvokesSub_OnLoseParameterMatch()
         {
-            var d = typeof(Base).GetNonVirtualInvokerOrFail<LostParameterByTypeDelegate>("PublicVirtualInstance");
+            var d = typeof(Base).GetNonVirtualInvoker<LostParameterByTypeDelegate>("PublicVirtualInstance");
             Sub s1 = new Sub();
             Sub s2 = new Sub();
             int intout;
@@ -420,7 +420,7 @@ namespace Common.Reflection.UnitTests.Method
         {
             Sub s1 = new Sub();
             Sub s2 = new Sub();
-            var d = s1.GetNonVirtualInvokerOrFail<LostParameterByInstanceDelegate>(typeof(Base), "PublicVirtualInstance");
+            var d = s1.GetNonVirtualInvoker<LostParameterByInstanceDelegate>(typeof(Base), "PublicVirtualInstance");
             int intout;
             new Base().PublicVirtualInstance(3445, "objectb", s2, out intout);
             string expected = Sub.JustCalled;
@@ -432,46 +432,46 @@ namespace Common.Reflection.UnitTests.Method
             Assert.AreEqual(expectedOut, intout);
         }
 
-        [Test] public void GetInvoker_FiltersMethod()
+        [Test] public void GetInvokerOrNull_FiltersMethod()
         {
             Base b = new Base();
 
-            var dProtected = Reflections.GetInvoker<Func<T>>(
+            var dProtected = Reflections.GetInvokerOrNull<Func<T>>(
                 b, b.GetType(), "ProtectedVirtualInstance",
                 BindingFlags.Instance | BindingFlags.NonPublic, null);
             Assert.NotNull(dProtected);
 
-            var dPrivate = Reflections.GetInvoker<Action<T>>(
+            var dPrivate = Reflections.GetInvokerOrNull<Action<T>>(
                 b, b.GetType(), "PrivateInstance",
                 BindingFlags.Instance | BindingFlags.NonPublic, null);
             Assert.NotNull(dPrivate);
 
-            dProtected = Reflections.GetInvoker<Func<T>>(
+            dProtected = Reflections.GetInvokerOrNull<Func<T>>(
                 b, b.GetType(), "ProtectedVirtualInstance",
                 BindingFlags.Instance | BindingFlags.NonPublic, m=>m.IsFamily);
             Assert.NotNull(dProtected);
 
-            dPrivate = Reflections.GetInvoker<Action<T>>(
+            dPrivate = Reflections.GetInvokerOrNull<Action<T>>(
                 b, b.GetType(), "PrivateInstance",
                 BindingFlags.Instance | BindingFlags.NonPublic, m => m.IsFamily);
             Assert.Null(dPrivate);
         }
 
-        [Test] public void GetInvokerOrFail_FiltersMethod()
+        [Test] public void GetInvoker_FiltersMethod()
         {
             Base b = new Base();
             var message = "protected methods only";
-            var dProtected = Reflections.GetInvokerOrFail<Func<T>>(
+            var dProtected = Reflections.GetInvoker<Func<T>>(
                 b, b.GetType(), "ProtectedVirtualInstance",
                 BindingFlags.Instance | BindingFlags.NonPublic, null, null);
             Assert.NotNull(dProtected);
 
-            var dPrivate = Reflections.GetInvokerOrFail<Action<T>>(
+            var dPrivate = Reflections.GetInvoker<Action<T>>(
                 b, b.GetType(), "PrivateInstance",
                 BindingFlags.Instance | BindingFlags.NonPublic, null, null);
             Assert.NotNull(dPrivate);
 
-            dProtected = Reflections.GetInvokerOrFail<Func<T>>(
+            dProtected = Reflections.GetInvoker<Func<T>>(
                 b, b.GetType(), "ProtectedVirtualInstance",
                 BindingFlags.Instance | BindingFlags.NonPublic, m=>m.IsFamily, message);
             Assert.NotNull(dProtected);
@@ -479,7 +479,7 @@ namespace Common.Reflection.UnitTests.Method
             var e = Assert.Throws<MissingMethodException>(
                 delegate
                     {
-                        Reflections.GetInvokerOrFail<Action<T>>(
+                        Reflections.GetInvoker<Action<T>>(
                             b, b.GetType(), "PrivateInstance",
                             BindingFlags.Instance | BindingFlags.NonPublic, m => m.IsFamily, message);
                     });
