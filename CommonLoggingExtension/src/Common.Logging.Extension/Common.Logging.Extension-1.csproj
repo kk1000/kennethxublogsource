@@ -21,22 +21,22 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\build\Common.Logging.Extension\Debug\</OutputPath>
+    <OutputPath>..\..\build\Common.Logging.Extension-1\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\build\Common.Logging.Extension\Debug\Common.Logging.Extension.XML</DocumentationFile>
+    <DocumentationFile>..\..\build\Common.Logging.Extension-1\Debug\Common.Logging.Extension.XML</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\build\Common.Logging.Extension\Release\</OutputPath>
+    <OutputPath>..\..\build\Common.Logging.Extension-1\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\build\Common.Logging.Extension\Release\Common.Logging.Extension.XML</DocumentationFile>
+    <DocumentationFile>..\..\build\Common.Logging.Extension-1\Release\Common.Logging.Extension.XML</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
