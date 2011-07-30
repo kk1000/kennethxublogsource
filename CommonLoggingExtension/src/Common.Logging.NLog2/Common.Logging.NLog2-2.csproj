@@ -5,15 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DB8AAA7E-9CAF-4309-80FC-B91F448F2445}</ProjectGuid>
+    <ProjectGuid>{F07731D4-2292-481F-B8A7-8091E916136D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Common.Logging</RootNamespace>
-    <AssemblyName>Common.Logging.Extension</AssemblyName>
+    <AssemblyName>Common.Logging.NLog2</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkSubset>
-    </TargetFrameworkSubset>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\dependency\Key\kennehtxu-open-source.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -21,43 +19,44 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\build\Common.Logging.Extension\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;CL_2_0</DefineConstants>
+    <OutputPath>..\..\build\Common.Logging.NLog2-2\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\build\Common.Logging.Extension\Debug\Common.Logging.Extension.XML</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
+    <DocumentationFile>..\..\build\Common.Logging.NLog2-2\Debug\Common.Logging.NLog2.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\build\Common.Logging.Extension\Release\</OutputPath>
-    <DefineConstants>TRACE;CL_2_0</DefineConstants>
+    <OutputPath>..\..\build\Common.Logging.NLog2-2\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\build\Common.Logging.Extension\Release\Common.Logging.Extension.XML</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
+    <DocumentationFile>..\..\build\Common.Logging.NLog2-2\Release\Common.Logging.NLog2.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Common.Logging, Version=2.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\dependency\CommonLogging\net\2.0\$(Configuration)\Common.Logging.dll</HintPath>
+      <HintPath>..\..\dependency\CommonLogging-2\net\2.0\$(Configuration)\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\dependency\NLog\2.x\net-2.0\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\AssemblyVersion.cs">
-      <Link>AssemblyVersion.cs</Link>
+    <Compile Include="..\..\AssemblyVersion-2.cs">
+      <Link>AssemblyVersion-2.cs</Link>
     </Compile>
-    <Compile Include="Factory\AbstractLogger.cs" />
+    <Compile Include="NLog2\CommonLoggingTarget.cs" />
+    <Compile Include="NLog2\NamespaceDoc.cs" />
+    <Compile Include="NLog2\NLogLogger.cs" />
+    <Compile Include="NLog2\NLogLoggerFactoryAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Simple\InMemoryLogEntry.cs" />
-    <Compile Include="Simple\InMemoryLogger.cs" />
-    <Compile Include="Simple\InMemoryLoggerFactoryAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\dependency\Key\kennehtxu-open-source.snk">
