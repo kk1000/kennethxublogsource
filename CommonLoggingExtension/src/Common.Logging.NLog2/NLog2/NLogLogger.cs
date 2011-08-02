@@ -19,7 +19,6 @@
 #endregion
 
 using System;
-using Common.Logging.Factory;
 using NLog;
 using LogLevelNLog = NLog.LogLevel;
 using LoggerNLog = NLog.Logger;
@@ -33,13 +32,14 @@ namespace Common.Logging.NLog2
     /// NLog is a .NET logging library designed with simplicity and flexibility in mind.
     /// http://www.nlog-project.org/
     /// </remarks>
+    /// <author>Kenneth Xu</author>
     /// <author>Bruno Baia</author>
-    public class NLogLogger : AbstractLogger
+    public partial class NLogLogger
     {
         #region Fields
 
         private readonly LoggerNLog _logger;
-        private readonly static Type declaringType = typeof(AbstractLogger);
+        private readonly static Type _declaringType = typeof(NLogLogger);
 
         #endregion
 
@@ -52,14 +52,13 @@ namespace Common.Logging.NLog2
         }
 
         #region ILog Members
-
         /// <summary>
         /// Gets a value indicating whether this instance is trace enabled.
         /// </summary>
         /// <value>
         /// 	<c>true</c> if this instance is trace enabled; otherwise, <c>false</c>.
         /// </value>
-        public override bool IsTraceEnabled
+        public virtual bool IsTraceEnabled
         {
             get { return _logger.IsTraceEnabled; }
         }
@@ -70,7 +69,7 @@ namespace Common.Logging.NLog2
         /// <value>
         /// 	<c>true</c> if this instance is debug enabled; otherwise, <c>false</c>.
         /// </value>
-        public override bool IsDebugEnabled
+        public virtual bool IsDebugEnabled
         {
             get { return _logger.IsDebugEnabled; }
         }
@@ -81,7 +80,7 @@ namespace Common.Logging.NLog2
         /// <value>
         /// 	<c>true</c> if this instance is info enabled; otherwise, <c>false</c>.
         /// </value>
-        public override bool IsInfoEnabled
+        public virtual bool IsInfoEnabled
         {
             get { return _logger.IsInfoEnabled; }
         }
@@ -93,7 +92,7 @@ namespace Common.Logging.NLog2
         /// <value>
         /// 	<c>true</c> if this instance is warn enabled; otherwise, <c>false</c>.
         /// </value>
-        public override bool IsWarnEnabled
+        public virtual bool IsWarnEnabled
         {
             get { return _logger.IsWarnEnabled; }
         }
@@ -104,7 +103,7 @@ namespace Common.Logging.NLog2
         /// <value>
         /// 	<c>true</c> if this instance is error enabled; otherwise, <c>false</c>.
         /// </value>
-        public override bool IsErrorEnabled
+        public virtual bool IsErrorEnabled
         {
             get { return _logger.IsErrorEnabled; }
         }
@@ -115,7 +114,7 @@ namespace Common.Logging.NLog2
         /// <value>
         /// 	<c>true</c> if this instance is fatal enabled; otherwise, <c>false</c>.
         /// </value>
-        public override bool IsFatalEnabled
+        public virtual bool IsFatalEnabled
         {
             get { return _logger.IsFatalEnabled; }
         }
@@ -128,11 +127,11 @@ namespace Common.Logging.NLog2
         /// <param name="logLevel">the level of this log event.</param>
         /// <param name="message">the message to log</param>
         /// <param name="exception">the exception to log (may be null)</param>
-        protected override void WriteInternal(LogLevel logLevel, object message, Exception exception)
+        protected virtual void WriteInternal(LogLevel logLevel, object message, Exception exception)
         {
             LogLevelNLog level = GetLevel(logLevel);
             LogEventInfo logEvent = new LogEventInfo(level, _logger.Name, null, "{0}", new object[] { message }, exception);
-            _logger.Log(declaringType, logEvent);
+            _logger.Log(_declaringType, logEvent);
         }
 
         private static LogLevelNLog GetLevel(LogLevel logLevel)

@@ -53,8 +53,8 @@
     <Compile Include="..\..\AssemblyVersion-1.cs">
       <Link>AssemblyVersion-1.cs</Link>
     </Compile>
-    <Compile Include="..\Common.Logging.NLog2\Factory\AbstractLogger.cs">
-      <Link>Factory\AbstractLogger.cs</Link>
+    <Compile Include="..\Common.Logging.Factory\AbstractLogger1.cs">
+      <Link>Factory\AbstractLogger1.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Simple\InMemoryLogEntry.cs" />

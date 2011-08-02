@@ -21,6 +21,13 @@
 using System;
 using FormatMessageCallback = System.Action<Common.Logging.FormatMessageHandler>;
 
+#if NLOG
+namespace Common.Logging.NLog2
+{
+    [Serializable]
+    public partial class NLogLogger : ILog
+#endif
+#if !ADAPTER
 namespace Common.Logging.Factory
 {
     /// <summary>
@@ -29,7 +36,9 @@ namespace Common.Logging.Factory
     /// <author>Erich Eichinger</author>
     [Serializable]
     public abstract class AbstractLogger : ILog
+#endif
     {
+
         #region FormatMessageCallbackFormattedMessage
 
         private class FormatMessageCallbackFormattedMessage
@@ -107,6 +116,7 @@ namespace Common.Logging.Factory
         /// </summary>
         private readonly WriteHandler Write;
 
+#if !ADAPTER
         /// <summary>
         /// Creates a new logger instance using <see cref="WriteInternal"/> for 
         /// writing log events to the underlying log system.
@@ -190,7 +200,7 @@ namespace Common.Logging.Factory
         /// <param name="message">the message to log</param>
         /// <param name="exception">the exception to log (may be null)</param>
         protected abstract void WriteInternal(LogLevel level, object message, Exception exception);
-
+#endif
         #region Trace
 
         /// <summary>

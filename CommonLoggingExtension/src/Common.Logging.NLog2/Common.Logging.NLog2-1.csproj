@@ -20,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\build\Common.Logging.NLog2-1\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NLOG ADAPTER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\..\build\Common.Logging.NLog2-1\Debug\Common.Logging.NLog2.XML</DocumentationFile>
@@ -29,7 +29,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\build\Common.Logging.NLog2-1\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;NLOG ADAPTER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\..\build\Common.Logging.NLog2-1\Release\Common.Logging.NLog2.XML</DocumentationFile>
@@ -52,8 +52,12 @@
     <Compile Include="..\..\AssemblyVersion-1.cs">
       <Link>AssemblyVersion-1.cs</Link>
     </Compile>
-    <Compile Include="Factory\AbstractCachingLoggerFactoryAdapter.cs" />
-    <Compile Include="Factory\AbstractLogger.cs" />
+    <Compile Include="..\Common.Logging.Factory\AbstractCachingLoggerFactoryAdapter.cs">
+      <Link>Factory\AbstractCachingLoggerFactoryAdapter.cs</Link>
+    </Compile>
+    <Compile Include="..\Common.Logging.Factory\AbstractLogger1.cs">
+      <Link>NLog2\AbstractLogger1.cs</Link>
+    </Compile>
     <Compile Include="NLog2\CommonLoggingTarget.cs" />
     <Compile Include="NLog2\NamespaceDoc.cs" />
     <Compile Include="NLog2\NLogLogger.cs" />
