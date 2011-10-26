@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Data.SQLite;
+using System.Data.Common;
+using System.Reflection;
 
 namespace RandomCodeReviewPlanner
 {
@@ -21,32 +22,43 @@ namespace RandomCodeReviewPlanner
 
         private static void SaveToDatabase(string output)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["TracDatabase"].ConnectionString;
+            var connectionSettings = ConfigurationManager.ConnectionStrings["TracDatabase"];
+            string connectionString = connectionSettings.ConnectionString;
+            string connectionProvider = connectionSettings.ProviderName;
+            var assemblyName = connectionProvider.Split(new[]{',', ' '}, StringSplitOptions.RemoveEmptyEntries)[1];
+            Assembly.Load(new AssemblyName(assemblyName));
+            var connectionClass = Type.GetType(connectionProvider);
             string wikiPage = ConfigurationManager.AppSettings["WikiPage"];
-            using (SQLiteConnection conn = new SQLiteConnection(connectionString))
+            using (DbConnection conn = (DbConnection)Activator.CreateInstance(connectionClass, connectionString))
             {
                 conn.Open();
                 var command = conn.CreateCommand();
                 command.CommandType = CommandType.Text;
                 command.CommandText = "select max(version) from wiki where name=@name";
-                command.Parameters.Add(
-                    new SQLiteParameter("name", DbType.String) {Value = wikiPage});
+
+                AddParameter(command, "name", DbType.String, wikiPage);
                 object value = command.ExecuteScalar();
                 int version = (value == DBNull.Value) ? 1 : Convert.ToInt32(value) + 1;
                 int seconds = (int) (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds;
 
-                command.Parameters.Add(
-                    new SQLiteParameter("version", DbType.Int32) {Value = version});
-                command.Parameters.Add(
-                    new SQLiteParameter("time", DbType.Int32) {Value = seconds});
-                command.Parameters.Add(
-                    new SQLiteParameter("text", DbType.String) {Value = output});
+                AddParameter(command, "version", DbType.Int32, version);
+                AddParameter(command, "time", DbType.Int32, seconds);
+                AddParameter(command, "text", DbType.String, output);
                 command.CommandText =
                     "insert into wiki(name, version, time, author, ipnr, text, comment, readonly) " +
                     "values (@name, @version, @time, 'RandomCodeReviewPlanner', '127.0.0.1', @text, '', 0)";
                 command.ExecuteNonQuery();
                 conn.Close();
             }
+        }
+
+        private static void AddParameter(DbCommand command, string name, DbType type, object value)
+        {
+            var param = command.CreateParameter();
+            param.ParameterName = name;
+            param.DbType = type;
+            param.Value = value;
+            command.Parameters.Add(param);
         }
 
         private static string GenerateOutput(string[] developers)
