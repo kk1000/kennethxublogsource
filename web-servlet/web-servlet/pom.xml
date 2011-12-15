@@ -22,9 +22,9 @@
         </license>
     </licenses>
     <scm>
-        <url>code.google.com/p/kennethxublogsource/source/browse/</url>
-        <connection>http://kennethxublogsource.googlecode.com/svn/trunk/web-servlet</connection>
-        <developerConnection>https://kennethxublogsource.googlecode.com/svn/trunk/web-servlet</developerConnection>
+        <url>http://kennethxublogsource.googlecode.com/svn/trunk/web-servlet</url>
+        <connection>scm:svn:http://kennethxublogsource.googlecode.com/svn/trunk/web-servlet</connection>
+        <developerConnection>scm:svn:https://kennethxublogsource.googlecode.com/svn/trunk/web-servlet</developerConnection>
     </scm>
     <developers>
         <developer>

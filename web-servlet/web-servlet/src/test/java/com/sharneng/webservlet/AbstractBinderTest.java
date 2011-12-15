@@ -28,7 +28,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class AbstractLookupServletTest {
+/**
+ * Test {@link AbstractBinder}
+ * 
+ * @author Kenneth Xu
+ * 
+ */
+public class AbstractBinderTest {
     private AbstractBinder sut;
     @Mock
     private ServletContext servletContext;

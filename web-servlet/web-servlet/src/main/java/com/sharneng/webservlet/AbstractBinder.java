@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
  * Abstract servlet class to provides fundamental functionalities of binding to the {@link WebServlet}. All binder
  * servlet should inherit from this class and implement the only abstract method {@link #getWebServlet(ServletConfig)}.
  * The method should obtain an instance of {@link WebServlet} from the Dependency Injection framework. The binder
- * servlets are the classes that should be decleared in the web.xml file with certian parameter to help obtain the
+ * servlets are the classes that should be declared in the web.xml file with certain parameter to help obtain the
  * specific instance of {@link WebServlet}.
  * 
  * @author Kenneth Xu

@@ -26,7 +26,13 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
-public class SpringLookupServletTest {
+/**
+ * Test {@link SpringBinder}
+ * 
+ * @author Kenneth Xu
+ * 
+ */
+public class SpringBindertTest {
     private static final String WebServletName = "MyWebSevlet";
     private AbstractBinder sut;
     @Mock

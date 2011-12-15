@@ -33,6 +33,12 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Test {@link AbstractWebServlet}
+ * 
+ * @author Kenneth Xu
+ * 
+ */
 public class AbstractWebServletTest {
 
     @SuppressWarnings("serial")
