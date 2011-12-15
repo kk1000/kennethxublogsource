@@ -19,6 +19,8 @@ import java.io.IOException;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,12 +32,11 @@ import javax.servlet.http.HttpServletResponse;
  * <p>
  * The purpose of this interface and its abstract implementation {@link AbstractWebServlet} is to allow servlet to
  * participate in the dependency injection systems, and simplifies that task of writing the tests for servlets. For
- * example, {@link com.sharneng.webservlet.SpringBinder} is provided as a glue class to integrate with
- * Spring Framework.
+ * example, {@link com.sharneng.webservlet.SpringBinder} is provided as a glue class to integrate with Spring Framework.
  * <p>
  * Please note that most of method names in this interface has preceding "do" removed from their counterparts in
- * {@link HttpServlet} class. This is done in purpose to avoid overriding those methods in {@link AbstraceWebServlet}
- * class so that its parent's method {@link HttpServlet#getOptions} can generate the correct option list.
+ * {@link HttpServlet} class. This is done in purpose to avoid overriding those methods in {@link AbstractWebServlet}
+ * class so that its parent's method {@link HttpServlet#doOptions} can generate the correct option list.
  * 
  * @author Kenneth Xu
  * 
