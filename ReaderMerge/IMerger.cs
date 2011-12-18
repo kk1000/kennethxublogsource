@@ -2,7 +2,7 @@ namespace ReaderMerge
 {
     public interface IMerger
     {
-        // merge takes a count for testing purpose, the count can be humongous.
+        // For testing purpose, the process can stop when it reaches Int32.MaxValue.
         void Merge(IReader[] readers, IWriter writer);
     }
 }
