@@ -24,7 +24,7 @@ namespace ReaderMerge
             Setup();
             Console.WriteLine("-------- Method ---------+--- Ticks ---+--- ms --");
             TestMerge(new MergeReaderMerger());
-            TestMerge(new PriorityQueueMerger());
+            //TestMerge(new PriorityQueueMerger()); //Spring.Threading M2 needs to be enhanced to support generic comparable
             TestMerge(new IntBufferMerger());
             TestMerge(new BufferReaderMerger());
             TestMerge(new AdaptiveMerger());
