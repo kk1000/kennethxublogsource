@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.Common;
+using System.Net.Mail;
 using System.Reflection;
 
 namespace RandomCodeReviewPlanner
@@ -17,7 +18,35 @@ namespace RandomCodeReviewPlanner
 
             string output = GenerateOutput(developers);
 
-            SaveToDatabase(output);
+            string action = ConfigurationManager.AppSettings["Action"];
+
+            switch (action)
+            {
+                case "Trac" :
+                    SaveToDatabase(output);
+                    break;
+                case "Stdout":
+                    Console.Out.WriteLine(output);
+                    break;
+                case "Email":
+                    SendMail(output);
+                    break;
+            }
+
+        }
+
+        private static void SendMail(string output)
+        {
+            var smtpServer = ConfigurationManager.AppSettings["SmtpServer"];
+            var smtpClient = new SmtpClient(smtpServer);
+            var from = new MailAddress(ConfigurationManager.AppSettings["MailFrom"]);
+            var to = new MailAddress(ConfigurationManager.AppSettings["MailTo"]);
+            var message = new MailMessage(from, to)
+                              {
+                                  Body = output,
+                                  Subject = "Code Review Assignment"
+                              };
+            smtpClient.Send(message);
         }
 
         private static void SaveToDatabase(string output)
