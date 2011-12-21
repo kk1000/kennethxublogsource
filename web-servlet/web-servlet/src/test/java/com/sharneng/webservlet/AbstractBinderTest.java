@@ -41,7 +41,7 @@ public class AbstractBinderTest {
     @Mock
     private ServletConfig servletConfig;
     @Mock
-    private WebServlet webServlet;
+    private InjectableServlet webServlet;
     @Mock
     HttpServletRequest req;
     @Mock
@@ -53,7 +53,7 @@ public class AbstractBinderTest {
         MockitoAnnotations.initMocks(this);
         sut = new AbstractBinder() {
             @Override
-            protected WebServlet getWebServlet(ServletConfig config) throws ServletException {
+            protected InjectableServlet getWebServlet(ServletConfig config) throws ServletException {
                 return webServlet;
             }
         };

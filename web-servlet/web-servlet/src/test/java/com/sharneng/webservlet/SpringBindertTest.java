@@ -42,7 +42,7 @@ public class SpringBindertTest {
     @Mock
     private WebApplicationContext springContext;
     @Mock
-    private WebServlet webServlet;
+    private InjectableServlet webServlet;
 
     @Before
     public void setup() {

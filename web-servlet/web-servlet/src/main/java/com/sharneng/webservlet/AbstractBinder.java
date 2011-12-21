@@ -24,11 +24,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Abstract servlet class to provides fundamental functionalities of binding to the {@link WebServlet}. All binder
+ * Abstract servlet class to provides fundamental functionalities of binding to the {@link InjectableServlet}. All binder
  * servlet should inherit from this class and implement the only abstract method {@link #getWebServlet(ServletConfig)}.
- * The method should obtain an instance of {@link WebServlet} from the Dependency Injection framework. The binder
+ * The method should obtain an instance of {@link InjectableServlet} from the Dependency Injection framework. The binder
  * servlets are the classes that should be declared in the web.xml file with certain parameter to help obtain the
- * specific instance of {@link WebServlet}.
+ * specific instance of {@link InjectableServlet}.
  * 
  * @author Kenneth Xu
  * 
@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("serial")
 public abstract class AbstractBinder extends HttpServlet {
 
-    private WebServlet webServlet;
+    private InjectableServlet webServlet;
 
     /** {@inheritDoc} */
     @Override
@@ -55,7 +55,7 @@ public abstract class AbstractBinder extends HttpServlet {
      * @throws ServletException
      *             if failed to obtain the {@code WebServlet}
      */
-    protected abstract WebServlet getWebServlet(ServletConfig config) throws ServletException;
+    protected abstract InjectableServlet getWebServlet(ServletConfig config) throws ServletException;
 
     /** {@inheritDoc} */
     @Override

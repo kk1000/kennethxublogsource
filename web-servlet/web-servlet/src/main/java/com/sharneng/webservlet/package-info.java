@@ -16,15 +16,15 @@
 
 /**
  * Classes in this package provide the ability to use Dependency Injection frameworks with servlets. With the help of 
- * {@link com.sharneng.webservlet.WebServlet} interface and supporting classes, one can have their servlets managed by 
+ * {@link com.sharneng.webservlet.InjectableServlet} interface and supporting classes, one can have their servlets managed by 
  * dependency injection frameworks.
  * <p>
  * Binder for Spring Framework is provided in this package. Binder for other dependency injection framework can be
  * easily implemented by inheriting from {@link com.sharneng.webservlet.AbstractBinder} class.
  * <p>
- * Let's demonstrate the use of {@link com.sharneng.webservlet.WebServlet} by using a "Hello World" example.
+ * Let's demonstrate the use of {@link com.sharneng.webservlet.InjectableServlet} by using a "Hello World" example.
  * <p>
- * First we create a servlet extends from {@link com.sharneng.webservlet.AbstractWebServlet}. It say hello to a name set
+ * First we create a servlet extends from {@link com.sharneng.webservlet.AbstractInjectableServlet}. It say hello to a name set
  * by {@code setName} method. The actually name will be injected through Spring.
  * <pre>
  * {@code

@@ -22,7 +22,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
 /**
- * This is a binding Servlet that delegates its work to a {@link WebServlet} declared in Spring framework's
+ * This is a binding Servlet that delegates its work to a {@link InjectableServlet} declared in Spring framework's
  * {@link WebApplicationContext} . Servlet init parameter "WebServletName" (the value of
  * {@link #WEB_SERVLET_NAME_PARAMETER}) should be used to specify which bean in the spring context to delegate the work.
  * <p>
@@ -51,10 +51,10 @@ public class SpringBinder extends AbstractBinder {
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected WebServlet getWebServlet(ServletConfig config) throws ServletException {
+    protected InjectableServlet getWebServlet(ServletConfig config) throws ServletException {
         String webServletName = config.getInitParameter(WEB_SERVLET_NAME_PARAMETER);
         final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(config
                 .getServletContext());
-        return (WebServlet) context.getBean(webServletName);
+        return (InjectableServlet) context.getBean(webServletName);
     }
 }

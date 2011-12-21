@@ -23,13 +23,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Serve as the base class for implementations of {@link WebServlet}.
+ * Serve as the base class for implementations of {@link InjectableServlet}.
  * 
  * @author Kenneth Xu
  * 
  */
 @SuppressWarnings("serial")
-public abstract class AbstractWebServlet extends HttpServlet implements WebServlet {
+public abstract class AbstractInjectableServlet extends HttpServlet implements InjectableServlet {
 
     /** {@inheritDoc} */
     public void get(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

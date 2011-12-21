@@ -34,21 +34,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Test {@link AbstractWebServlet}
+ * Test {@link AbstractInjectableServlet}
  * 
  * @author Kenneth Xu
  * 
  */
-public class AbstractWebServletTest {
+public class AbstractInjectableServletTest {
 
     @SuppressWarnings("serial")
-    private static class WebServletMock extends AbstractWebServlet {
+    private static class WebServletMock extends AbstractInjectableServlet {
         @Override
         public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         }
     }
 
-    private AbstractWebServlet sut;
+    private AbstractInjectableServlet sut;
     @Mock
     private HttpServletRequest req;
     @Mock
@@ -58,7 +58,7 @@ public class AbstractWebServletTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        sut = new AbstractWebServlet() {
+        sut = new AbstractInjectableServlet() {
         };
         when(req.getProtocol()).thenReturn("HTTP/1.1");
     }
