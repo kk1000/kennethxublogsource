@@ -1,6 +1,6 @@
 package com.sharneng.webservlet.example;
 
-import com.sharneng.webservlet.AbstractWebServlet;
+import com.sharneng.webservlet.AbstractInjectableServlet;
 
 import java.io.IOException;
 
@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @SuppressWarnings("serial")
-public class GreetingServlet extends AbstractWebServlet {
+public class GreetingServlet extends AbstractInjectableServlet {
     private String name;
 
     public void setName(String name) {
