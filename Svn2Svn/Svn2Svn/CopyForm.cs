@@ -55,15 +55,14 @@ namespace Svn2Svn
             textBoxLog.Text = String.Empty;
             textBoxSourceRevision.Text = string.Empty;
             textBoxDestinationRevision.Text = string.Empty;
-            buttonCopy.Text = "Stop";
+            buttonCopy.Text = "St&op";
             var t = new Thread(DoCopy);
             t.Start();
         }
 
         private static DialogResult ConfirmStop()
         {
-            return MessageBox.Show("Are you sure you want to stop?", "Svn2Svn", MessageBoxButtons.YesNo,
-                                   MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            return MessageBox.Show("Are you sure you want to stop?", "Svn2Svn", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
         }
 
         private void DoCopy()
@@ -89,7 +88,7 @@ namespace Svn2Svn
             finally
             {
                 _isCopyInProgress = false;
-                DoWindowUpdate(()=>buttonCopy.Text = "Copy");
+                DoWindowUpdate(()=>buttonCopy.Text = "C&opy");
             }
             Log(DateTime.Now);
         }

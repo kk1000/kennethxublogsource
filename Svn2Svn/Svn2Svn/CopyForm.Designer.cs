@@ -91,7 +91,7 @@ namespace Svn2Svn
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(66, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Source URI:";
+            this.label1.Text = "&Source URI:";
             // 
             // label2
             // 
@@ -100,7 +100,7 @@ namespace Svn2Svn
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(85, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Destination URI:";
+            this.label2.Text = "&Destination URI:";
             // 
             // textBoxTarget
             // 
@@ -118,7 +118,7 @@ namespace Svn2Svn
             this.buttonCopy.Name = "buttonCopy";
             this.buttonCopy.Size = new System.Drawing.Size(75, 23);
             this.buttonCopy.TabIndex = 7;
-            this.buttonCopy.Text = "Copy";
+            this.buttonCopy.Text = "C&opy";
             this.buttonCopy.UseVisualStyleBackColor = true;
             this.buttonCopy.Click += new System.EventHandler(this.HandleCopyClick);
             // 
@@ -139,7 +139,7 @@ namespace Svn2Svn
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(66, 13);
             this.label3.TabIndex = 4;
-            this.label3.Text = "Working Dir:";
+            this.label3.Text = "&Working Dir:";
             // 
             // textBoxLog
             // 
@@ -194,7 +194,7 @@ namespace Svn2Svn
             this.checkBoxCopySourceRevision.Name = "checkBoxCopySourceRevision";
             this.checkBoxCopySourceRevision.Size = new System.Drawing.Size(104, 17);
             this.checkBoxCopySourceRevision.TabIndex = 3;
-            this.checkBoxCopySourceRevision.Text = "Source Revision";
+            this.checkBoxCopySourceRevision.Text = "Source &Revision";
             this.checkBoxCopySourceRevision.UseVisualStyleBackColor = true;
             // 
             // checkBoxCopyDateTime
@@ -206,7 +206,7 @@ namespace Svn2Svn
             this.checkBoxCopyDateTime.Name = "checkBoxCopyDateTime";
             this.checkBoxCopyDateTime.Size = new System.Drawing.Size(77, 17);
             this.checkBoxCopyDateTime.TabIndex = 2;
-            this.checkBoxCopyDateTime.Text = "Date/Time";
+            this.checkBoxCopyDateTime.Text = "Date/&Time";
             this.checkBoxCopyDateTime.UseVisualStyleBackColor = true;
             // 
             // checkBoxCopyAuthor
@@ -218,7 +218,7 @@ namespace Svn2Svn
             this.checkBoxCopyAuthor.Name = "checkBoxCopyAuthor";
             this.checkBoxCopyAuthor.Size = new System.Drawing.Size(57, 17);
             this.checkBoxCopyAuthor.TabIndex = 1;
-            this.checkBoxCopyAuthor.Text = "Author";
+            this.checkBoxCopyAuthor.Text = "&Author";
             this.checkBoxCopyAuthor.UseVisualStyleBackColor = true;
             // 
             // checkBoxCopyReversionProperty
@@ -230,7 +230,7 @@ namespace Svn2Svn
             this.checkBoxCopyReversionProperty.Name = "checkBoxCopyReversionProperty";
             this.checkBoxCopyReversionProperty.Size = new System.Drawing.Size(144, 17);
             this.checkBoxCopyReversionProperty.TabIndex = 0;
-            this.checkBoxCopyReversionProperty.Text = "Copy Revision Properties";
+            this.checkBoxCopyReversionProperty.Text = "Copy Revision &Properties";
             this.checkBoxCopyReversionProperty.UseVisualStyleBackColor = true;
             this.checkBoxCopyReversionProperty.CheckedChanged += new System.EventHandler(this.HandleCheckBoxCopyReversionPropertyCheckedChanged);
             // 
@@ -289,7 +289,7 @@ namespace Svn2Svn
             this.radioButtonTrace.Name = "radioButtonTrace";
             this.radioButtonTrace.Size = new System.Drawing.Size(52, 17);
             this.radioButtonTrace.TabIndex = 2;
-            this.radioButtonTrace.Text = "Detail";
+            this.radioButtonTrace.Text = "D&etail";
             this.radioButtonTrace.UseVisualStyleBackColor = true;
             this.radioButtonTrace.CheckedChanged += new System.EventHandler(this.HandleRadioButtonCheckedChanged);
             // 
@@ -300,7 +300,7 @@ namespace Svn2Svn
             this.radioButtonInfo.Name = "radioButtonInfo";
             this.radioButtonInfo.Size = new System.Drawing.Size(66, 17);
             this.radioButtonInfo.TabIndex = 1;
-            this.radioButtonInfo.Text = "Revision";
+            this.radioButtonInfo.Text = "R&evision";
             this.radioButtonInfo.UseVisualStyleBackColor = true;
             this.radioButtonInfo.CheckedChanged += new System.EventHandler(this.HandleRadioButtonCheckedChanged);
             // 
@@ -313,7 +313,7 @@ namespace Svn2Svn
             this.radioButtonError.Size = new System.Drawing.Size(47, 17);
             this.radioButtonError.TabIndex = 0;
             this.radioButtonError.TabStop = true;
-            this.radioButtonError.Text = "Error";
+            this.radioButtonError.Text = "&Error";
             this.radioButtonError.UseVisualStyleBackColor = true;
             this.radioButtonError.CheckedChanged += new System.EventHandler(this.HandleRadioButtonCheckedChanged);
             // 
