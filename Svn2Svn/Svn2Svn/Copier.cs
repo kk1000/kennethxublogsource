@@ -137,7 +137,7 @@ namespace Svn2Svn
             }
             try
             {
-                _logger.Info("{0} {1} {2} {3}", e.Revision, e.Author, e.Time, e.LogMessage);
+                _logger.Info("{0} {1} {2} {3}", e.Revision, e.Author, e.Time.ToLocalTime(), e.LogMessage);
 
                 if (ChangeWorkingCopy(e)) CommitToDestination(e);
                 else e.Cancel = true;
