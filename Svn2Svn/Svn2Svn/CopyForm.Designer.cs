@@ -163,7 +163,7 @@
             this.groupBoxCopyRevisionProperties.Location = new System.Drawing.Point(386, 13);
             this.groupBoxCopyRevisionProperties.Name = "groupBoxCopyRevisionProperties";
             this.groupBoxCopyRevisionProperties.Size = new System.Drawing.Size(163, 69);
-            this.groupBoxCopyRevisionProperties.TabIndex = 11;
+            this.groupBoxCopyRevisionProperties.TabIndex = 6;
             this.groupBoxCopyRevisionProperties.TabStop = false;
             // 
             // checkBoxCopySourceRevision
@@ -174,7 +174,7 @@
             this.checkBoxCopySourceRevision.Location = new System.Drawing.Point(6, 43);
             this.checkBoxCopySourceRevision.Name = "checkBoxCopySourceRevision";
             this.checkBoxCopySourceRevision.Size = new System.Drawing.Size(104, 17);
-            this.checkBoxCopySourceRevision.TabIndex = 0;
+            this.checkBoxCopySourceRevision.TabIndex = 3;
             this.checkBoxCopySourceRevision.Text = "Source Revision";
             this.checkBoxCopySourceRevision.UseVisualStyleBackColor = true;
             // 
@@ -186,7 +186,7 @@
             this.checkBoxCopyDateTime.Location = new System.Drawing.Point(74, 20);
             this.checkBoxCopyDateTime.Name = "checkBoxCopyDateTime";
             this.checkBoxCopyDateTime.Size = new System.Drawing.Size(77, 17);
-            this.checkBoxCopyDateTime.TabIndex = 0;
+            this.checkBoxCopyDateTime.TabIndex = 2;
             this.checkBoxCopyDateTime.Text = "Date/Time";
             this.checkBoxCopyDateTime.UseVisualStyleBackColor = true;
             // 
@@ -198,7 +198,7 @@
             this.checkBoxCopyAuthor.Location = new System.Drawing.Point(7, 20);
             this.checkBoxCopyAuthor.Name = "checkBoxCopyAuthor";
             this.checkBoxCopyAuthor.Size = new System.Drawing.Size(57, 17);
-            this.checkBoxCopyAuthor.TabIndex = 0;
+            this.checkBoxCopyAuthor.TabIndex = 1;
             this.checkBoxCopyAuthor.Text = "Author";
             this.checkBoxCopyAuthor.UseVisualStyleBackColor = true;
             // 
@@ -210,7 +210,7 @@
             this.checkBoxCopyReversionProperty.Location = new System.Drawing.Point(7, -1);
             this.checkBoxCopyReversionProperty.Name = "checkBoxCopyReversionProperty";
             this.checkBoxCopyReversionProperty.Size = new System.Drawing.Size(144, 17);
-            this.checkBoxCopyReversionProperty.TabIndex = 8;
+            this.checkBoxCopyReversionProperty.TabIndex = 0;
             this.checkBoxCopyReversionProperty.Text = "Copy Revision Properties";
             this.checkBoxCopyReversionProperty.UseVisualStyleBackColor = true;
             this.checkBoxCopyReversionProperty.CheckedChanged += new System.EventHandler(this.HandleCheckBoxCopyReversionPropertyCheckedChanged);
@@ -221,7 +221,8 @@
             this.textBoxDestinationRevision.Name = "textBoxDestinationRevision";
             this.textBoxDestinationRevision.ReadOnly = true;
             this.textBoxDestinationRevision.Size = new System.Drawing.Size(60, 20);
-            this.textBoxDestinationRevision.TabIndex = 10;
+            this.textBoxDestinationRevision.TabIndex = 12;
+            this.textBoxDestinationRevision.TabStop = false;
             // 
             // textBoxSourceRevision
             // 
@@ -230,6 +231,7 @@
             this.textBoxSourceRevision.ReadOnly = true;
             this.textBoxSourceRevision.Size = new System.Drawing.Size(59, 20);
             this.textBoxSourceRevision.TabIndex = 10;
+            this.textBoxSourceRevision.TabStop = false;
             // 
             // label5
             // 
@@ -237,7 +239,7 @@
             this.label5.Location = new System.Drawing.Point(406, 103);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(107, 13);
-            this.label5.TabIndex = 9;
+            this.label5.TabIndex = 11;
             this.label5.Text = "Destination Revision:";
             // 
             // label4
@@ -257,7 +259,7 @@
             this.groupBox1.Location = new System.Drawing.Point(12, 88);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(218, 38);
-            this.groupBox1.TabIndex = 6;
+            this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Log level:";
             // 
