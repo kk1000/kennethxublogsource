@@ -139,9 +139,8 @@ namespace Svn2Svn
             {
                 _logger.Info("{0} {1} {2} {3}", e.Revision, e.Author, e.Time, e.LogMessage);
 
-                ChangeWorkingCopy(e);
-
-                CommitToDestination(e);
+                if (ChangeWorkingCopy(e)) CommitToDestination(e);
+                else e.Cancel = true;
             }
             catch(Exception ex)
             {
@@ -166,22 +165,47 @@ namespace Svn2Svn
             _logger.UpdateProgress(e.Revision, result.Revision);
         }
 
-        private void ChangeWorkingCopy(SvnLogEventArgs e)
+        /// <summary>
+        /// Return false we didn't finish because _stopRequested, otherwise true.
+        /// </summary>
+        private bool ChangeWorkingCopy(SvnLogEventArgs e)
         {
-            var itemsAdded = from x in e.ChangedPaths where x.Action == SvnChangeAction.Add orderby x.Path select x;
-            foreach (var node in itemsAdded) Add(node, e);
-            var itemsModified = from x in e.ChangedPaths where x.Action == SvnChangeAction.Modify select x;
-            foreach (var node in itemsModified) Modify(node, e);
+            var itemsAdded = from x in e.ChangedPaths 
+                             where x.Action == SvnChangeAction.Add 
+                             orderby x.Path 
+                             select x;
+
+            var itemsModified = from x in e.ChangedPaths 
+                                where x.Action == SvnChangeAction.Modify 
+                                select x;
+
             var itemsDeleted = from x in e.ChangedPaths
                                where x.Action == SvnChangeAction.Delete
                                orderby x.Path descending
                                select x;
-            foreach (var node in itemsDeleted) Delete(node);
+
+            return ProcessNodes(itemsAdded, e, Add) &&
+                   ProcessNodes(itemsModified, e, Modify) &&
+                   ProcessNodes(itemsDeleted, e, Delete);
         }
 
-        private void Delete(SvnChangeItem node)
+        /// <summary>
+        /// Return false if _stopRequested, otherwise true.
+        /// </summary>
+        private bool ProcessNodes(IEnumerable<SvnChangeItem> nodes, SvnLogEventArgs e, Action<SvnChangeItem, SvnLogEventArgs, string> action )
         {
-            var destinationPath = GetDestinationPath(node);
+            foreach (var node in nodes)
+            {
+                if (_stopRequested) return false; // canceled
+                var destinationPath = GetDestinationPath(node);
+                if (destinationPath == null) continue; // files not in source path.
+                action(node, e, destinationPath);
+            }
+            return true; // finished 
+        }
+
+        private void Delete(SvnChangeItem node, SvnLogEventArgs e, string destinationPath)
+        {
             if (File.Exists(destinationPath) || Directory.Exists(destinationPath))
             {
                 _svn.Delete(destinationPath);
@@ -189,9 +213,8 @@ namespace Svn2Svn
             }
         }
 
-        private void Modify(SvnChangeItem node, SvnLogEventArgs e)
+        private void Modify(SvnChangeItem node, SvnLogEventArgs e, string destinationPath)
         {
-            var destinationPath = GetDestinationPath(node);
             var source = GetSourceTarget(node, e);
             if (node.NodeKind == SvnNodeKind.File)
             {
@@ -201,23 +224,14 @@ namespace Svn2Svn
             CopyProperties(source, destinationPath);
         }
 
-        private void Add(SvnChangeItem node, SvnLogEventArgs e)
+        private void Add(SvnChangeItem node, SvnLogEventArgs e, string destinationPath)
         {
-            var destinationPath = GetDestinationPath(node);
             if (destinationPath == _workingDir) return;
             var source = GetSourceTarget(node, e);
             bool processed = false;
             if (node.CopyFromPath != null)
             {
-                string copyFrom = node.CopyFromPath.Substring(1);
-                if (_sourcePath.Length == 0 || copyFrom.StartsWith(_sourcePath))
-                {
-                    var copyFromUri = new Uri(_destination, copyFrom.Substring(_sourcePath.Length));
-                    long revision = _revisionMap[node.CopyFromRevision];
-                    // must use server uri as working copy may have been delete when copy from old revision.
-                    _svn.Copy(new SvnUriTarget(copyFromUri, revision), destinationPath);
-                    processed = true;
-                }
+                processed = TryCopy(node, destinationPath);
             }
             else if (node.NodeKind == SvnNodeKind.Directory)
             {
@@ -231,6 +245,29 @@ namespace Svn2Svn
             }
             _logger.Trace("\tCreated " + destinationPath);
             CopyProperties(source, destinationPath);
+        }
+
+        private bool TryCopy(SvnChangeItem node, string destinationPath)
+        {
+            string copyFrom = node.CopyFromPath.Substring(1);
+            if (_sourcePath.Length != 0 && !copyFrom.StartsWith(_sourcePath)) return false;
+
+            var copyFromUri = new Uri(_destination, copyFrom.Substring(_sourcePath.Length));
+            var revision = FindCopyFromRevision(node, copyFrom);
+            if (revision < 0) return false;
+            // must use server uri as working copy may have been delete when copy from old revision.
+            _svn.Copy(new SvnUriTarget(copyFromUri, revision), destinationPath);
+            return true;
+        }
+
+        private long FindCopyFromRevision(SvnChangeItem node, string copyFrom)
+        {
+            long revision;
+            if (_revisionMap.TryGetValue(node.CopyFromRevision, out revision)) return revision;
+            SvnInfoEventArgs info;
+            _svn.GetInfo(new SvnUriTarget(new Uri(_sourceRoot, copyFrom), node.CopyFromRevision), out info);
+            if (_revisionMap.TryGetValue(info.LastChangeRevision, out revision)) return revision;
+            return -1;
         }
 
         private void CopyProperties(SvnTarget source, string destinationPath)
@@ -249,7 +286,10 @@ namespace Svn2Svn
 
         private string GetDestinationPath(SvnChangeItem node)
         {
-            return Path.Combine(_workingDir, node.RepositoryPath.ToString().Substring(_sourcePath.Length));
+            var nodePath = node.RepositoryPath.ToString();
+            return nodePath.StartsWith(_sourcePath)
+                       ? Path.Combine(_workingDir, nodePath.Substring(_sourcePath.Length))
+                       : null;
         }
 
         private SvnUriTarget GetSourceTarget(SvnChangeItem node, SvnLogEventArgs e)
