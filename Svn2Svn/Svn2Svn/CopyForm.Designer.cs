@@ -1,4 +1,23 @@
-﻿namespace Svn2Svn
+﻿#region License
+
+/*
+ * Copyright (C) 2012 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#endregion
+namespace Svn2Svn
 {
     partial class CopyForm
     {
@@ -217,7 +236,7 @@
             // 
             // textBoxDestinationRevision
             // 
-            this.textBoxDestinationRevision.Location = new System.Drawing.Point(513, 100);
+            this.textBoxDestinationRevision.Location = new System.Drawing.Point(510, 102);
             this.textBoxDestinationRevision.Name = "textBoxDestinationRevision";
             this.textBoxDestinationRevision.ReadOnly = true;
             this.textBoxDestinationRevision.Size = new System.Drawing.Size(60, 20);
@@ -226,7 +245,7 @@
             // 
             // textBoxSourceRevision
             // 
-            this.textBoxSourceRevision.Location = new System.Drawing.Point(341, 100);
+            this.textBoxSourceRevision.Location = new System.Drawing.Point(341, 102);
             this.textBoxSourceRevision.Name = "textBoxSourceRevision";
             this.textBoxSourceRevision.ReadOnly = true;
             this.textBoxSourceRevision.Size = new System.Drawing.Size(59, 20);
@@ -236,7 +255,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(406, 103);
+            this.label5.Location = new System.Drawing.Point(406, 105);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(107, 13);
             this.label5.TabIndex = 11;
@@ -245,7 +264,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(256, 103);
+            this.label4.Location = new System.Drawing.Point(256, 105);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(88, 13);
             this.label4.TabIndex = 9;
