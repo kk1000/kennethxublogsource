@@ -49,10 +49,7 @@ namespace Svn2Svn
         {
             if (_isCopyInProgress)
             {
-                if (_copier!= null && MessageBox.Show("Are you sure you want to stop?", "Svn2Svn", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    _copier.Stop();
-                }
+                if (_copier != null && ConfirmStop() == DialogResult.Yes) _copier.Stop();
                 return;
             }
             textBoxLog.Text = String.Empty;
@@ -61,6 +58,12 @@ namespace Svn2Svn
             buttonCopy.Text = "Stop";
             var t = new Thread(DoCopy);
             t.Start();
+        }
+
+        private static DialogResult ConfirmStop()
+        {
+            return MessageBox.Show("Are you sure you want to stop?", "Svn2Svn", MessageBoxButtons.YesNo,
+                                   MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
         }
 
         private void DoCopy()
