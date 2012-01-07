@@ -36,6 +36,7 @@ namespace Svn2Svn
         private static readonly SvnExportArgs _infiniteOverwriteExport = new SvnExportArgs {Depth = SvnDepth.Infinity, Overwrite = true};
 
         private readonly Dictionary<long, long> _revisionMap = new Dictionary<long, long>();
+        private readonly List<long> _revisionHistory = new List<long>();
         private ILog _logger = new NoLog();
 
         private readonly SvnClient _svn = new SvnClient();
@@ -154,15 +155,23 @@ namespace Svn2Svn
             SvnCommitResult result;
             _svn.Commit(_workingDir, new SvnCommitArgs {LogMessage = e.LogMessage}, out result);
             if (result == null) return;
-            _revisionMap[e.Revision] = result.Revision;
-            if (CopyAuthor) _svn.SetRevisionProperty(_destination, result.Revision, "svn:author", e.Author);
+            var sourceRevision = e.Revision;
+            var destinationReivison = result.Revision;
+            TrackRevision(sourceRevision, destinationReivison);
+            if (CopyAuthor) _svn.SetRevisionProperty(_destination, destinationReivison, "svn:author", e.Author);
             if (CopyDateTime)
-                _svn.SetRevisionProperty(_destination, result.Revision, "svn:date", e.Time.ToString("O") + "Z");
+                _svn.SetRevisionProperty(_destination, destinationReivison, "svn:date", e.Time.ToString("O") + "Z");
             if (CopySourceRevision)
-                _svn.SetRevisionProperty(_destination, result.Revision, "svn2svn:revision",
-                                         e.Revision.ToString("#0"));
+                _svn.SetRevisionProperty(_destination, destinationReivison, "svn2svn:revision",
+                                         sourceRevision.ToString("#0"));
             _svn.Update(_workingDir, new SvnUpdateArgs { IgnoreExternals = true });
-            _logger.UpdateProgress(e.Revision, result.Revision);
+            _logger.UpdateProgress(sourceRevision, destinationReivison);
+        }
+
+        private void TrackRevision(long sourceRevision, long destinationReivison)
+        {
+            _revisionHistory.Add(sourceRevision);
+            _revisionMap[sourceRevision] = destinationReivison;
         }
 
         /// <summary>
@@ -253,20 +262,22 @@ namespace Svn2Svn
             if (_sourcePath.Length != 0 && !copyFrom.StartsWith(_sourcePath)) return false;
 
             var copyFromUri = new Uri(_destination, copyFrom.Substring(_sourcePath.Length));
-            var revision = FindCopyFromRevision(node, copyFrom);
+            var revision = FindCopyFromRevision(node);
             if (revision < 0) return false;
             // must use server uri as working copy may have been delete when copy from old revision.
             _svn.Copy(new SvnUriTarget(copyFromUri, revision), destinationPath);
             return true;
         }
 
-        private long FindCopyFromRevision(SvnChangeItem node, string copyFrom)
+        private long FindCopyFromRevision(SvnChangeItem node)
         {
             long revision;
-            if (_revisionMap.TryGetValue(node.CopyFromRevision, out revision)) return revision;
-            SvnInfoEventArgs info;
-            _svn.GetInfo(new SvnUriTarget(new Uri(_sourceRoot, copyFrom), node.CopyFromRevision), out info);
-            if (_revisionMap.TryGetValue(info.LastChangeRevision, out revision)) return revision;
+            var copyFromRevision = node.CopyFromRevision;
+            if (_revisionMap.TryGetValue(copyFromRevision, out revision)) return revision;
+            for (int i = _revisionHistory.Count - 1; i >= 0; i--)
+            {
+                if (_revisionHistory[i] < copyFromRevision) return _revisionMap[_revisionHistory[i]];
+            }
             return -1;
         }
 
