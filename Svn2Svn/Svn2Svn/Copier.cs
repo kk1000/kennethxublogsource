@@ -35,7 +35,7 @@ namespace Svn2Svn
         private static readonly SvnAddArgs _infiniteForceAdd = new SvnAddArgs{Depth = SvnDepth.Infinity, Force = true};
         private static readonly SvnExportArgs _infiniteOverwriteExport = new SvnExportArgs {Depth = SvnDepth.Infinity, Overwrite = true};
         private static readonly SvnUpdateArgs _ignoreExternalUpdate = new SvnUpdateArgs { IgnoreExternals = true };
-        private static readonly SvnLogArgs _oneToHeadLog = new SvnLogArgs(new SvnRevisionRange(SvnRevision.One, SvnRevision.Head)) { RetrieveAllProperties = true };
+        private static readonly SvnLogArgs _oneToHeadLog = new SvnLogArgs(new SvnRevisionRange(SvnRevision.Zero, SvnRevision.Head)) { RetrieveAllProperties = true };
 
         private readonly Dictionary<long, long> _revisionMap = new Dictionary<long, long>();
         private readonly List<long> _revisionHistory = new List<long>();
@@ -181,12 +181,13 @@ namespace Svn2Svn
         private void CheckResyncRevision(long sourceRevision)
         {
             long destRevision = 0;
+            if (_revisionHistory.Count == 0) return;
             if (sourceRevision >= _revisionHistory[0] &&
                 !_revisionMap.TryGetValue(sourceRevision, out destRevision))
                 throw new InvalidOperationException(
                     "Failed to resync, no matching destination revision for source revision number "
                     + sourceRevision);
-            if (destRevision == 0)
+            if (destRevision > 0)
                 _logger.Trace("\tResync {0} to {1}", sourceRevision, destRevision);
         }
 
@@ -325,12 +326,26 @@ namespace Svn2Svn
         {
             Collection<SvnPropertyListEventArgs> props;
             _svn.GetPropertyList(source, out props);
+            var keys = new HashSet<string>();
             foreach (var prop in props)
             {
                 foreach (var p in prop.Properties)
                 {
-                    _svn.SetProperty(destinationPath, p.Key, p.RawValue);
-                    _logger.Trace("\t\tSet {0}=>{1}", p.Key, p.StringValue);
+                    var key = p.Key;
+                    keys.Add(key);
+                    _svn.SetProperty(destinationPath, key, p.RawValue);
+                    _logger.Trace("\t\tSet {0}=>{1}", key, p.StringValue);
+                }
+            }
+            _svn.GetPropertyList(new SvnPathTarget(destinationPath), out props);
+            foreach (var prop in props)
+            {
+                foreach (var p in prop.Properties)
+                {
+                    var key = p.Key;
+                    if (keys.Contains(key)) continue;
+                    _svn.DeleteProperty(destinationPath, key);
+                    _logger.Trace("\t\tDelete {0}", key);
                 }
             }
         }
