@@ -163,14 +163,7 @@ namespace Svn2Svn
             _logger.Info("{0} {1} {2} {3}", sourceRevision, e.Author, e.Time.ToLocalTime(), e.LogMessage);
             if (sourceRevision <= _resyncToRevision)
             {
-                long destRevision = 0;
-                if (sourceRevision >= _revisionHistory[0] &&
-                    !_revisionMap.TryGetValue(sourceRevision, out destRevision))
-                    throw new InvalidOperationException(
-                        "Failed to resync, no matching destination revision for source revision number "
-                        + sourceRevision);
-                if (destRevision==0)
-                    _logger.Trace("\tResync {0} to {1}", sourceRevision, destRevision);
+                CheckResyncRevision(sourceRevision);
                 return;
             }
             try
@@ -183,6 +176,18 @@ namespace Svn2Svn
                 _logger.Error(ex.ToString());
                 throw;
             }
+        }
+
+        private void CheckResyncRevision(long sourceRevision)
+        {
+            long destRevision = 0;
+            if (sourceRevision >= _revisionHistory[0] &&
+                !_revisionMap.TryGetValue(sourceRevision, out destRevision))
+                throw new InvalidOperationException(
+                    "Failed to resync, no matching destination revision for source revision number "
+                    + sourceRevision);
+            if (destRevision == 0)
+                _logger.Trace("\tResync {0} to {1}", sourceRevision, destRevision);
         }
 
         private void CommitToDestination(SvnLogEventArgs e)
