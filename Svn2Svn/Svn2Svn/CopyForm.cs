@@ -29,7 +29,7 @@ namespace Svn2Svn
     /// <author>Kenneth Xu</author>
     public partial class CopyForm : Form
     {
-        private TextBoxLogger _logger;
+        private Interaction _interaction;
         private volatile bool _isCopyInProgress;
         private Copier _copier;
         private long _fromRevision = 0;
@@ -76,7 +76,7 @@ namespace Svn2Svn
                 _copier = new Copier(new Uri(textBoxSource.Text), new Uri(textBoxTarget.Text),
                                         textBoxWorkdingDir.Text)
                                  {
-                                     Logger = _logger,
+                                     Logger = _interaction,
                                      CopyAuthor = checkBoxCopyAuthor.Checked,
                                      CopyDateTime = checkBoxCopyDateTime.Checked,
                                      CopySourceRevision = checkBoxCopySourceRevision.Checked,
@@ -87,7 +87,7 @@ namespace Svn2Svn
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.ToString());
+                _interaction.Error(ex.ToString());
             }
             finally
             {
@@ -99,9 +99,9 @@ namespace Svn2Svn
 
         private void HandleRadioButtonCheckedChanged(object sender, EventArgs e)
         {
-            if (radioButtonError.Checked) _logger.Level = LogLevel.Error;
-            else if (radioButtonInfo.Checked) _logger.Level = LogLevel.Info;
-            else if (radioButtonTrace.Checked) _logger.Level = LogLevel.Trace;
+            if (radioButtonError.Checked) _interaction.Level = LogLevel.Error;
+            else if (radioButtonInfo.Checked) _interaction.Level = LogLevel.Info;
+            else if (radioButtonTrace.Checked) _interaction.Level = LogLevel.Trace;
         }
 
         private void HandleTextBoxTextChanged(object sender, EventArgs e)
@@ -112,7 +112,7 @@ namespace Svn2Svn
         private void HandleCopyFormLoad(object sender, EventArgs e)
         {
             ControlCopyButtonEnabled();
-            _logger = new TextBoxLogger { Parent = this, Level = LogLevel.Error };
+            _interaction = new Interaction { Parent = this, Level = LogLevel.Error };
         }
 
         private void Log(object o)
@@ -132,7 +132,7 @@ namespace Svn2Svn
             else action();
         }
 
-        private class TextBoxLogger : AbstractLogger
+        private class Interaction : AbstractInteraction
         {
             public CopyForm Parent;
             protected override void Log(LogLevel level, string value)

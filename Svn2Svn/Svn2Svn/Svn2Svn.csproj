@@ -56,8 +56,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractLogger.cs" />
-    <Compile Include="ConsoleLogger.cs" />
+    <Compile Include="AbstractInteraction.cs" />
+    <Compile Include="ConsoleInteraction.cs" />
     <Compile Include="Copier.cs" />
     <Compile Include="CopyForm.cs">
       <SubType>Form</SubType>
@@ -65,9 +65,9 @@
     <Compile Include="CopyForm.Designer.cs">
       <DependentUpon>CopyForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ILog.cs" />
+    <Compile Include="IInteraction.cs" />
     <Compile Include="LogLevel.cs" />
-    <Compile Include="NoLog.cs" />
+    <Compile Include="NoInteraction.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="CopyForm.resx">

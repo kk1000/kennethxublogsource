@@ -42,7 +42,7 @@ namespace Svn2Svn
 
         private readonly Dictionary<long, long> _revisionMap = new Dictionary<long, long>();
         private readonly List<long> _revisionHistory = new List<long>();
-        private ILog _logger = new NoLog();
+        private IInteraction _logger = new NoInteraction();
         private SvnRevision _startRevision = SvnRevision.Zero;
         private SvnRevision _endRevision = SvnRevision.Head;
 
@@ -71,7 +71,7 @@ namespace Svn2Svn
             ThrowOnResyncUnmatch = true;
         }
 
-        public ILog Logger
+        public IInteraction Logger
         {
             get { return _logger; }
             set

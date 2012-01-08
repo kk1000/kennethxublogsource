@@ -20,10 +20,10 @@
 namespace Svn2Svn
 {
     /// <summary>
-    /// Interface for logging
+    /// Interface for UI interaction.
     /// </summary>
     /// <author>Kenneth Xu</author>
-    public interface ILog
+    public interface IInteraction
     {
         void Info(string value);
         // ReSharper disable MethodOverloadWithOptionalParameter

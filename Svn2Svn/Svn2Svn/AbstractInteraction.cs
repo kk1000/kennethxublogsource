@@ -23,7 +23,7 @@ namespace Svn2Svn
     /// Serve as base class for various logger implemenations.
     /// </summary>
     /// <author>Kenneth Xu</author>
-    public abstract class AbstractLogger : ILog
+    public abstract class AbstractInteraction : IInteraction
     {
         public LogLevel Level { get; set; }
 
@@ -59,7 +59,7 @@ namespace Svn2Svn
 
         public virtual void UpdateProgress(long sourceRevision, long destinationReivison)
         {
-            
+            Info("#### {0} -> {1}", sourceRevision, destinationReivison);
         }
 
         protected abstract void Log(LogLevel level, string value);

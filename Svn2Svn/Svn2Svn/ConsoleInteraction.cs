@@ -17,17 +17,20 @@
  */
 
 #endregion
+
+using System;
+
 namespace Svn2Svn
 {
     /// <summary>
-    /// Does not log anything.
+    /// Send log to console.
     /// </summary>
     /// <author>Kenneth Xu</author>
-    public class NoLog : AbstractLogger
+    public class ConsoleInteraction : AbstractInteraction
     {
         protected override void Log(LogLevel level, string value)
         {
-            
+            Console.WriteLine(value);
         }
     }
 }
