@@ -1,5 +1,4 @@
-﻿using System;
-#region License
+﻿#region License
 
 /*
  * Copyright (C) 2012 the original author or authors.
@@ -18,6 +17,8 @@
  */
 
 #endregion
+
+using System;
 using System.Threading;
 using System.Windows.Forms;
 
