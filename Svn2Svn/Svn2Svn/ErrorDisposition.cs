@@ -17,20 +17,17 @@
  */
 
 #endregion
-
-using System;
-
 namespace Svn2Svn
 {
     /// <summary>
-    /// Send log to console.
+    /// 
     /// </summary>
     /// <author>Kenneth Xu</author>
-    public class ConsoleInteraction : AbstractInteraction
+    public enum ErrorDisposition
     {
-        protected override void Log(LogLevel level, string value)
-        {
-            Console.WriteLine(value);
-        }
+        Retry,
+        Ignore,
+        IgnoreAll,
+        Fail,
     }
 }

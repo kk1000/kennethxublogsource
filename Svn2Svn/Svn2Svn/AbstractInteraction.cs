@@ -62,6 +62,11 @@ namespace Svn2Svn
             Info("#### {0} -> {1}", sourceRevision, destinationReivison);
         }
 
+        public virtual ErrorDisposition Ask(string title, string message)
+        {
+            return ErrorDisposition.Fail;
+        }
+
         protected abstract void Log(LogLevel level, string value);
     }
 }

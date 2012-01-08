@@ -76,7 +76,7 @@ namespace Svn2Svn
                 _copier = new Copier(new Uri(textBoxSource.Text), new Uri(textBoxTarget.Text),
                                         textBoxWorkdingDir.Text)
                                  {
-                                     Logger = _interaction,
+                                     Interaction = _interaction,
                                      CopyAuthor = checkBoxCopyAuthor.Checked,
                                      CopyDateTime = checkBoxCopyDateTime.Checked,
                                      CopySourceRevision = checkBoxCopySourceRevision.Checked,
@@ -132,20 +132,6 @@ namespace Svn2Svn
             else action();
         }
 
-        private class Interaction : AbstractInteraction
-        {
-            public CopyForm Parent;
-            protected override void Log(LogLevel level, string value)
-            {
-                Parent.Log(value);
-            }
-
-            public override void UpdateProgress(long sourceRevision, long destinationReivison)
-            {
-                Parent.DoWindowUpdate(()=>Parent.UpdateProgress(sourceRevision, destinationReivison));
-            }
-        }
-
         private void HandleCheckBoxCopyReversionPropertyCheckedChanged(object sender, EventArgs e)
         {
             var isChecked = checkBoxCopyReversionProperty.Checked;
@@ -185,6 +171,46 @@ namespace Svn2Svn
             }
             saveRevision = revision;
             if (revision == x) textBox.Text = string.Empty;
+        }
+
+        private class Interaction : AbstractInteraction
+        {
+            public CopyForm Parent;
+            protected override void Log(LogLevel level, string value)
+            {
+                Parent.Log(value);
+            }
+
+            public override void UpdateProgress(long sourceRevision, long destinationReivison)
+            {
+                Parent.DoWindowUpdate(()=>Parent.UpdateProgress(sourceRevision, destinationReivison));
+            }
+
+            public override ErrorDisposition Ask(string title, string message)
+            {
+                if (Parent.InvokeRequired)
+                {
+                    return (ErrorDisposition)Parent.Invoke(
+                        new Func<ErrorDisposition>(() => Ask(title, message)));
+                }
+                var result = MessageBox.Show(message, title,
+                                             MessageBoxButtons.AbortRetryIgnore,
+                                             MessageBoxIcon.Error,
+                                             MessageBoxDefaultButton.Button2);
+                switch (result)
+                {
+                        case DialogResult.Retry: return ErrorDisposition.Retry;
+                        case DialogResult.Ignore:
+                        var ignoreAll = MessageBox.Show(
+                            "Do you want ignore all subsequent errors of same type?",
+                            title,
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question,
+                            MessageBoxDefaultButton.Button2);
+                        return ignoreAll == DialogResult.Yes ? ErrorDisposition.IgnoreAll : ErrorDisposition.Ignore;
+                }
+                return ErrorDisposition.Fail;
+            }
         }
     }
 } ;

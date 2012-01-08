@@ -38,5 +38,6 @@ namespace Svn2Svn
         void Error(string format, params object[] values);
         // ReSharper restore MethodOverloadWithOptionalParameter
         void UpdateProgress(long sourceRevision, long destinationReivison);
+        ErrorDisposition Ask(string title, string message);
     }
 }
