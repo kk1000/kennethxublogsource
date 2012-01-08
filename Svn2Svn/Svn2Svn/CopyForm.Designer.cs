@@ -56,6 +56,10 @@ namespace Svn2Svn
             this.label3 = new System.Windows.Forms.Label();
             this.textBoxLog = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.textBoxToRevision = new System.Windows.Forms.TextBox();
+            this.textBoxFromRevision = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBoxCopyRevisionProperties = new System.Windows.Forms.GroupBox();
             this.checkBoxCopySourceRevision = new System.Windows.Forms.CheckBox();
             this.checkBoxCopyDateTime = new System.Windows.Forms.CheckBox();
@@ -114,10 +118,10 @@ namespace Svn2Svn
             // 
             // buttonCopy
             // 
-            this.buttonCopy.Location = new System.Drawing.Point(555, 8);
+            this.buttonCopy.Location = new System.Drawing.Point(527, 99);
             this.buttonCopy.Name = "buttonCopy";
-            this.buttonCopy.Size = new System.Drawing.Size(75, 23);
-            this.buttonCopy.TabIndex = 7;
+            this.buttonCopy.Size = new System.Drawing.Size(104, 23);
+            this.buttonCopy.TabIndex = 16;
             this.buttonCopy.Text = "C&opy";
             this.buttonCopy.UseVisualStyleBackColor = true;
             this.buttonCopy.Click += new System.EventHandler(this.HandleCopyClick);
@@ -154,6 +158,10 @@ namespace Svn2Svn
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.textBoxToRevision);
+            this.panel1.Controls.Add(this.textBoxFromRevision);
+            this.panel1.Controls.Add(this.label6);
+            this.panel1.Controls.Add(this.label7);
             this.panel1.Controls.Add(this.groupBoxCopyRevisionProperties);
             this.panel1.Controls.Add(this.textBoxDestinationRevision);
             this.panel1.Controls.Add(this.textBoxSourceRevision);
@@ -173,16 +181,52 @@ namespace Svn2Svn
             this.panel1.Size = new System.Drawing.Size(643, 135);
             this.panel1.TabIndex = 0;
             // 
+            // textBoxToRevision
+            // 
+            this.textBoxToRevision.Location = new System.Drawing.Point(562, 12);
+            this.textBoxToRevision.Name = "textBoxToRevision";
+            this.textBoxToRevision.Size = new System.Drawing.Size(69, 20);
+            this.textBoxToRevision.TabIndex = 9;
+            this.textBoxToRevision.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.textBoxToRevision.TextChanged += new System.EventHandler(this.HandleTextBoxToRevisionTextChanged);
+            // 
+            // textBoxFromRevision
+            // 
+            this.textBoxFromRevision.Location = new System.Drawing.Point(465, 12);
+            this.textBoxFromRevision.Name = "textBoxFromRevision";
+            this.textBoxFromRevision.Size = new System.Drawing.Size(69, 20);
+            this.textBoxFromRevision.TabIndex = 7;
+            this.textBoxFromRevision.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.textBoxFromRevision.TextChanged += new System.EventHandler(this.HandleTextBoxFromRevisionTextChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(540, 15);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(16, 13);
+            this.label6.TabIndex = 8;
+            this.label6.Text = "&to";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(388, 15);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(71, 13);
+            this.label7.TabIndex = 6;
+            this.label7.Text = "Revision &from";
+            // 
             // groupBoxCopyRevisionProperties
             // 
             this.groupBoxCopyRevisionProperties.Controls.Add(this.checkBoxCopySourceRevision);
             this.groupBoxCopyRevisionProperties.Controls.Add(this.checkBoxCopyDateTime);
             this.groupBoxCopyRevisionProperties.Controls.Add(this.checkBoxCopyAuthor);
             this.groupBoxCopyRevisionProperties.Controls.Add(this.checkBoxCopyReversionProperty);
-            this.groupBoxCopyRevisionProperties.Location = new System.Drawing.Point(386, 13);
+            this.groupBoxCopyRevisionProperties.Location = new System.Drawing.Point(386, 36);
             this.groupBoxCopyRevisionProperties.Name = "groupBoxCopyRevisionProperties";
-            this.groupBoxCopyRevisionProperties.Size = new System.Drawing.Size(163, 69);
-            this.groupBoxCopyRevisionProperties.TabIndex = 6;
+            this.groupBoxCopyRevisionProperties.Size = new System.Drawing.Size(245, 46);
+            this.groupBoxCopyRevisionProperties.TabIndex = 10;
             this.groupBoxCopyRevisionProperties.TabStop = false;
             // 
             // checkBoxCopySourceRevision
@@ -190,7 +234,7 @@ namespace Svn2Svn
             this.checkBoxCopySourceRevision.AutoSize = true;
             this.checkBoxCopySourceRevision.Checked = true;
             this.checkBoxCopySourceRevision.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxCopySourceRevision.Location = new System.Drawing.Point(6, 43);
+            this.checkBoxCopySourceRevision.Location = new System.Drawing.Point(137, 20);
             this.checkBoxCopySourceRevision.Name = "checkBoxCopySourceRevision";
             this.checkBoxCopySourceRevision.Size = new System.Drawing.Size(104, 17);
             this.checkBoxCopySourceRevision.TabIndex = 3;
@@ -202,11 +246,11 @@ namespace Svn2Svn
             this.checkBoxCopyDateTime.AutoSize = true;
             this.checkBoxCopyDateTime.Checked = true;
             this.checkBoxCopyDateTime.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxCopyDateTime.Location = new System.Drawing.Point(74, 20);
+            this.checkBoxCopyDateTime.Location = new System.Drawing.Point(62, 20);
             this.checkBoxCopyDateTime.Name = "checkBoxCopyDateTime";
             this.checkBoxCopyDateTime.Size = new System.Drawing.Size(77, 17);
             this.checkBoxCopyDateTime.TabIndex = 2;
-            this.checkBoxCopyDateTime.Text = "Date/&Time";
+            this.checkBoxCopyDateTime.Text = "Date/Ti&me";
             this.checkBoxCopyDateTime.UseVisualStyleBackColor = true;
             // 
             // checkBoxCopyAuthor
@@ -236,39 +280,41 @@ namespace Svn2Svn
             // 
             // textBoxDestinationRevision
             // 
-            this.textBoxDestinationRevision.Location = new System.Drawing.Point(510, 102);
+            this.textBoxDestinationRevision.Location = new System.Drawing.Point(436, 102);
             this.textBoxDestinationRevision.Name = "textBoxDestinationRevision";
             this.textBoxDestinationRevision.ReadOnly = true;
             this.textBoxDestinationRevision.Size = new System.Drawing.Size(60, 20);
-            this.textBoxDestinationRevision.TabIndex = 12;
+            this.textBoxDestinationRevision.TabIndex = 15;
             this.textBoxDestinationRevision.TabStop = false;
+            this.textBoxDestinationRevision.Text = "destination";
             // 
             // textBoxSourceRevision
             // 
-            this.textBoxSourceRevision.Location = new System.Drawing.Point(341, 102);
+            this.textBoxSourceRevision.Location = new System.Drawing.Point(346, 103);
             this.textBoxSourceRevision.Name = "textBoxSourceRevision";
             this.textBoxSourceRevision.ReadOnly = true;
-            this.textBoxSourceRevision.Size = new System.Drawing.Size(59, 20);
-            this.textBoxSourceRevision.TabIndex = 10;
+            this.textBoxSourceRevision.Size = new System.Drawing.Size(60, 20);
+            this.textBoxSourceRevision.TabIndex = 13;
             this.textBoxSourceRevision.TabStop = false;
+            this.textBoxSourceRevision.Text = "source";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(406, 105);
+            this.label5.Location = new System.Drawing.Point(411, 105);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(107, 13);
-            this.label5.TabIndex = 11;
-            this.label5.Text = "Destination Revision:";
+            this.label5.Size = new System.Drawing.Size(19, 13);
+            this.label5.TabIndex = 14;
+            this.label5.Text = "=>";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(256, 105);
+            this.label4.Location = new System.Drawing.Point(245, 105);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(88, 13);
-            this.label4.TabIndex = 9;
-            this.label4.Text = "Source Revision:";
+            this.label4.Size = new System.Drawing.Size(99, 13);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "Processed revision:";
             // 
             // groupBox1
             // 
@@ -278,7 +324,7 @@ namespace Svn2Svn
             this.groupBox1.Location = new System.Drawing.Point(12, 88);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(218, 38);
-            this.groupBox1.TabIndex = 8;
+            this.groupBox1.TabIndex = 11;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Log level:";
             // 
@@ -364,6 +410,10 @@ namespace Svn2Svn
         private System.Windows.Forms.CheckBox checkBoxCopySourceRevision;
         private System.Windows.Forms.CheckBox checkBoxCopyDateTime;
         private System.Windows.Forms.CheckBox checkBoxCopyAuthor;
+        private System.Windows.Forms.TextBox textBoxToRevision;
+        private System.Windows.Forms.TextBox textBoxFromRevision;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
     }
 }
 

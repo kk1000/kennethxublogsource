@@ -32,6 +32,8 @@ namespace Svn2Svn
         private TextBoxLogger _logger;
         private volatile bool _isCopyInProgress;
         private Copier _copier;
+        private long _fromRevision = 0;
+        private long _toRevision = -1;
 
         public CopyForm()
         {
@@ -78,6 +80,8 @@ namespace Svn2Svn
                                      CopyAuthor = checkBoxCopyAuthor.Checked,
                                      CopyDateTime = checkBoxCopyDateTime.Checked,
                                      CopySourceRevision = checkBoxCopySourceRevision.Checked,
+                                     StartRevision = _fromRevision,
+                                     EndRevision = _toRevision,
                                  };
                 _copier.Copy();
             }
@@ -151,6 +155,36 @@ namespace Svn2Svn
             checkBoxCopyAuthor.Enabled = isChecked;
             checkBoxCopyDateTime.Enabled = isChecked;
             checkBoxCopySourceRevision.Enabled = isChecked;
+        }
+
+        private void HandleTextBoxToRevisionTextChanged(object sender, EventArgs e)
+        {
+            RegulateRevisionTextBox((TextBox)sender, ref _toRevision, -1);
+        }
+
+        private void HandleTextBoxFromRevisionTextChanged(object sender, EventArgs e)
+        {
+            RegulateRevisionTextBox((TextBox)sender, ref _fromRevision, 0);
+        }
+
+        private void RegulateRevisionTextBox(TextBox textBox, ref long saveRevision, long x)
+        {
+            var selectionStart = textBox.SelectionStart;
+
+            if (string.IsNullOrEmpty(textBox.Text))
+            {
+                saveRevision = x;
+                return;
+            }
+            long revision;
+            if (!long.TryParse(textBox.Text, out revision) || revision < x)
+            {
+                textBox.Text = saveRevision == x ? string.Empty : saveRevision.ToString("#0");
+                textBox.Select(selectionStart - 1, 0);
+                return;
+            }
+            saveRevision = revision;
+            if (revision == x) textBox.Text = string.Empty;
         }
     }
 } ;
