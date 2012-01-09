@@ -118,7 +118,17 @@ namespace Svn2Svn
 
         private void Log(object o)
         {
-            DoWindowUpdate(() => textBoxLog.Text += o + Environment.NewLine);
+            DoWindowUpdate(
+                () =>
+                    {
+                        var start = textBoxLog.SelectionStart;
+                        var length = textBoxLog.SelectionLength;
+                        var isEnd = start == textBoxLog.Text.Length;
+                        textBoxLog.Text += o + Environment.NewLine;
+                        if (isEnd) textBoxLog.Select(textBoxLog.Text.Length, 0);
+                        else textBoxLog.Select(start, length);
+                        textBoxLog.ScrollToCaret();
+                    });
         }
 
         private void UpdateProgress(long sourceRevision, long destinationRevision)
