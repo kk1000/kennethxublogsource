@@ -36,11 +36,30 @@ namespace Svn2SvnConsole
         private bool _copySourceRevision = true;
         private long _startRevision;
         private long _endRevision = -1;
+        private Copier _copier;
+        private ConsoleInteraction _consoleInteraction;
 
         static void Main(string[] args)
         {
             var p = new Program(args);
+            Console.CancelKeyPress += p.HandleCancelKeyPress;
             p.Run();
+        }
+
+        private void HandleCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            Copier copier = _copier;
+            if (copier == null) return;
+            lock(_consoleInteraction)
+            {
+                Console.WriteLine("Are you sure you want to stop process? Press Y to stop safely");
+                Console.Write("Press X to stop immediately, any other key to continue...");
+                var key = char.ToUpper(Console.ReadKey().KeyChar);
+                Console.WriteLine();
+                if (key == 'X') return;
+                if (key == 'Y') copier.Stop();
+                e.Cancel = true;
+            }
         }
 
         public Program(string[] args)
@@ -81,16 +100,17 @@ namespace Svn2SvnConsole
 
         void Run()
         {
-            var copier = new Copier(new Uri(_sourceUri), new Uri(_destinationUri),_workingDir)
+            _consoleInteraction = _ignoreError ? new IgnoreErrorInteraction() : new ConsoleInteraction();
+            _copier = new Copier(new Uri(_sourceUri), new Uri(_destinationUri),_workingDir)
             {
-                Interaction = _ignoreError ? new IgnoreErrorInteraction() : new ConsoleInteraction(),
+                Interaction = _consoleInteraction,
                 CopyAuthor = _copyAuthor,
                 CopyDateTime = _copyDateTime,
                 CopySourceRevision = _copySourceRevision,
                 StartRevision = _startRevision,
                 EndRevision = _endRevision,
             };
-            copier.Copy();
+            _copier.Copy();
 
         }
 

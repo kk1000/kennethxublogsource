@@ -31,7 +31,7 @@ namespace Svn2SvnConsole
     {
         protected override void Log(LogLevel level, string value)
         {
-            Console.WriteLine(value);
+            lock(this) Console.WriteLine(value);
         }
 
         public override ErrorDisposition Ask(string title, string message)
