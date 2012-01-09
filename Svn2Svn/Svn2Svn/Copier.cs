@@ -284,7 +284,7 @@ namespace Svn2Svn
             if (destinationPath != _workingDir)
             {
                 _svn.Add(destinationPath, _forceAdd);
-                _interaction.Trace(exists ? ActionModified : ActionCreated + destinationPath);
+                _interaction.Trace((exists ? ActionModified : ActionCreated) + destinationPath);
             }
             CopyProperties(source, destinationPath);
         }
