@@ -112,10 +112,8 @@ namespace Svn2SvnConsole
                                   CopyAuthor = _copyAuthor,
                                   CopyDateTime = _copyDateTime,
                                   CopySourceRevision = _copySourceRevision,
-                                  StartRevision = _startRevision,
-                                  EndRevision = _endRevision,
                               };
-                _copier.Copy();
+                _copier.Copy(_startRevision, _endRevision);
                 return true;
             }
             catch (Exception ex)

@@ -71,7 +71,7 @@
     <Compile Include="IInteraction.cs" />
     <Compile Include="LogLevel.cs" />
     <Compile Include="NoInteraction.cs" />
-    <Compile Include="PathManager.cs" />
+    <Compile Include="SourceInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="CopyForm.resx">
@@ -95,6 +95,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="RevisionMap.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

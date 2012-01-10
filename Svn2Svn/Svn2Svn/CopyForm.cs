@@ -81,10 +81,8 @@ namespace Svn2Svn
                                      CopyAuthor = checkBoxCopyAuthor.Checked,
                                      CopyDateTime = checkBoxCopyDateTime.Checked,
                                      CopySourceRevision = checkBoxCopySourceRevision.Checked,
-                                     StartRevision = _fromRevision,
-                                     EndRevision = _toRevision,
                                  };
-                _copier.Copy();
+                _copier.Copy(_fromRevision, _toRevision);
             }
             catch (Exception ex)
             {

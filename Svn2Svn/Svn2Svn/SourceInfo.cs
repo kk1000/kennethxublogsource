@@ -5,47 +5,42 @@ using SharpSvn;
 
 namespace Svn2Svn
 {
-    public class PathManager
+    public class SourceInfo
     {
         private readonly Uri _source;
         private readonly Uri _sourceRoot;
         private readonly string _sourcePath;
-        private readonly string _workingDir;
+        private readonly long _lastChangeRevision;
 
-        public PathManager(Uri sourceUri, string workingDir)
+        public SourceInfo(Uri sourceUri)
         {
             if (sourceUri == null) throw new ArgumentNullException("sourceUri");
-            if (workingDir == null) throw new ArgumentNullException("workingDir");
             _source = sourceUri;
-            _workingDir = workingDir;
-            SeparateSourceRootAndPath(out _sourceRoot, out _sourcePath);
+            var info = GetSourceInfo();
+            _lastChangeRevision = info.LastChangeRevision;
+            SeparateSourceRootAndPath(info, out _sourceRoot, out _sourcePath);
         }
 
-        public string WorkingDir
+        public long LastChangeRevision
         {
-            get { return _workingDir; }
+            get { return _lastChangeRevision; }
         }
 
-        public Uri SourceUri
+        public Uri Uri
         {
             get { return _source; }
         }
 
-        //public Uri SourceRoot
-        //{
-        //    get { return _sourceRoot; }
-        //}
-
-        //public string SourcePath
-        //{
-        //    get { return _sourcePath; }
-        //}
-
-        private void SeparateSourceRootAndPath(out Uri sourceRoot, out string sourcePath)
+        private SvnInfoEventArgs GetSourceInfo()
         {
             SvnInfoEventArgs info;
             using (var svn = new SvnClient())
                 svn.GetInfo(new SvnUriTarget(_source), out info);
+            return info;
+        }
+
+        private static void SeparateSourceRootAndPath(SvnInfoEventArgs info, out Uri sourceRoot, out string sourcePath)
+        {
             sourceRoot = info.RepositoryRoot;
             string s = info.Uri.ToString().Substring(sourceRoot.ToString().Length);
             var length = s.Length;
@@ -56,10 +51,10 @@ namespace Svn2Svn
             sourcePath = sb.ToString();
         }
 
-        public string GetDestinationPath(string nodePath)
+        public string GetDestinationPath(string workingDir, string nodePath)
         {
             var relativePath = GetRelativePath(nodePath);
-            return relativePath == null ? null : Path.Combine(_workingDir, relativePath);
+            return relativePath == null ? null : Path.Combine(workingDir, relativePath);
         }
 
         public string GetRelativePath(string path)
@@ -76,6 +71,5 @@ namespace Svn2Svn
         {
             return new SvnUriTarget(new Uri(_sourceRoot, node.Path.Substring(1)), revision);
         }
-
     }
 }
