@@ -36,14 +36,14 @@ namespace Svn2SvnConsole
         private bool _copySourceRevision = true;
         private long _startRevision;
         private long _endRevision = -1;
-        private Copier _copier;
-        private ConsoleInteraction _consoleInteraction;
+        private volatile Copier _copier;
+        private volatile ConsoleInteraction _consoleInteraction;
 
         static void Main(string[] args)
         {
             var p = new Program(args);
             Console.CancelKeyPress += p.HandleCancelKeyPress;
-            p.Run();
+            if (!p.Run()) Environment.Exit(1);
         }
 
         private void HandleCancelKeyPress(object sender, ConsoleCancelEventArgs e)
@@ -98,20 +98,35 @@ namespace Svn2SvnConsole
             //Console.WriteLine("revision: {0} : {1}", _startRevision, _endRevision);
         }
 
-        void Run()
+        bool Run()
         {
-            _consoleInteraction = _ignoreError ? new IgnoreErrorInteraction() : new ConsoleInteraction();
-            _copier = new Copier(new Uri(_sourceUri), new Uri(_destinationUri),_workingDir)
+            var ci = _ignoreError ? new IgnoreErrorInteraction() : new ConsoleInteraction();
+            _consoleInteraction = ci;
+            Console.WriteLine(DateTime.Now);
+            try
             {
-                Interaction = _consoleInteraction,
-                CopyAuthor = _copyAuthor,
-                CopyDateTime = _copyDateTime,
-                CopySourceRevision = _copySourceRevision,
-                StartRevision = _startRevision,
-                EndRevision = _endRevision,
-            };
-            _copier.Copy();
 
+                _copier = new Copier(new Uri(_sourceUri), new Uri(_destinationUri), _workingDir)
+                              {
+                                  Interaction = ci,
+                                  CopyAuthor = _copyAuthor,
+                                  CopyDateTime = _copyDateTime,
+                                  CopySourceRevision = _copySourceRevision,
+                                  StartRevision = _startRevision,
+                                  EndRevision = _endRevision,
+                              };
+                _copier.Copy();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _consoleInteraction.Error(ex.ToString());
+                return false;
+            }
+            finally
+            {
+                Console.WriteLine(DateTime.Now);
+            }
         }
 
         private void DoNotCopyRevisionProperties()
