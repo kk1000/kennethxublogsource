@@ -22,7 +22,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using SharpSvn;
 
 namespace Svn2Svn
@@ -48,19 +47,15 @@ namespace Svn2Svn
         private static readonly SvnUpdateArgs _ignoreExternalUpdate = new SvnUpdateArgs { IgnoreExternals = true };
         private static readonly SvnLogArgs _oneToHeadLog = new SvnLogArgs(new SvnRevisionRange(SvnRevision.Zero, SvnRevision.Head)) { RetrieveAllProperties = true };
 
-        private readonly Dictionary<long, long> _revisionMap = new Dictionary<long, long>();
-        private readonly List<long> _revisionHistory = new List<long>();
         private IInteraction _interaction = new NoInteraction();
         private SvnRevision _startRevision = SvnRevision.Zero;
         private SvnRevision _endRevision = SvnRevision.Head;
 
+        private readonly PathManager _pm;
+        private readonly RevisionMap _map = new RevisionMap();
         private readonly SvnClient _svn = new SvnClient();
-        private readonly Uri _source;
         private Uri _destination;
-        private readonly string _workingDir;
 
-        private Uri _sourceRoot;
-        private string _sourcePath;
         private volatile bool _stopRequested;
         private long _resyncToRevision;
         private bool _firstLoad = true;
@@ -68,16 +63,12 @@ namespace Svn2Svn
         private bool _ignoreResyncMismatch;
         private bool _ignoreRevisionError;
         private bool _ignoreItemError;
-        private bool _failed;
 
         public Copier(Uri sourceUri, Uri destinationUri, string workingDir)
         {
-            if (sourceUri == null) throw new ArgumentNullException("sourceUri");
             if (destinationUri == null) throw new ArgumentNullException("destinationUri");
-            if (workingDir == null) throw new ArgumentNullException("workingDir");
-            _source = sourceUri;
+            _pm = new PathManager(sourceUri, workingDir);
             _destination = destinationUri;
-            _workingDir = workingDir;
             CopyAuthor = true;
             CopyDateTime = true;
             CopySourceRevision = true;
@@ -123,9 +114,8 @@ namespace Svn2Svn
             if (destinationDirExists) ResyncRevision();
             PrepareWorkingDir();
             NormalizeDestinationUri();
-            SeparateSourceRootAndPath();
             var svnLogArgs = new SvnLogArgs(new SvnRevisionRange(_startRevision, _endRevision));
-            new SvnClient().Log(_source, svnLogArgs, HandleRevisionLog);
+            new SvnClient().Log(_pm.SourceUri, svnLogArgs, HandleRevisionLog);
         }
 
         private void ResyncRevision()
@@ -136,9 +126,9 @@ namespace Svn2Svn
                              var p = e.RevisionProperties.FirstOrDefault(x=>x.Key ==PropertyKeySourceRevision);
                              if (p == null) return;
                              var sourceRivision = long.Parse(p.StringValue);
-                             TrackRevision(sourceRivision, e.Revision);
+                             _map.TrackRevision(sourceRivision, e.Revision);
                          });
-            if (_revisionHistory.Count > 0) _resyncToRevision = _revisionHistory[_revisionHistory.Count - 1];
+            _resyncToRevision = _map.GetLastRevision();
         }
 
         private bool PrepareDestinationDir()
@@ -147,7 +137,7 @@ namespace Svn2Svn
             var exist = _svn.GetInfo(new SvnUriTarget(_destination), new SvnInfoArgs {ThrowOnError = false}, out discard);
             if (!exist)
             {
-                _svn.RemoteCreateDirectory(_destination, new SvnCreateDirectoryArgs {LogMessage = "Migrate from " + _source});
+                _svn.RemoteCreateDirectory(_destination, new SvnCreateDirectoryArgs {LogMessage = "Migrate from " + _pm.SourceUri});
             }
             return exist;
         }
@@ -155,7 +145,7 @@ namespace Svn2Svn
         private void NormalizeDestinationUri()
         {
             SvnInfoEventArgs info;
-            _svn.GetInfo(new SvnPathTarget(_workingDir), out info);
+            _svn.GetInfo(new SvnPathTarget(_pm.WorkingDir), out info);
             if (!info.Uri.ToString().Equals(_destination.ToString(), StringComparison.InvariantCultureIgnoreCase))
             {
                 throw new InvalidOperationException("Working dir does not match with destination repo: " +
@@ -166,23 +156,15 @@ namespace Svn2Svn
 
         private void PrepareWorkingDir()
         {
-            var workingDir = new DirectoryInfo(_workingDir);
+            var workingDir = new DirectoryInfo(_pm.WorkingDir);
             if (!workingDir.Exists)
-                _svn.CheckOut(new SvnUriTarget(_destination), _workingDir);
+                _svn.CheckOut(new SvnUriTarget(_destination), _pm.WorkingDir);
             else
             {
-                _svn.CleanUp(_workingDir);
-                _svn.Revert(_workingDir, new SvnRevertArgs{Depth=SvnDepth.Infinity});
-                _svn.Update(_workingDir, _ignoreExternalUpdate);
+                _svn.CleanUp(_pm.WorkingDir);
+                _svn.Revert(_pm.WorkingDir, new SvnRevertArgs { Depth = SvnDepth.Infinity });
+                _svn.Update(_pm.WorkingDir, _ignoreExternalUpdate);
             }
-        }
-
-        private void SeparateSourceRootAndPath()
-        {
-            SvnInfoEventArgs info;
-            _svn.GetInfo(new SvnUriTarget(_source), out info);
-            _sourceRoot = info.RepositoryRoot;
-            _sourcePath = info.Uri.ToString().Substring(_sourceRoot.ToString().Length);
         }
 
         private void HandleRevisionLog(object sender, SvnLogEventArgs e)
@@ -198,13 +180,13 @@ namespace Svn2Svn
             {
                 _firstLoad = false;
                 if (!_ignoreResyncMismatch)
-                    DoInteractively(
+                    _interaction.DoInteractively(
                         ref _ignoreResyncMismatch, 
                         TitleErrorResyncRevision,
                         () => CheckResyncRevision(sourceRevision));
                 return;
             }
-            DoInteractively(
+            _interaction.DoInteractively(
                 ref _ignoreRevisionError,
                 TitleProcessRevision,                
                 () =>
@@ -212,7 +194,7 @@ namespace Svn2Svn
                         if (_firstLoad)
                         {
                             _firstLoad = false;
-                            ExportDirectory(new SvnUriTarget(_source, e.Revision), _workingDir);
+                            ExportDirectory(new SvnUriTarget(_pm.SourceUri, e.Revision), _pm.WorkingDir);
                             CommitToDestination(e);
                         }
                         else if (ChangeWorkingCopy(e)) CommitToDestination(e);
@@ -220,37 +202,6 @@ namespace Svn2Svn
                     });
         }
 
-        private void DoInteractively(ref bool ignore, string title, Action action)
-        {
-            while (true)
-            {
-                try
-                {
-                    action();
-                    return;
-                }
-                catch (Exception e)
-                {
-                    if (_failed) throw;
-                    var chainMessage = ChainMessage(e);
-                    if (!ignore)
-                    {
-                        var answer = _interaction.Ask(title, chainMessage);
-                        if (answer == ErrorDisposition.Fail)
-                        {
-                            _failed = true;
-                            throw;
-                        }
-                        if (answer == ErrorDisposition.Retry)
-                            continue;
-                        if (answer == ErrorDisposition.IgnoreAll)
-                            ignore = true;
-                    }
-                    _interaction.Error("Ignored Error: {0}", chainMessage);
-                    return;
-                }
-            }
-        }
 
         private void ExportDirectory(SvnTarget sourceUri, string destinationPath)
         {
@@ -259,7 +210,7 @@ namespace Svn2Svn
                 svnClient.List(
                     sourceUri,
                     new SvnListArgs {Depth = SvnDepth.Infinity},
-                    (s, e) => DoInteractively(
+                    (s, e) => _interaction.DoInteractively(
                         ref _ignoreItemError,
                         TitleErrorProcessingNode,
                         () => ExportDirectoryListItem(e, sourceUri.Revision, destinationPath)));
@@ -281,7 +232,7 @@ namespace Svn2Svn
                 exists = File.Exists(destinationPath);
                 _svn.Export(source, destinationPath, _infiniteOverwriteExport);
             }
-            if (destinationPath != _workingDir)
+            if (destinationPath != _pm.WorkingDir)
             {
                 _svn.Add(destinationPath, _forceAdd);
                 _interaction.Trace((exists ? ActionModified : ActionCreated) + destinationPath);
@@ -291,15 +242,7 @@ namespace Svn2Svn
 
         private void CheckResyncRevision(long sourceRevision)
         {
-            long destRevision = 0;
-            if (_revisionHistory.Count == 0) return;
-            if (sourceRevision >= _revisionHistory[0] &&
-                !_revisionMap.TryGetValue(sourceRevision, out destRevision))
-            {
-                throw new InvalidOperationException(
-                    "No matching destination revision for source revision number "
-                    + sourceRevision);
-            }
+            long destRevision = _map.CheckResyncRevision(sourceRevision);
             if (destRevision > 0)
                 _interaction.Trace("\tResync {0} to {1}", sourceRevision, destRevision);
         }
@@ -307,25 +250,19 @@ namespace Svn2Svn
         private void CommitToDestination(SvnLogEventArgs e)
         {
             SvnCommitResult result;
-            _svn.Commit(_workingDir, new SvnCommitArgs {LogMessage = e.LogMessage}, out result);
+            _svn.Commit(_pm.WorkingDir, new SvnCommitArgs { LogMessage = e.LogMessage }, out result);
             if (result == null) return;
             var sourceRevision = e.Revision;
             var destinationReivison = result.Revision;
-            TrackRevision(sourceRevision, destinationReivison);
+            _map.TrackRevision(sourceRevision, destinationReivison);
             if (CopyAuthor) _svn.SetRevisionProperty(_destination, destinationReivison, PropertyKeyAuthor, e.Author);
             if (CopyDateTime)
                 _svn.SetRevisionProperty(_destination, destinationReivison, PropertyKeyDateTime, e.Time.ToString("O") + "Z");
             if (CopySourceRevision)
                 _svn.SetRevisionProperty(_destination, destinationReivison, PropertyKeySourceRevision,
                                          sourceRevision.ToString("#0"));
-            _svn.Update(_workingDir, _ignoreExternalUpdate);
+            _svn.Update(_pm.WorkingDir, _ignoreExternalUpdate);
             _interaction.UpdateProgress(sourceRevision, destinationReivison);
-        }
-
-        private void TrackRevision(long sourceRevision, long destinationReivison)
-        {
-            _revisionHistory.Add(sourceRevision);
-            _revisionMap[sourceRevision] = destinationReivison;
         }
 
         /// <summary>
@@ -360,9 +297,9 @@ namespace Svn2Svn
             foreach (var node in nodes)
             {
                 if (_stopRequested) return false; // canceled
-                var destinationPath = GetDestinationPath(node.Path);
+                var destinationPath = _pm.GetDestinationPath(node.Path);
                 if (destinationPath == null) continue; // files not in source path.
-                DoInteractively(
+                _interaction.DoInteractively(
                     ref _ignoreItemError,
                     TitleErrorProcessingNode,
                     () => action(node, e, destinationPath));
@@ -381,7 +318,7 @@ namespace Svn2Svn
 
         private void Modify(SvnChangeItem node, SvnLogEventArgs e, string destinationPath)
         {
-            var source = GetSourceTarget(node, e);
+            var source = _pm.GetSourceTarget(node, e.Revision);
             if (node.NodeKind == SvnNodeKind.File)
             {
                 _svn.Export(source, destinationPath);
@@ -392,8 +329,8 @@ namespace Svn2Svn
 
         private void Add(SvnChangeItem node, SvnLogEventArgs e, string destinationPath)
         {
-            if (destinationPath == _workingDir) return;
-            var source = GetSourceTarget(node, e);
+            if (destinationPath == _pm.WorkingDir) return;
+            var source = _pm.GetSourceTarget(node, e.Revision);
             bool processed = false;
             if (node.CopyFromPath != null)
             {
@@ -420,29 +357,16 @@ namespace Svn2Svn
 
         private bool TryCopy(SvnChangeItem node, string destinationPath)
         {
-            string copyFrom = node.CopyFromPath.Substring(1);
-            if (_sourcePath.Length != 0 && !copyFrom.StartsWith(_sourcePath)) return false;
-
-            var copyFromUri = new Uri(_destination, copyFrom.Substring(_sourcePath.Length));
-            var revision = FindCopyFromRevision(node);
+            var relativePath = _pm.GetRelativePath(node.CopyFromPath);
+            if (relativePath == null) return false;
+            var copyFromUri = new Uri(_destination, relativePath);
+            var revision = _map.FindDestinationRevision(node.CopyFromRevision);
             if (revision < 0) return false;
             if (File.Exists(destinationPath)) File.Delete(destinationPath);
             if (Directory.Exists(destinationPath)) Directory.Delete(destinationPath, true);
             // must use server uri as working copy may have been delete when copy from old revision.
             _svn.Copy(new SvnUriTarget(copyFromUri, revision), destinationPath);
             return true;
-        }
-
-        private long FindCopyFromRevision(SvnChangeItem node)
-        {
-            long revision;
-            var copyFromRevision = node.CopyFromRevision;
-            if (_revisionMap.TryGetValue(copyFromRevision, out revision)) return revision;
-            for (int i = _revisionHistory.Count - 1; i >= 0; i--)
-            {
-                if (_revisionHistory[i] < copyFromRevision) return _revisionMap[_revisionHistory[i]];
-            }
-            return -1;
         }
 
         private void CopyProperties(SvnTarget source, string destinationPath)
@@ -471,30 +395,6 @@ namespace Svn2Svn
                     _interaction.Trace("\t\tDelete {0}", key);
                 }
             }
-        }
-
-        private string GetDestinationPath(string nodePath)
-        {
-            nodePath = nodePath.Substring(1);
-            return nodePath.StartsWith(_sourcePath)
-                       ? Path.Combine(_workingDir, nodePath.Substring(_sourcePath.Length))
-                       : null;
-        }
-
-        private SvnUriTarget GetSourceTarget(SvnChangeItem node, SvnLogEventArgs e)
-        {
-            return new SvnUriTarget(new Uri(_sourceRoot, node.Path.Substring(1)), e.Revision);
-        }
-
-        private string ChainMessage(Exception e)
-        {
-            if (e.InnerException == null) return e.Message;
-            var buffer = new StringBuilder(e.Message);
-            while((e=e.InnerException) != null)
-            {
-                buffer.Append(" ---> ").Append(e.Message);
-            }
-            return buffer.ToString();
         }
     }
 }

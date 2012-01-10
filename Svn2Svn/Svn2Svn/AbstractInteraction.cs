@@ -17,6 +17,10 @@
  */
 
 #endregion
+
+using System;
+using System.Text;
+
 namespace Svn2Svn
 {
     /// <summary>
@@ -25,6 +29,8 @@ namespace Svn2Svn
     /// <author>Kenneth Xu</author>
     public abstract class AbstractInteraction : IInteraction
     {
+        private bool _failed;
+
         public LogLevel Level { get; set; }
 
         public void Info(string value)
@@ -67,6 +73,49 @@ namespace Svn2Svn
             return ErrorDisposition.Fail;
         }
 
+        public void DoInteractively(ref bool ignore, string title, Action action)
+        {
+            while (true)
+            {
+                try
+                {
+                    action();
+                    return;
+                }
+                catch (Exception e)
+                {
+                    if (_failed) throw;
+                    var chainMessage = ChainMessage(e);
+                    if (!ignore)
+                    {
+                        var answer = Ask(title, chainMessage);
+                        if (answer == ErrorDisposition.Fail)
+                        {
+                            _failed = true;
+                            throw;
+                        }
+                        if (answer == ErrorDisposition.Retry)
+                            continue;
+                        if (answer == ErrorDisposition.IgnoreAll)
+                            ignore = true;
+                    }
+                    Error("Ignored Error: {0}", chainMessage);
+                    return;
+                }
+            }
+        }
+
         protected abstract void Log(LogLevel level, string value);
+
+        private string ChainMessage(Exception e)
+        {
+            if (e.InnerException == null) return e.Message;
+            var buffer = new StringBuilder(e.Message);
+            while ((e = e.InnerException) != null)
+            {
+                buffer.Append(" ---> ").Append(e.Message);
+            }
+            return buffer.ToString();
+        }
     }
 }

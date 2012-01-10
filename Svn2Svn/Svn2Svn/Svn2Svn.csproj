@@ -71,6 +71,7 @@
     <Compile Include="IInteraction.cs" />
     <Compile Include="LogLevel.cs" />
     <Compile Include="NoInteraction.cs" />
+    <Compile Include="PathManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="CopyForm.resx">

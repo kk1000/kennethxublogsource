@@ -17,6 +17,9 @@
  */
 
 #endregion
+
+using System;
+
 namespace Svn2Svn
 {
     /// <summary>
@@ -39,5 +42,7 @@ namespace Svn2Svn
         // ReSharper restore MethodOverloadWithOptionalParameter
         void UpdateProgress(long sourceRevision, long destinationReivison);
         ErrorDisposition Ask(string title, string message);
+        void DoInteractively(ref bool ignore, string title, Action action);
+
     }
 }
