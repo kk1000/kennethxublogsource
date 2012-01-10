@@ -8,15 +8,19 @@ namespace Svn2Svn
     public class SourceInfo
     {
         private readonly Uri _source;
-        private readonly Uri _sourceRoot;
-        private readonly string _sourcePath;
-        private readonly long _lastChangeRevision;
+        private Uri _sourceRoot;
+        private string _sourcePath;
+        private long _lastChangeRevision;
 
         public SourceInfo(Uri sourceUri)
         {
             if (sourceUri == null) throw new ArgumentNullException("sourceUri");
             _source = sourceUri;
-            var info = GetSourceInfo();
+        }
+
+        public void Init(long revision)
+        {
+            var info = GetSourceInfo(revision);
             _lastChangeRevision = info.LastChangeRevision;
             SeparateSourceRootAndPath(info, out _sourceRoot, out _sourcePath);
         }
@@ -31,11 +35,11 @@ namespace Svn2Svn
             get { return _source; }
         }
 
-        private SvnInfoEventArgs GetSourceInfo()
+        private SvnInfoEventArgs GetSourceInfo(long revision)
         {
             SvnInfoEventArgs info;
-            using (var svn = new SvnClient())
-                svn.GetInfo(new SvnUriTarget(_source), out info);
+            var sourceTarget = new SvnUriTarget(_source, revision == -1 ? SvnRevision.Head : revision);
+            using (var svn = new SvnClient()) svn.GetInfo(sourceTarget, out info);
             return info;
         }
 
