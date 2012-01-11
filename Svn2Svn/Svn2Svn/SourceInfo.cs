@@ -67,13 +67,36 @@ namespace Svn2Svn
             if (!path.StartsWith(_sourcePath)) return null; // path: "/notabc"
             var sourcePathLenth = _sourcePath.Length;
             if (path.Length == sourcePathLenth) return string.Empty; // path: "/abc"
-            if (sourcePathLenth > 1 && path[sourcePathLenth] != '/') return null; // path: "/abcandmore"
-            return path.Substring(sourcePathLenth + 1); // path: "/abc/rest/of/uri"
+            if (sourcePathLenth == 1) // _sourcePath = "/"
+                return path.Substring(1); // path: "/xyz => xyz"
+            if (path[sourcePathLenth] != '/')
+                return null; // path: "/abcandmore"
+            return path.Substring(sourcePathLenth + 1); // path: "/abc/rest => rest"
         }
 
         public SvnUriTarget GetSourceTarget(SvnChangeItem node, SvnRevision revision)
         {
             return new SvnUriTarget(new Uri(_sourceRoot, node.Path.Substring(1)), revision);
         }
+        /*
+        public static void TestGetRelativePath()
+        {
+            var s = new SourceInfo(new Uri("file:///d/svn/testrepo1"));
+            Verify(s, "/abc", "/notabc", null);
+            Verify(s, "/abc", "/abc", string.Empty);
+            Verify(s, "/abc", "/abc/", string.Empty);
+            Verify(s, "/abc", "/abcandmore", null);
+            Verify(s, "/abc", "/abc/def", "def");
+            Verify(s, "/", "/", string.Empty);
+            Verify(s, "/", "/abc", "abc");
+        }
+
+        private static void Verify(SourceInfo s, string sourcePath, string path, string expected)
+        {
+            s._sourcePath = sourcePath;
+            var relativePath = s.GetRelativePath(path);
+            Debug.Assert(relativePath == expected, "Expected " + expected + " but " + relativePath);
+        }
+        */
     }
 }

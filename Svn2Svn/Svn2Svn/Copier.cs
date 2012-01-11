@@ -173,23 +173,39 @@ namespace Svn2Svn
         {
             var workingDir = new DirectoryInfo(_workingDir);
             if (!workingDir.Exists)
-                _svn.CheckOut(new SvnUriTarget(_destination), _workingDir);
-            else
             {
-                _svn.CleanUp(_workingDir);
-                _svn.Revert(_workingDir, new SvnRevertArgs { Depth = SvnDepth.Infinity });
-                _svn.Update(_workingDir, _ignoreExternalUpdate);
-                _svn.Status(_workingDir, _infiniteStatus,
-                            (s, e) =>
-                                { // delete all unversioned files.
-                                    if (e.LocalContentStatus == SvnStatus.NotVersioned)
-                                    {
-                                        string destinationPath = e.Path;
-                                        if (File.Exists(destinationPath)) File.Delete(destinationPath);
-                                        if (Directory.Exists(destinationPath)) Directory.Delete(destinationPath, true);
-                                    }
-                                });
+                _svn.CheckOut(new SvnUriTarget(_destination), _workingDir);
+                return;
             }
+            _svn.CleanUp(_workingDir);
+            Collection<SvnStatusEventArgs> statuses;
+            _svn.GetStatus(_workingDir, _infiniteStatus, out statuses);
+            var infiniteRevert = new SvnRevertArgs {Depth = SvnDepth.Infinity};
+            foreach (var e in from x in statuses orderby x.Path descending select x)
+            {
+                switch (e.LocalContentStatus)
+                {
+                    case SvnStatus.Added:
+                        _svn.Revert(e.Path, infiniteRevert);
+                        string destinationPath = e.Path;
+                        if (File.Exists(destinationPath)) File.Delete(destinationPath);
+                        if (Directory.Exists(destinationPath)) Directory.Delete(destinationPath, true);
+                        break;
+                    case SvnStatus.NotVersioned:
+                        DeleteFromFileSystem(e);
+                        break;
+                    default:
+                        _svn.Revert(e.Path);
+                        break;
+                }
+            }
+            _svn.Update(_workingDir, _ignoreExternalUpdate);
+        }
+
+        private static void DeleteFromFileSystem(SvnStatusEventArgs e)
+        {
+            if (e.NodeKind == SvnNodeKind.Directory) Directory.Delete(e.Path, true);
+            else File.Delete(e.Path);
         }
 
         private void ProcessRevisionLog(SvnLogEventArgs e)
