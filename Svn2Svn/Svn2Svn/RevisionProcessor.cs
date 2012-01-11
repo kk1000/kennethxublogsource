@@ -41,7 +41,7 @@ namespace Svn2Svn
         private static readonly SvnLogArgs _oneToHeadLog = new SvnLogArgs(new SvnRevisionRange(SvnRevision.Zero, SvnRevision.Head)) { RetrieveAllProperties = true };
 
         private readonly Global _g = new Global();
-        private readonly NodeProcessor _n;
+        private readonly NodeProcessor _nodeProcessor;
 
         private long _resyncToRevision;
         private bool _firstLoad = true;
@@ -52,7 +52,7 @@ namespace Svn2Svn
         public RevisionProcessor(Global g)
         {
             _g = g;
-            _n = new NodeProcessor(g);
+            _nodeProcessor = new NodeProcessor(g);
         }
 
         public bool CopyAuthor { get; set; }
@@ -93,13 +93,14 @@ namespace Svn2Svn
                 TitleProcessRevision,
                 () =>
                 {
-                    bool result = _firstLoad
-                                      ? _n.ExportDirectory(new SvnUriTarget(_g.Source.Uri, e.Revision), _g.WorkingDir)
+                    var sourceTarget = new SvnUriTarget(_g.Source.Uri, e.Revision);
+                    bool success = _firstLoad
+                                      ? _nodeProcessor.ExportDirectory(sourceTarget, _g.WorkingDir)
                                       : ChangeWorkingCopy(e);
 
-                    if (result)
+                    if (success)
                     {
-                        CommitToDestination(e);
+                        CommitToDestination(e, true);
                         _firstLoad = false;
                     }
                     else
@@ -116,7 +117,7 @@ namespace Svn2Svn
                 _g.Interaction.Trace("\tResync {0} to {1}", sourceRevision, destRevision);
         }
 
-        private void CommitToDestination(SvnLogEventArgs e)
+        private void CommitToDestination(SvnLogEventArgs e, bool allowCopySourceRevision)
         {
             SvnCommitResult result;
             _g.Svn.Commit(_g.WorkingDir, new SvnCommitArgs { LogMessage = e.LogMessage }, out result);
@@ -127,7 +128,7 @@ namespace Svn2Svn
             if (CopyAuthor) _g.Svn.SetRevisionProperty(_g.Destination, destinationReivison, PropertyKeyAuthor, e.Author);
             if (CopyDateTime)
                 _g.Svn.SetRevisionProperty(_g.Destination, destinationReivison, PropertyKeyDateTime, e.Time.ToString("O") + "Z");
-            if (CopySourceRevision)
+            if (CopySourceRevision && allowCopySourceRevision)
                 _g.Svn.SetRevisionProperty(_g.Destination, destinationReivison, PropertyKeySourceRevision,
                                          sourceRevision.ToString("#0"));
             _g.Svn.Update(_g.WorkingDir, _ignoreExternalUpdate);
@@ -139,23 +140,40 @@ namespace Svn2Svn
         /// </summary>
         private bool ChangeWorkingCopy(SvnLogEventArgs e)
         {
-            var itemsAdded = from x in e.ChangedPaths
+            var changes = e.ChangedPaths;
+            var itemsAdded = from x in changes
                              where x.Action == SvnChangeAction.Add
                              orderby x.Path
                              select x;
 
-            var itemsModified = from x in e.ChangedPaths
+            var itemsModified = from x in changes
                                 where x.Action == SvnChangeAction.Modify
                                 select x;
 
-            var itemsDeleted = from x in e.ChangedPaths
+            var itemsDeleted = from x in changes
                                where x.Action == SvnChangeAction.Delete
                                orderby x.Path descending
                                select x;
 
-            return ProcessNodes(itemsDeleted, e, _n.Delete) &&
-                   ProcessNodes(itemsModified, e, _n.Modify) &&
-                   ProcessNodes(itemsAdded, e, _n.Add);
+            var success = ProcessNodes(itemsDeleted, e, _nodeProcessor.Delete) &&
+                          ProcessNodes(itemsModified, e, _nodeProcessor.Modify);
+            if (!success) return false;
+
+            if (DetectNameChangeByCaseOnly(changes)) CommitToDestination(e, false);
+
+            return ProcessNodes(itemsAdded, e, _nodeProcessor.Add);
+        }
+
+        private bool DetectNameChangeByCaseOnly(IEnumerable<SvnChangeItem> changes)
+        {
+            var h = new HashSet<string>();
+            foreach (var node in changes)
+            {
+                var p = node.Path.ToLowerInvariant();
+                if (h.Contains(p)) return true;
+                h.Add(p);
+            }
+            return false;
         }
 
         /// <summary>
@@ -166,7 +184,7 @@ namespace Svn2Svn
             foreach (var node in nodes)
             {
                 if (_g.StopRequested) return false; // canceled
-                _n.ProcessNode(e, action, node);
+                _nodeProcessor.ProcessNode(e, action, node);
             }
             return true; // finished 
         }
