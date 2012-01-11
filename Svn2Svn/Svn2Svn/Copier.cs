@@ -156,9 +156,12 @@ namespace Svn2Svn
 
         private void NormalizeDestinationUri()
         {
+            var d = _destination.ToString();
+            if (d[d.Length - 1] != '/') d += '/';
+
             SvnInfoEventArgs info;
             _svn.GetInfo(new SvnPathTarget(_workingDir), out info);
-            if (!info.Uri.ToString().Equals(_destination.ToString(), StringComparison.InvariantCultureIgnoreCase))
+            if (!info.Uri.ToString().Equals(d, StringComparison.InvariantCultureIgnoreCase))
             {
                 throw new InvalidOperationException("Working dir does not match with destination repo: " +
                                                     info.Uri + " vs. " + _destination);
