@@ -115,7 +115,8 @@ namespace Svn2Svn
             var exist = _g.Svn.GetInfo(new SvnUriTarget(_g.Destination), new SvnInfoArgs {ThrowOnError = false}, out discard);
             if (!exist)
             {
-                _g.Svn.RemoteCreateDirectory(_g.Destination, new SvnCreateDirectoryArgs {LogMessage = "Migrate from " + _g.Source.Uri});
+                _g.Svn.RemoteCreateDirectory(_g.Destination, 
+                    new SvnCreateDirectoryArgs {LogMessage = "Migrate from " + _g.Source.Uri, CreateParents = true});
             }
             return exist;
         }
