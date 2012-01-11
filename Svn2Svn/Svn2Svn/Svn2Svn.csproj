@@ -67,8 +67,10 @@
     <Compile Include="CopyForm.Designer.cs">
       <DependentUpon>CopyForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="RevisionProcessor.cs" />
     <Compile Include="ErrorDisposition.cs" />
     <Compile Include="IInteraction.cs" />
+    <Compile Include="NodeProcessor.cs" />
     <Compile Include="LogLevel.cs" />
     <Compile Include="NoInteraction.cs" />
     <Compile Include="SourceInfo.cs" />
@@ -96,6 +98,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="RevisionMap.cs" />
+    <Compile Include="Global.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
