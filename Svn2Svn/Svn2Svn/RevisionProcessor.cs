@@ -155,11 +155,18 @@ namespace Svn2Svn
                                orderby x.Path descending
                                select x;
 
+            if (!DetectNameChangeByCaseOnly(changes))
+            {
+                return ProcessNodes(itemsAdded, e, _nodeProcessor.Add) &&
+                       ProcessNodes(itemsModified, e, _nodeProcessor.Modify) &&
+                       ProcessNodes(itemsDeleted, e, _nodeProcessor.Delete);
+            }
+
             var success = ProcessNodes(itemsDeleted, e, _nodeProcessor.Delete) &&
                           ProcessNodes(itemsModified, e, _nodeProcessor.Modify);
             if (!success) return false;
 
-            if (DetectNameChangeByCaseOnly(changes)) CommitToDestination(e, false);
+            CommitToDestination(e, false);
 
             return ProcessNodes(itemsAdded, e, _nodeProcessor.Add);
         }
