@@ -140,11 +140,13 @@ namespace Svn2Svn
                 _g.Svn.CreateDirectory(destinationPath);
                 processed = true;
             }
-            if (!processed)
-            {
+
+            if (node.NodeKind != SvnNodeKind.Directory)
                 _g.Svn.Export(source, destinationPath, _infiniteOverwriteExport);
+
+            if (!processed)
                 _g.Svn.Add(destinationPath, _infiniteForceAdd);
-            }
+
             _g.Interaction.Trace(ActionCreated + destinationPath);
             CopyProperties(source, destinationPath);
         }
