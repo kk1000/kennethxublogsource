@@ -37,7 +37,8 @@ namespace Svn2Svn
         private const string ActionCreated = "\tCreated ";
         private static readonly SvnAddArgs _forceAdd = new SvnAddArgs { Force = true };
         private static readonly SvnAddArgs _infiniteForceAdd = new SvnAddArgs{Depth = SvnDepth.Infinity, Force = true};
-        private static readonly SvnExportArgs _infiniteOverwriteExport = new SvnExportArgs {Depth = SvnDepth.Infinity, Overwrite = true};
+        private static readonly SvnExportArgs _infiniteOverwriteExport = new SvnExportArgs {Depth = SvnDepth.Infinity, Overwrite = true, IgnoreExternals = true};
+        private static readonly SvnCopyArgs _ignoreExternalCopyArgs = new SvnCopyArgs { IgnoreExternals = true };
 
         private readonly Global _g;
 
@@ -159,7 +160,7 @@ namespace Svn2Svn
             if (revision < 0) return false;
             // must use server uri as working copy may have been delete when copy from old revision.
             var copyFromUri = new Uri(_g.Destination, relativePath);
-            _g.Svn.Copy(new SvnUriTarget(copyFromUri, revision), destinationPath);
+            _g.Svn.Copy(new SvnUriTarget(copyFromUri, revision), destinationPath, _ignoreExternalCopyArgs);
             return true;
         }
 
