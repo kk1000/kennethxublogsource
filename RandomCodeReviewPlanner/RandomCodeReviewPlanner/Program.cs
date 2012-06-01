@@ -40,12 +40,14 @@ namespace RandomCodeReviewPlanner
             var smtpServer = ConfigurationManager.AppSettings["SmtpServer"];
             var smtpClient = new SmtpClient(smtpServer);
             var from = new MailAddress(ConfigurationManager.AppSettings["MailFrom"]);
-            var to = new MailAddress(ConfigurationManager.AppSettings["MailTo"]);
-            var message = new MailMessage(from, to)
+            var recipients = ConfigurationManager.AppSettings["MailTo"].Split(',', ';');
+            var message = new MailMessage
                               {
                                   Body = output,
-                                  Subject = "Code Review Assignment"
+                                  Subject = "Code Review Assignment",
+                                  From = @from
                               };
+            foreach (var to in recipients) message.To.Add(to);
             smtpClient.Send(message);
         }
 
