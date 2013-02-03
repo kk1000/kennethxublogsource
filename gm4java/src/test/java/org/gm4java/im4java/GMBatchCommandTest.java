@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -68,9 +69,29 @@ public class GMBatchCommandTest {
         op.resize(800, 600);
         op.addImage(TARGET_IMAGE);
         final String message = "bad command";
-        when(service.execute(anyString(), (String[]) anyVararg())).thenThrow(new GMException(message));
+        when(service.execute(anyListOf(String.class))).thenThrow(new GMException(message));
         exception.expect(CommandException.class);
         exception.expectMessage(message);
+
+        // execute the operation
+        sut.run(op);
+    }
+
+    @Test
+    public void run_chokes_whenErrorConsumerIsNull() throws Exception {
+        // create command
+        final String command = "bad";
+        sut = new GMBatchCommand(service, command);
+        // create the operation, add images and operators/options
+        IMOperation op = new IMOperation();
+        op.addImage(SOURCE_IMAGE);
+        op.resize(800, 600);
+        op.addImage(TARGET_IMAGE);
+        final String message = "bad command";
+        when(service.execute(anyListOf(String.class))).thenThrow(new GMException(message));
+        exception.expect(CommandException.class);
+        exception.expectMessage(message);
+        sut.setErrorConsumer(null);
 
         // execute the operation
         sut.run(op);
@@ -90,7 +111,25 @@ public class GMBatchCommandTest {
         // execute the operation
         sut.run(op);
 
-        verify(service).execute(command, SOURCE_IMAGE, "-resize", "800x600", TARGET_IMAGE);
+        verify(service).execute(Arrays.asList(command, SOURCE_IMAGE, "-resize", "800x600", TARGET_IMAGE));
+    }
+
+    @Test
+    public void run_works_whenOutputConsumerIsNull() throws Exception {
+        // create command
+        final String command = "convert";
+        sut = new GMBatchCommand(service, command);
+        // create the operation, add images and operators/options
+        IMOperation op = new IMOperation();
+        op.addImage(SOURCE_IMAGE);
+        op.resize(800, 600);
+        op.addImage(TARGET_IMAGE);
+        sut.setOutputConsumer(null);
+
+        // execute the operation
+        sut.run(op);
+
+        verify(service).execute(Arrays.asList(command, SOURCE_IMAGE, "-resize", "800x600", TARGET_IMAGE));
     }
 
     @Test
@@ -104,11 +143,11 @@ public class GMBatchCommandTest {
         op.addImage();
         ArrayListOutputConsumer output = new ArrayListOutputConsumer();
         sut.setOutputConsumer(output);
-        when(service.execute(anyString(), (String[]) anyVararg())).thenReturn("JPEG\n800\n600\n800x600\n0\n");
+        when(service.execute(anyListOf(String.class))).thenReturn("JPEG\n800\n600\n800x600\n0\n");
 
         sut.run(op, SOURCE_IMAGE);
 
-        verify(service).execute(command, "-ping", "-format", format, SOURCE_IMAGE);
+        verify(service).execute(Arrays.asList(command, "-ping", "-format", format, SOURCE_IMAGE));
         // ... and parse result
         ArrayList<String> cmdOutput = output.getOutput();
         Iterator<String> iter = cmdOutput.iterator();

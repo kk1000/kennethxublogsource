@@ -34,6 +34,8 @@ import java.io.BufferedReader;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Common test cases for implementation of {@link GMConnection}.
@@ -72,10 +74,25 @@ public abstract class AbstractGMConnectionTest {
     }
 
     @Test
+    public void executeByList_chokes_whenErrorSendingCommandToProcess() throws Exception {
+        exception.expect(GMServiceException.class);
+        when(process.getWriter()).thenReturn(mockWriter);
+        doThrow(new IOException()).when(mockWriter).write(gmCommand);
+        sut().execute(Arrays.asList(gmCommand));
+    }
+
+    @Test
     public void execute_chokes_whenErrorReadingResultFromProcess() throws Exception {
         exception.expect(GMServiceException.class);
         doThrow(new IOException()).when(reader).readLine();
         sut().execute(gmCommand);
+    }
+
+    @Test
+    public void executeByList_chokes_whenErrorReadingResultFromProcess() throws Exception {
+        exception.expect(GMServiceException.class);
+        doThrow(new IOException()).when(reader).readLine();
+        sut().execute(Arrays.asList(gmCommand));
     }
 
     @Test
@@ -85,10 +102,23 @@ public abstract class AbstractGMConnectionTest {
     }
 
     @Test
+    public void executeByList_chokes_whenCommunicationInterrupts() throws Exception {
+        exception.expect(GMServiceException.class);
+        sut().execute(Arrays.asList(gmCommand));
+    }
+
+    @Test
     public void execute_chokes_onCommunicationProblem() throws Exception {
         when(reader.readLine()).thenThrow(new IOException());
         exception.expect(GMServiceException.class);
         sut().execute(gmCommand);
+    }
+
+    @Test
+    public void executeByList_chokes_onCommunicationProblem() throws Exception {
+        when(reader.readLine()).thenThrow(new IOException());
+        exception.expect(GMServiceException.class);
+        sut().execute(Arrays.asList(gmCommand));
     }
 
     @Test
@@ -105,9 +135,64 @@ public abstract class AbstractGMConnectionTest {
     }
 
     @Test
+    public void executeByList_throwsGMException_whenGMreturnsError() throws Exception {
+        final String line1 = "error line 1";
+        final String line2 = "line 2";
+        when(reader.readLine()).thenReturn(line1, line2, "NG");
+
+        exception.expect(GMException.class);
+        exception.expectMessage(line1);
+        exception.expectMessage(line2);
+
+        sut().execute(Arrays.asList(gmCommand));
+    }
+
+    @Test
+    public void execute_chokes_onNullCommand() throws Exception {
+        exception.expect(NullPointerException.class);
+        exception.expectMessage("command");
+        exception.expectMessage("null");
+        sut().execute((String) null);
+    }
+
+    @Test
+    public void executeByList_chokes_onNullCommand() throws Exception {
+        exception.expect(NullPointerException.class);
+        exception.expectMessage("command");
+        exception.expectMessage("null");
+        sut().execute((List<String>) null);
+    }
+
+    @Test
+    public void execute_chokes_onEmptyListCommand() throws Exception {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("command");
+        exception.expectMessage("empty");
+        sut().execute(Arrays.asList(new String[0]));
+    }
+
+    @Test
     public void execute_sendsCommandToProcess() throws Exception {
         when(reader.readLine()).thenReturn("OK");
         String result = sut().execute(gmCommand);
+        assertThat(result, is(""));
+        String s = writer.toString();
+        assertThat(s, equalTo(gmCommand + TestUtils.EOL));
+    }
+
+    @Test
+    public void executeByList_sendsCommandToProcess() throws Exception {
+        when(reader.readLine()).thenReturn("OK");
+        String result = sut().execute(Arrays.asList(gmCommand));
+        assertThat(result, is(""));
+        String s = writer.toString();
+        assertThat(s, equalTo(" \"" + gmCommand + '"' + TestUtils.EOL));
+    }
+
+    @Test
+    public void executeNullArguments_sendsCommandToProcess() throws Exception {
+        when(reader.readLine()).thenReturn("OK");
+        String result = sut().execute(gmCommand, (String[]) null);
         assertThat(result, is(""));
         String s = writer.toString();
         assertThat(s, equalTo(gmCommand + TestUtils.EOL));
@@ -160,6 +245,16 @@ public abstract class AbstractGMConnectionTest {
         exception.expectMessage("closed");
 
         sut().execute(gmCommand);
+    }
+
+    @Test
+    public void executeByList_chokes_afterClose() throws Exception {
+        when(reader.readLine()).thenReturn("OK");
+        sut().close();
+        exception.expect(GMServiceException.class);
+        exception.expectMessage("closed");
+
+        sut().execute(Arrays.asList(gmCommand));
     }
 
     @Test

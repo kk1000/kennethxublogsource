@@ -29,6 +29,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Test cases for {@link SimpleGMService}.
@@ -75,11 +76,32 @@ public class SimpleGMServiceTest extends AbstractGMConnectionTest {
     }
 
     @Test
+    public void executeByList_delegatesToConnection() throws Exception {
+        final String command = "some command";
+        final String expected = "some result";
+        when(process.getWriter()).thenReturn(mockWriter);
+        when(reader.readLine()).thenReturn(expected, "OK");
+
+        String result = sut.execute(Arrays.asList(command));
+
+        verify(mockWriter).write(command);
+        assertThat(result, is(expected + TestUtils.EOL));
+    }
+
+    @Test
     public void execute_chokes_onGMError() throws Exception {
         when(reader.readLine()).thenReturn("NG");
         exception.expect(GMException.class);
 
         sut.execute("any");
+    }
+
+    @Test
+    public void executeByList_chokes_onGMError() throws Exception {
+        when(reader.readLine()).thenReturn("NG");
+        exception.expect(GMException.class);
+
+        sut.execute(Arrays.asList("any"));
     }
 
     @Test
@@ -92,11 +114,34 @@ public class SimpleGMServiceTest extends AbstractGMConnectionTest {
     }
 
     @Test
+    public void executeByList_destroysProcess_onSuccess() throws Exception {
+        when(reader.readLine()).thenReturn("OK");
+
+        sut.execute(Arrays.asList("any"));
+
+        verify(process).destroy();
+    }
+
+    @Test
     public void execute_destroysProcess_onFailure() throws Exception {
         when(reader.readLine()).thenReturn("NG");
 
         try {
             sut.execute("any");
+            Assert.fail("GMException should have been thrown.");
+            // SUPPRESS CHECKSTYLE EmptyBlock BECAUSE test
+        } catch (GMException e) {
+        }
+
+        verify(process).destroy();
+    }
+
+    @Test
+    public void executeByList_destroysProcess_onFailure() throws Exception {
+        when(reader.readLine()).thenReturn("NG");
+
+        try {
+            sut.execute(Arrays.asList("any"));
             Assert.fail("GMException should have been thrown.");
             // SUPPRESS CHECKSTYLE EmptyBlock BECAUSE test
         } catch (GMException e) {

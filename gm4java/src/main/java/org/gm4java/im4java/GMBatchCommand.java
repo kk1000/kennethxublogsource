@@ -37,7 +37,6 @@ import javax.annotation.Nonnull;
  * 
  */
 public class GMBatchCommand extends ImageCommand {
-    private static final String[] emptyArray = new String[0];
     private final GMService service;
     private OutputConsumer outputConsumer;
     private ErrorConsumer errorConsumer;
@@ -83,7 +82,7 @@ public class GMBatchCommand extends ImageCommand {
 
         int rc;
         try {
-            String result = service.execute(pArgs.get(0), pArgs.subList(1, pArgs.size()).toArray(emptyArray));
+            String result = service.execute(pArgs);
             if (outputConsumer != null && result != null) outputConsumer.consumeOutput(stringToStream(result));
             rc = 0;
         } catch (GMException e) {

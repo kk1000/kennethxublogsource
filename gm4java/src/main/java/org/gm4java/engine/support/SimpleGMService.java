@@ -22,6 +22,7 @@ import org.gm4java.engine.GMServiceException;
 import org.gm4java.engine.support.ReaderWriterProcess.Factory;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 
@@ -71,6 +72,19 @@ public class SimpleGMService implements GMService {
         final GMConnection connection = getConnection();
         try {
             return connection.execute(command, arguments);
+        } finally {
+            connection.close();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String execute(List<String> command) throws GMException, GMServiceException {
+        final GMConnection connection = getConnection();
+        try {
+            return connection.execute(command);
         } finally {
             connection.close();
         }

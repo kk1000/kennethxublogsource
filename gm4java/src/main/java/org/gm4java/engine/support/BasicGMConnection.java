@@ -22,7 +22,10 @@ import org.gm4java.engine.GMServiceException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 /**
@@ -34,6 +37,7 @@ import javax.annotation.Nonnull;
  * 
  */
 class BasicGMConnection implements GMConnection {
+    private static final List<String> empty = Arrays.asList(new String[0]);
     private static final int NORMAL_BUFFER_SIZE = 4096;
     private static final String EOL = System.getProperty("line.separator");
     private ReaderWriterProcess process;
@@ -45,10 +49,17 @@ class BasicGMConnection implements GMConnection {
     }
 
     @Override
-    public String execute(@Nonnull String command, String... arguments) throws GMException, GMServiceException {
-        if (process == null) throw new GMServiceException("GMConnection is already closed.");
-        sendCommand(command, arguments);
-        return readResult();
+    public final String execute(@Nonnull String command, @CheckForNull String... arguments) throws GMException,
+            GMServiceException {
+        if (command == null) throw new NullPointerException("Argument 'command' must not be null");
+        return execute(command, arguments == null || arguments.length == 0 ? empty : Arrays.asList(arguments));
+    }
+
+    @Override
+    public final String execute(@Nonnull List<String> command) throws GMException, GMServiceException {
+        if (command == null) throw new NullPointerException("Argument 'command' must not be null");
+        if (command.size() == 0) throw new IllegalArgumentException("Argument 'command' must not be empty");
+        return execute(null, command);
     }
 
     @Override
@@ -58,10 +69,16 @@ class BasicGMConnection implements GMConnection {
         process = null;
     }
 
-    private void sendCommand(String command, String[] arguments) throws GMServiceException {
+    protected String execute(String command, @Nonnull List<String> arguments) throws GMException, GMServiceException {
+        if (process == null) throw new GMServiceException("GMConnection is already closed.");
+        sendCommand(command, arguments);
+        return readResult();
+    }
+
+    private void sendCommand(String command, @Nonnull List<String> arguments) throws GMServiceException {
         Writer toGm = process.getWriter();
         try {
-            toGm.write(command);
+            if (command != null) toGm.write(command);
             for (String s : arguments) {
                 final byte quote = '"';
                 toGm.write(" ");

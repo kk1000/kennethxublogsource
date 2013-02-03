@@ -114,6 +114,17 @@ public class GMConnectionPoolTest {
     }
 
     @Test
+    public void borrowObject_propagatesRuntimeException() throws Exception {
+        when(factory.getProcess((String[]) anyVararg())).thenThrow(
+                new NullPointerException(READER_WRITER_PROCESS_FAILURE));
+
+        exception.expect(NullPointerException.class);
+        exception.expectMessage(READER_WRITER_PROCESS_FAILURE);
+
+        sut.borrowObject();
+    }
+
+    @Test
     public void borrowObject_doesNotReturnUnhealthyConnection() throws Exception {
         when(reader.readLine()).thenThrow(new IOException(READER_WRITER_PROCESS_FAILURE));
         PooledGMConnection connection = sut.borrowObject();

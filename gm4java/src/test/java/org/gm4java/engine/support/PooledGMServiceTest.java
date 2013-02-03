@@ -30,6 +30,11 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
+import java.util.List;
+
+import junit.framework.Assert;
+
 /**
  * Test cases for {@link PooledGMService}.
  * 
@@ -122,6 +127,16 @@ public class PooledGMServiceTest {
     }
 
     @Test
+    public void getConnection__executeByList_chokes_afterClose() throws Exception {
+        GMConnection p = sut.getConnection();
+        p.close();
+        exception.expect(GMServiceException.class);
+        exception.expectMessage("closed");
+
+        p.execute(Arrays.asList(gmCommand));
+    }
+
+    @Test
     public void getConnection__execute_delegatesToBorrowedConnection() throws Exception {
         String expected = "result 9465";
         when(connection.execute(gmCommand)).thenReturn(expected);
@@ -135,12 +150,35 @@ public class PooledGMServiceTest {
     }
 
     @Test
+    public void getConnection__executeByList_delegatesToBorrowedConnection() throws Exception {
+        String expected = "result 9465";
+        final List<String> command = Arrays.asList(gmCommand);
+        when(connection.execute(command)).thenReturn(expected);
+        GMConnection p = sut.getConnection();
+
+        String result = p.execute(command);
+        p.close();
+
+        verify(connection).execute(command);
+        assertThat(result, is(expected));
+    }
+
+    @Test
     public void execute_chokes_whenBorrowObjectChokes() throws Exception {
         when(pool.borrowObject()).thenThrow(new GMServiceException(CREATE_PROCESS_FAILURE));
         exception.expect(GMServiceException.class);
         exception.expectMessage(CREATE_PROCESS_FAILURE);
 
         sut.execute(gmCommand);
+    }
+
+    @Test
+    public void executeByList_chokes_whenBorrowObjectChokes() throws Exception {
+        when(pool.borrowObject()).thenThrow(new GMServiceException(CREATE_PROCESS_FAILURE));
+        exception.expect(GMServiceException.class);
+        exception.expectMessage(CREATE_PROCESS_FAILURE);
+
+        sut.execute(Arrays.asList(gmCommand));
     }
 
     @Test
@@ -154,8 +192,26 @@ public class PooledGMServiceTest {
     }
 
     @Test
+    public void executeByList_delegatesToBorrowedConnection() throws Exception {
+        String expected = "result 9465";
+        final List<String> command = Arrays.asList(gmCommand);
+        when(connection.execute(command)).thenReturn(expected);
+        String result = sut.execute(command);
+
+        verify(connection).execute(command);
+        assertThat(result, is(expected));
+    }
+
+    @Test
     public void execute_returnBorrowedConnection() throws Exception {
         sut.execute(gmCommand);
+
+        verify(pool).returnObject(connection);
+    }
+
+    @Test
+    public void executeByList_returnBorrowedConnection() throws Exception {
+        sut.execute(Arrays.asList(gmCommand));
 
         verify(pool).returnObject(connection);
     }
@@ -165,6 +221,21 @@ public class PooledGMServiceTest {
         when(connection.execute(gmCommand)).thenThrow(new GMException(""));
         try {
             sut.execute(gmCommand);
+            Assert.fail("shoud get exeception here.");
+            // SUPPRESS CHECKSTYLE EmptyBlock BECAUSE test
+        } catch (GMException e) {
+        }
+
+        verify(pool).returnObject(connection);
+    }
+
+    @Test
+    public void executeByList_returnBorrowedConnection_onError() throws Exception {
+        final List<String> command = Arrays.asList(gmCommand);
+        when(connection.execute(command)).thenThrow(new GMException(""));
+        try {
+            sut.execute(command);
+            Assert.fail("shoud get exeception here.");
             // SUPPRESS CHECKSTYLE EmptyBlock BECAUSE test
         } catch (GMException e) {
         }

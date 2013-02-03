@@ -20,6 +20,8 @@ import org.gm4java.engine.GMException;
 import org.gm4java.engine.GMService;
 import org.gm4java.engine.GMServiceException;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -60,6 +62,16 @@ public class PooledGMService implements GMService {
         }
     }
 
+    @Override
+    public String execute(List<String> command) throws GMException, GMServiceException {
+        PooledGMConnection connection = pool.borrowObject();
+        try {
+            return connection.execute(command);
+        } finally {
+            pool.returnObject(connection);
+        }
+    }
+
     /**
      * {@inheritDoc}
      * <p>
@@ -87,8 +99,14 @@ public class PooledGMService implements GMService {
 
         @Override
         public String execute(@Nonnull String command, String... arguments) throws GMException, GMServiceException {
-            if (real == null) throw new GMServiceException("GMConnection is already closed.");
+            assertConnectionNotClosed();
             return real.execute(command, arguments);
+        }
+
+        @Override
+        public String execute(List<String> command) throws GMException, GMServiceException {
+            assertConnectionNotClosed();
+            return real.execute(command);
         }
 
         @Override
@@ -96,6 +114,10 @@ public class PooledGMService implements GMService {
             if (real == null) return;
             pool.returnObject(real);
             real = null;
+        }
+
+        private void assertConnectionNotClosed() throws GMServiceException {
+            if (real == null) throw new GMServiceException("GMConnection is already closed.");
         }
     }
 }

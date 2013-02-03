@@ -15,6 +15,8 @@
  */
 package org.gm4java.engine;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -29,8 +31,43 @@ public interface GMService {
     /**
      * Executes the GraphisMagick command and return the result.
      * <p>
-     * This is a convenient method to get the connection, execute the command once and close it. It is functionally
-     * equivalent to code below, but actual implementation may optimize this for better efficiency.
+     * This is a convenient method to {@link #getConnection() get the connection},
+     * {@link GMConnection#execute(String, String...) execute} the command once and {@link GMConnection#close() close}
+     * it. It is functionally equivalent to code below, but actual implementation may optimize this for better
+     * efficiency.
+     * 
+     * <pre>
+     * final GMConnection connection = gmService.getConnection();
+     * try {
+     *     return connection.execute(command, argument1, argument2, ...);
+     * } finally {
+     *     connection.close();
+     * }
+     * </pre>
+     * <p>
+     * This method is thread safe.
+     * 
+     * @param command
+     *            the command to be executed
+     * @param arguments
+     *            arguments of the command.
+     * @return the output from GraphicsMagick as the result of executing the command
+     * @throws NullPointerException
+     *             when command is null
+     * @throws GMException
+     *             when GraphicsMagick returns error executing the command
+     * @throws GMServiceException
+     *             when there is error communicating with the underlying GraphicsMagick process
+     */
+    String execute(@Nonnull String command, String... arguments) throws GMException, GMServiceException;
+
+    /**
+     * Executes the command using the underlying GraphicsMagick process. GraphicsMagick command and its arguments are
+     * passed in as a list of strings.
+     * <p>
+     * This is a convenient method to {@link #getConnection() get the connection}, {@link GMConnection#execute(List)
+     * execute} the command once and {@link GMConnection#close() close} it. It is functionally equivalent to code below,
+     * but actual implementation may optimize this for better efficiency.
      * 
      * <pre>
      * final GMConnection connection = gmService.getConnection();
@@ -44,16 +81,19 @@ public interface GMService {
      * This method is thread safe.
      * 
      * @param command
-     *            the command to be executed
-     * @param arguments
-     *            arguments of the command.
+     *            the command and arguments to be executed
      * @return the output from GraphicsMagick as the result of executing the command
+     * @throws NullPointerException
+     *             when command is null
+     * @throws IllegalArgumentException
+     *             when command is an empty list.
      * @throws GMException
      *             when GraphicsMagick returns error executing the command
      * @throws GMServiceException
      *             when there is error communicating with the underlying GraphicsMagick process
+     * @see #execute(String, String...)
      */
-    String execute(@Nonnull String command, String... arguments) throws GMException, GMServiceException;
+    String execute(@Nonnull List<String> command) throws GMException, GMServiceException;
 
     /**
      * Gets an instance of {@link GMConnection}. Depends on the implementation, the instance can be newly created or

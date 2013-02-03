@@ -15,6 +15,8 @@
  */
 package org.gm4java.engine;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -44,7 +46,7 @@ public interface GMConnection {
      * execute("convert in.png -draw \"text 50 100 \"\"NO IMAGE\"\"\" out.png");
      * </code>
      * </pre>
-     * <p>
+     * 
      * A better way is to pass the command and arguments separately. The same example can now be written as below.
      * Notice that you don't need to add the quotes and escape the quotes anymore.
      * 
@@ -59,12 +61,34 @@ public interface GMConnection {
      * @param arguments
      *            arguments of the command.
      * @return the output from GraphicsMagick as the result of executing the command
+     * @throws NullPointerException
+     *             when command is null
      * @throws GMException
      *             when GraphicsMagick returns error executing the command
      * @throws GMServiceException
      *             when there is error communicating with the underlying GraphicsMagick process
+     * @see #execute(List)
      */
     String execute(@Nonnull String command, String... arguments) throws GMException, GMServiceException;
+
+    /**
+     * Executes the command using the underlying GraphicsMagick process. GraphicsMagick command and its arguments are
+     * passed in as a list of strings.
+     * 
+     * @param command
+     *            the command and arguments to be executed
+     * @return the output from GraphicsMagick as the result of executing the command
+     * @throws NullPointerException
+     *             when command is null
+     * @throws IllegalArgumentException
+     *             when command is an empty list.
+     * @throws GMException
+     *             when GraphicsMagick returns error executing the command
+     * @throws GMServiceException
+     *             when there is error communicating with the underlying GraphicsMagick process
+     * @see #execute(String, String...)
+     */
+    String execute(@Nonnull List<String> command) throws GMException, GMServiceException;
 
     /**
      * Close {@linkplain GMConnection} and destroy the underlying GraphicsMagick process.
