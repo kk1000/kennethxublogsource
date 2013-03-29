@@ -4,14 +4,20 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 
-	<description>GraphicsMagick interactive mode Java integration</description>
+    <groupId>com.sharneng</groupId>
 	<artifactId>gm4java</artifactId>
-	<groupId>org.gm4java</groupId>
-	<version>0.1-SNAPSHOT</version>
-	<name>gm4java</name>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+	<name>gm4java</name>
 	<url>http://maven.apache.org</url>
-	
+
 		<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<commons.lang3.version>3.0.1</commons.lang3.version>
@@ -23,8 +29,27 @@
 		<powermock.version>1.4.12</powermock.version>
 		<commons.io.version>1.3.2</commons.io.version>
 	</properties>
+	<description>GraphicsMagick interactive mode Java integration</description>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <url>http://kennethxublogsource.googlecode.com/svn/trunk/gm4java</url>
+        <connection>scm:svn:http://kennethxublogsource.googlecode.com/svn/trunk/gm4java</connection>
+        <developerConnection>scm:svn:https://kennethxublogsource.googlecode.com/svn/trunk/gm4java</developerConnection>
+    </scm>
+    <developers>
+        <developer>
+            <id>kennethxu</id>
+            <name>Kenneth Xu</name>
+            <email>kennethxu at sharneng dot com</email>
+        </developer>
+    </developers>
 
-	
 	<build>
 		<pluginManagement>
 			<plugins>
