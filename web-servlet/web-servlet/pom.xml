@@ -38,6 +38,38 @@
             <email>kennethxu at sharneng dot com</email>
         </developer>
     </developers>
+    <build>
+        <pluginManagement>
+            <plugins>
+            <plugin>
+                <groupId>com.soebes.maven.plugins.dmg</groupId>
+                <artifactId>doxygen-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <configuration>
+					 <input>src</input>
+					 <recursive>yes</recursive>
+                     <projectName>web-servlet</projectName>
+                    <configurationFile>Doxyfile</configurationFile>
+                    <reportOutputDirectory>target/docs</reportOutputDirectory>
+                </configuration>            </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>com.soebes.maven.plugins.dmg</groupId>
+                <artifactId>doxygen-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <configuration>
+                     <projectName>web-servlet</projectName>
+					 <input>src</input>
+					 <recursive>yes</recursive>
+                    <configurationFile>Doxyfile</configurationFile>
+                    <reportOutputDirectory>target/docs</reportOutputDirectory>
+                </configuration>            </plugin>
+        </plugins>
+    </reporting>
 
     <dependencies>
         <dependency>

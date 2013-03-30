@@ -4,7 +4,7 @@
   <groupId>com.sharneng</groupId>
   <artifactId>web-servlet-example</artifactId>
   <packaging>war</packaging>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.2-SNAPSHOT</version>
   <name>web-servlet-example Maven Webapp</name>
   <url>http://maven.apache.org</url>
   <dependencies>
@@ -30,6 +30,11 @@
         <artifactId>spring-web</artifactId>
         <version>3.0.6.RELEASE</version>
         <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.6.4</version>
     </dependency>
   </dependencies>
   <build>
