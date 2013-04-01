@@ -3,7 +3,7 @@
 
     <groupId>com.sharneng</groupId>
     <artifactId>web-servlet</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -27,9 +27,9 @@
         </license>
     </licenses>
     <scm>
-        <url>http://kennethxublogsource.googlecode.com/svn/trunk/web-servlet</url>
-        <connection>scm:svn:http://kennethxublogsource.googlecode.com/svn/trunk/web-servlet</connection>
-        <developerConnection>scm:svn:https://kennethxublogsource.googlecode.com/svn/trunk/web-servlet</developerConnection>
+        <url>http://kennethxublogsource.googlecode.com/svn/tags/web-servlet/web-servlet-1.0.3</url>
+        <connection>scm:svn:http://kennethxublogsource.googlecode.com/svn/tags/web-servlet/web-servlet-1.0.3</connection>
+        <developerConnection>scm:svn:https://kennethxublogsource.googlecode.com/svn/tags/web-servlet/web-servlet-1.0.3</developerConnection>
     </scm>
     <developers>
         <developer>
