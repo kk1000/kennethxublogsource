@@ -22,22 +22,27 @@ import javax.servlet.ServletResponse;
 /**
  * Represents a servlet request/response interaction that has both the request and response object.
  * 
+ * @param <Request>
+ *            the type of the {@link ServletRequest}, for example {@link javax.servlet.HttpServletRequest}.
+ * @param <Response>
+ *            the type of the {@link ServletResponse}, for example {@link javax.servlet.HttpServletResponse}.
+ * 
  * @author Kenneth Xu
  * 
  */
-public interface ServletInteraction {
+public interface ServletInteraction<Request extends ServletRequest, Response extends ServletResponse> {
 
     /**
      * The servlet request of the interaction.
      * 
      * @return the {@link ServletRequest} object in this interaction.
      */
-    ServletRequest getServletRequest();
+    Request getServletRequest();
 
     /**
      * The servlet response of the interaction.
      * 
      * @return the {@link ServletResponse} object in this interaction.
      */
-    ServletResponse getServletResponse();
+    Response getServletResponse();
 }

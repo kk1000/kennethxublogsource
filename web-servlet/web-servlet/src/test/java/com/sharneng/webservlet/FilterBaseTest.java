@@ -39,10 +39,10 @@ import javax.servlet.ServletResponse;
  */
 public class FilterBaseTest {
 
-    private class MockFilter extends FilterBase {
+    private class MockFilter extends FilterBase<ServletRequest, ServletResponse> {
         @Override
-        public ServletInteraction beforeService(ServletRequest request, ServletResponse response) throws IOException,
-                ServletException {
+        public ServletInteraction<ServletRequest, ServletResponse> beforeService(ServletRequest request,
+                ServletResponse response) throws IOException, ServletException {
             beforeCallTime = System.currentTimeMillis();
             sleep(100);
             return super.beforeService(request, response);
@@ -76,7 +76,7 @@ public class FilterBaseTest {
     private long afterCallTime;
     private long chainCallTime;
 
-    private FilterBase sut;
+    private FilterBase<ServletRequest, ServletResponse> sut;
 
     private static void sleep(long millis) {
         try {
@@ -122,10 +122,10 @@ public class FilterBaseTest {
     public void doFilter_usesReplacedRequestResponse_whenInteractionIsNotNull() throws Exception {
         sut = new MockFilter() {
             @Override
-            public ServletInteraction beforeService(ServletRequest request, ServletResponse response)
-                    throws IOException, ServletException {
+            public ServletInteraction<ServletRequest, ServletResponse> beforeService(ServletRequest request,
+                    ServletResponse response) throws IOException, ServletException {
                 super.beforeService(request, response);
-                return new SimpleInteraction(req2, resp2);
+                return new SimpleInteraction<ServletRequest, ServletResponse>(req2, resp2);
             }
         };
         sut.doFilter(req, resp, chain);

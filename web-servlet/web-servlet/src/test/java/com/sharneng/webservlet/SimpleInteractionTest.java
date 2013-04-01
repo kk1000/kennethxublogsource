@@ -43,7 +43,7 @@ public class SimpleInteractionTest {
     @Mock
     private ServletResponse resp;
 
-    private SimpleInteraction sut;
+    private SimpleInteraction<ServletRequest, ServletResponse> sut;
 
     @Before
     public void setup() throws Exception {
@@ -55,7 +55,7 @@ public class SimpleInteractionTest {
         exception.expect(NullPointerException.class);
         exception.expectMessage("request");
 
-        new SimpleInteraction(null, resp);
+        new SimpleInteraction<ServletRequest, ServletResponse>(null, resp);
     }
 
     @Test
@@ -63,19 +63,19 @@ public class SimpleInteractionTest {
         exception.expect(NullPointerException.class);
         exception.expectMessage("response");
 
-        new SimpleInteraction(req, null);
+        new SimpleInteraction<ServletRequest, ServletResponse>(req, null);
     }
 
     @Test
     public void getServletRequest_returnsValueSetInConstructor() throws Exception {
-        sut = new SimpleInteraction(req, resp);
+        sut = new SimpleInteraction<ServletRequest, ServletResponse>(req, resp);
 
         assertThat(sut.getServletRequest(), is(req));
     }
 
     @Test
     public void getServletResponse_returnsValueSetInConstructor() throws Exception {
-        sut = new SimpleInteraction(req, resp);
+        sut = new SimpleInteraction<ServletRequest, ServletResponse>(req, resp);
 
         assertThat(sut.getServletResponse(), is(resp));
     }

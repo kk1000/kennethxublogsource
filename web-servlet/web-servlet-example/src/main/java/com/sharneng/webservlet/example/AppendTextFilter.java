@@ -4,12 +4,11 @@ import com.sharneng.webservlet.FilterBase;
 
 import java.io.IOException;
 
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-public class AppendTextFilter extends FilterBase {
+public class AppendTextFilter extends FilterBase<HttpServletRequest, HttpServletResponse> {
 
     private String messageToAppend;
 
@@ -17,7 +16,8 @@ public class AppendTextFilter extends FilterBase {
         this.messageToAppend = messageToAppend;
     }
 
-    public void afterService(ServletRequest request, ServletResponse response) throws IOException, ServletException {
+    public void afterService(HttpServletRequest request, HttpServletResponse response) throws IOException,
+            ServletException {
         response.getOutputStream().println("<br/>Appended by filter: " + messageToAppend);
     }
 }

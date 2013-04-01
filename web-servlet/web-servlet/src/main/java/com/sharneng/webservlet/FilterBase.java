@@ -33,10 +33,14 @@ import javax.servlet.ServletResponse;
  * {@link #afterService(ServletRequest, ServletResponse)} methods and leaving the work of calling
  * {@code chain.doFilter(...)} to {@link FilterBase}.
  * 
+ * @param <Request>
+ *            the type of the {@link ServletRequest}, for example {@link javax.servlet.HttpServletRequest}.
+ * @param <Response>
+ *            the type of the {@link ServletResponse}, for example {@link javax.servlet.HttpServletResponse}.
  * @author Kenneth Xu
  * 
  */
-public class FilterBase implements Filter {
+public class FilterBase<Request extends ServletRequest, Response extends ServletResponse> implements Filter {
 
     /**
      * {@inheritDoc}
@@ -68,16 +72,21 @@ public class FilterBase implements Filter {
      * <li>{@link #afterService(ServletRequest, ServletResponse) afterService(request, response)}</li>
      * </ol>
      */
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
-        ServletInteraction interaction = beforeService(request, response);
+    public void doFilter(final ServletRequest request, final ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        @SuppressWarnings("unchecked")
+        Request req = (Request) request;
+        @SuppressWarnings("unchecked")
+        Response resp = (Response) response;
+
+        ServletInteraction<Request, Response> interaction = beforeService(req, resp);
         if (interaction != null) {
-            request = interaction.getServletRequest();
-            response = interaction.getServletResponse();
+            req = interaction.getServletRequest();
+            resp = interaction.getServletResponse();
         }
 
-        chain.doFilter(request, response);
-        afterService(request, response);
+        chain.doFilter(req, resp);
+        afterService(req, resp);
     }
 
     /**
@@ -88,14 +97,14 @@ public class FilterBase implements Filter {
      *            the {@link ServletRequest} object that contains the client's request
      * @param response
      *            the {@link ServletResponse} object that contains the servlet's response
-     * @return an {@link ServletInteraction} object that contains the replaced request and/or response objects, or null if
-     *         neither request nor response object is replaced as a result.
+     * @return an {@link ServletInteraction} object that contains the replaced request and/or response objects, or null
+     *         if neither request nor response object is replaced as a result.
      * @throws IOException
      *             if an input or output exception occurs
      * @throws ServletException
      *             if an exception occurs that interferes with the servlet's normal operation
      */
-    public ServletInteraction beforeService(ServletRequest request, ServletResponse response) throws IOException,
+    public ServletInteraction<Request, Response> beforeService(Request request, Response response) throws IOException,
             ServletException {
         return null;
     }
@@ -113,6 +122,6 @@ public class FilterBase implements Filter {
      * @throws ServletException
      *             if an exception occurs that interferes with the servlet's normal operation
      */
-    public void afterService(ServletRequest request, ServletResponse response) throws IOException, ServletException {
+    public void afterService(Request request, Response response) throws IOException, ServletException {
     }
 }
