@@ -27,16 +27,17 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Made functions of {@link HttpServlet} available through an interface.
  * <p>
- * Implementations of {@link InjectableServlet} should generally extends from {@link AbstractInjectableServlet} to avoid the need of
- * implementing every method of this interface.
+ * Implementations of {@link InjectableServlet} should generally extends from {@link AbstractInjectableServlet} to avoid
+ * the need of implementing every method of this interface.
  * <p>
- * The purpose of this interface and its abstract implementation {@link AbstractInjectableServlet} is to allow servlet to
- * participate in the dependency injection systems, and simplifies that task of writing the tests for servlets. For
+ * The purpose of this interface and its abstract implementation {@link AbstractInjectableServlet} is to allow servlet
+ * to participate in the dependency injection systems, and simplifies that task of writing the tests for servlets. For
  * example, {@link com.sharneng.webservlet.SpringBinder} is provided as a glue class to integrate with Spring Framework.
  * <p>
  * Please note that most of method names in this interface has preceding "do" removed from their counterparts in
- * {@link HttpServlet} class. This is done in purpose to avoid overriding those methods in {@link AbstractInjectableServlet}
- * class so that its parent's method {@link HttpServlet#doOptions} can generate the correct option list.
+ * {@link HttpServlet} class. This is done in purpose to avoid overriding those methods in
+ * {@link AbstractInjectableServlet} class so that its parent's method {@link HttpServlet#doOptions} can generate the
+ * correct option list.
  * 
  * @author Kenneth Xu
  * 

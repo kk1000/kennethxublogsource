@@ -4,6 +4,21 @@
 
 <web-app>
     <display-name>WebServlet example application</display-name>
+
+    <filter>
+        <filter-name>Append Text Filter</filter-name>
+        <filter-class>com.sharneng.webservlet.SpringFilterBinder</filter-class>
+        <init-param>
+            <param-name>WebFilterName</param-name>
+            <param-value>appendTextFilter</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Append Text Filter</filter-name>
+        <url-pattern>*</url-pattern>
+    </filter-mapping>
+
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>

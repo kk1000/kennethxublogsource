@@ -15,9 +15,10 @@
  */
 
 /**
- * Classes in this package provide the ability to use Dependency Injection frameworks with servlets. With the help of 
- * {@link com.sharneng.webservlet.InjectableServlet} interface and supporting classes, one can have their servlets managed by 
- * dependency injection frameworks.
+ * Classes in this package provide the ability to use Dependency Injection frameworks with servlets and filters. 
+ * <p>
+ * With the help of {@link com.sharneng.webservlet.InjectableServlet} interface and supporting classes, one can have their
+ * servlets managed by dependency injection frameworks.
  * <p>
  * Binder for Spring Framework is provided in this package. Binder for other dependency injection framework can be
  * easily implemented by inheriting from {@link com.sharneng.webservlet.AbstractBinder} class.
@@ -66,7 +67,38 @@
  * </pre>
  * That's all to manage your servlet in dependency injection framework. Just add servlet mapping as usual and servlet
  * can be accessed.
+ * <p>
+ * Managing servlet filter in dependency framework is relatively easier. Binder for Spring framework is provided. Binder for
+ * other dependency framework can be implemented by extending {@link com.sharneng.webservlet.AbstractFilterBinder} class.
+ * <p>
+ * Filters can be developed just like any POJO as long as they implement {@link javax.servlet.Filter} interface and register
+ * the filter in the dependency injection framework.
+ * <p>
+ * For example, filter is declared as a bean in Spring configuration.
+ * <pre>
+ * {@code
+ * <bean id="appendTextFilter" class="com.sharneng.webservlet.example.AppendTextFilter">
+ *     <property name="messageToAppend" value="Text Injected from Spring context" />
+ * </bean>
+ * }
+ * </pre>
+ * Then use the {@link com.sharneng.webservlet.SpringFilterBinder} to define the filter in web.xml and add filter mapping as
+ * usual.
+ * <pre>
+ * {@code
+ * <filter>
+ *     <filter-name>Append Text Filter</filter-name>
+ *     <filter-class>com.sharneng.webservlet.SpringFilterBinder</filter-class>
+ *     <init-param>
+ *         <param-name>WebFilterName</param-name>
+ *         <param-value>appendTextFilter</param-value>
+ *     </init-param>
+ * </filter>
+ * }
+ * </pre>
  * 
+ * <p>
+ * In addition, class {@link com.sharneng.webservlet.FilterBase} is provided to help simplify the development of the filters.
  * @author Kenneth Xu
  */
 package com.sharneng.webservlet;

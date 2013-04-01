@@ -5,4 +5,8 @@
     <bean id="helloWorldServlet" class="com.sharneng.webservlet.example.GreetingServlet">
         <property name="name" value="World" />
     </bean>
+
+    <bean id="appendTextFilter" class="com.sharneng.webservlet.example.AppendTextFilter">
+        <property name="messageToAppend" value="Text Injected from Spring context" />
+    </bean>
 </beans>

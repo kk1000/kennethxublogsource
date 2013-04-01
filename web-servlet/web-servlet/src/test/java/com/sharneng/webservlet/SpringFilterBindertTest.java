@@ -15,7 +15,8 @@
  */
 package com.sharneng.webservlet;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,43 +24,44 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletConfig;
+import javax.servlet.Filter;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 
 /**
- * Test {@link SpringBinder}.
+ * Test {@link SpringFilterBinder}.
  * 
  * @author Kenneth Xu
  * 
  */
-public class SpringBindertTest {
-    private static final String WebServletName = "MyWebSevlet";
-    private AbstractBinder sut;
+public class SpringFilterBindertTest {
+    private static final String WebFilterName = "MyFilter";
+    private AbstractFilterBinder sut;
     @Mock
     private ServletContext servletContext;
     @Mock
-    private ServletConfig servletConfig;
+    private FilterConfig filterConfig;
     @Mock
     private WebApplicationContext springContext;
     @Mock
-    private InjectableServlet webServlet;
+    private Filter webFilter;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        sut = new SpringBinder();
+        sut = new SpringFilterBinder();
         when(servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)).thenReturn(
                 springContext);
-        when(servletConfig.getInitParameter(SpringBinder.WEB_SERVLET_NAME_PARAMETER)).thenReturn(WebServletName);
-        when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(springContext.getBean(WebServletName)).thenReturn(webServlet);
+        when(filterConfig.getInitParameter(SpringFilterBinder.WEB_FILTER_NAME_PARAMETER)).thenReturn(WebFilterName);
+        when(filterConfig.getServletContext()).thenReturn(servletContext);
+        when(springContext.getBean(WebFilterName)).thenReturn(webFilter);
     }
 
     @Test
     public void init_retrievesWebServletFromSpringContext() throws Exception {
-        sut.init(servletConfig);
-        verify(springContext).getBean(WebServletName);
-        verify(webServlet).init(servletConfig);
+        sut.init(filterConfig);
+        verify(springContext).getBean(WebFilterName);
+        verify(webFilter).init(filterConfig);
     }
 
 }

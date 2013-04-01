@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Test {@link AbstractInjectableServlet}
+ * Test {@link AbstractInjectableServlet}.
  * 
  * @author Kenneth Xu
  * 
