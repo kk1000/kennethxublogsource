@@ -2,4 +2,4 @@ mvn clean deploy
 
 mvn release:clean
 mvn release:prepare -DtagBase=https://kennethxublogsource.googlecode.com/svn/tags/web-servlet
-mvn release:perform -DtagBase=https://kennethxublogsource.googlecode.com/svn/tags/web-servlet -Dtag=web-servlet-1.0.1/web-servlet
+mvn release:perform -DtagBase=https://kennethxublogsource.googlecode.com/svn/tags/web-servlet -Dtag=web-servlet-1.0.3/web-servlet
